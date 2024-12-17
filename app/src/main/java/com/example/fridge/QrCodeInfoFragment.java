@@ -30,11 +30,6 @@ public class QrCodeInfoFragment extends Fragment {
     private TextView textViewName, textViewType, textViewManufactureDate, textViewExpiryDate, textViewMass, textViewProteins, textViewFats, textViewCarbohydrates, textViewCalories, textViewAllergens, textViewMeasurementType;
     private Button addButton, deleteButton;
 
-    // Интерфейс для взаимодействия с активностью
-    public interface OnFragmentInteractionListener {
-        void onFragmentClose();
-    }
-
     private OnFragmentInteractionListener mListener;
 
     public QrCodeInfoFragment(JsonObject jsonData) {

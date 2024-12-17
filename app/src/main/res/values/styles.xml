@@ -13,4 +13,40 @@
         <item name="android:padding">8dp</item>
         <item name="android:layout_gravity">center_vertical</item>
     </style>
+
+    <style name="TextHintStyle">
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColorHint">@color/gray</item>
+        <item name="android:background">@drawable/edit_text_border</item>
+    </style>
+
+    <!-- Стиль для TextInputLayout -->
+    <style name="CustomTextInputLayout" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <!-- Режим рамки -->
+        <item name="boxBackgroundMode">outline</item>
+
+        <!-- Цвет обводки при фокусе -->
+        <item name="boxStrokeColor">@color/main_color</item>
+
+        <!-- Цвет текста подсказки -->
+        <item name="hintTextColor">@color/main_color</item>
+
+        <!-- Цвет текста в EditText -->
+        <item name="android:textColor">@color/gray</item>
+
+        <!-- Толщина обводки -->
+        <item name="boxStrokeWidth">2dp</item>
+
+        <!-- Указываем закруглённость углов -->
+        <item name="shapeAppearanceOverlay">@style/RoundedCorners</item>
+
+        <!-- Подсказка при фокусе перемещается наверх -->
+        <item name="hintAnimationEnabled">true</item>
+    </style>
+
+    <!-- Стиль для формы с закруглёнными углами -->
+    <style name="RoundedCorners" parent="">
+        <item name="cornerSize">12dp</item> <!-- Закруглённость углов -->
+    </style>
+
 </resources>

@@ -6,5 +6,23 @@
         <item name="android:statusBarColor">@color/main_color</item>
     </style>
 
-    <style name="Theme.Fridge" parent="Base.Theme.Fridge" />
+<!--    <style name="Theme.Fridge" parent="Base.Theme.Fridge" />-->
+
+    <style name="Theme.Fridge" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <item name="android:statusBarColor">@color/main_color</item>
+
+        <!-- Основные цвета темы -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryVariant">@color/colorPrimaryVariant</item>
+        <item name="colorAccent">@color/colorAccent</item>
+
+        <!-- Цвет для выделений и интерактивных элементов -->
+        <item name="colorControlActivated">@color/colorAccent</item>
+        <item name="colorControlHighlight">@color/colorAccent</item>
+        <item name="colorControlNormal">@color/colorPrimary</item>
+
+        <!-- Цвет текста и иконок на фоне -->
+        <item name="android:textColorPrimary">@color/colorOnPrimary</item>
+    </style>
+
 </resources>

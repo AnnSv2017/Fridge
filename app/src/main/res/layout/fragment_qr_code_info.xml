@@ -20,7 +20,7 @@
             android:layout_height="50dp"
             android:layout_marginStart="20dp"
             android:src="@drawable/ic_back"
-            android:contentDescription="Закрыть"
+            android:contentDescription="Назад"
             android:clickable="true"/>
 
     </LinearLayout>

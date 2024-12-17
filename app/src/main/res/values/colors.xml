@@ -10,4 +10,10 @@
     <color name="transparent">#33000000</color>
     <color name="white">#FFFFFFFF</color>
 
+    <!-- Основные цвета темы -->
+    <color name="colorPrimary">#03A9F4</color> <!-- Голубой -->
+    <color name="colorPrimaryVariant">#0288D1</color> <!-- Тёмно-голубой -->
+    <color name="colorAccent">#03A9F4</color> <!-- Голубой для акцентов -->
+    <color name="colorOnPrimary">#2F2E2E</color> <!-- Цвет текста на фоне Primary -->
+
 </resources>

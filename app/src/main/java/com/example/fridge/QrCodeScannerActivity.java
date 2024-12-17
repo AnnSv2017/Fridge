@@ -5,6 +5,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
@@ -41,7 +42,7 @@ import com.journeyapps.barcodescanner.Size;
 import java.util.List;
 
 
-public class QrCodeScannerActivity extends AppCompatActivity implements QrCodeInfoFragment.OnFragmentInteractionListener {
+public class QrCodeScannerActivity extends AppCompatActivity implements OnFragmentInteractionListener {
 
     private ImageView qrCodeImageView;
     private Button scanQrButton, addQrButton;
@@ -49,6 +50,7 @@ public class QrCodeScannerActivity extends AppCompatActivity implements QrCodeIn
     private CaptureManager capture;
     private DecoratedBarcodeView barcodeScannerView;
     private ScannerFrameView scannerFrameView;
+    private JsonObject jsonObject;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,35 +92,14 @@ public class QrCodeScannerActivity extends AppCompatActivity implements QrCodeIn
             @Override
             public void barcodeResult(BarcodeResult result) {
                 if (result.getText() != null) {
-                    try {
-                        // Парсинг JSON
-                        Gson gson = new Gson();
-                        JsonObject jsonData = gson.fromJson(result.getText(), JsonObject.class);
 
-                        // Остановка сканера
-                        barcodeScannerView.pause();
+                    // Парсинг JSON
+                    Gson gson = new Gson();
+                    jsonObject = gson.fromJson(result.getText(), JsonObject.class);
 
-                        // Переход на новый фрагмент
-                        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-                        FragmentManager fragmentManager = getSupportFragmentManager();
-                        QrCodeInfoFragment existingFragment = (QrCodeInfoFragment) fragmentManager.findFragmentById(R.id.fragment_container);
-
-                        if (existingFragment == null || !existingFragment.isVisible()) {
-                            QrCodeInfoFragment fragment = new QrCodeInfoFragment(jsonData);
-
-                            // Скрываем активность
-                            findViewById(R.id.activity_container).setVisibility(View.GONE);
-                            // Отображаем фрагмент
-                            findViewById(R.id.fragment_container).setVisibility(View.VISIBLE);
-
-                            transaction.replace(R.id.fragment_container, fragment);
-                            transaction.addToBackStack(null);
-                            transaction.commit();
-                        }
-                    } catch (Exception e) {
-                        Toast.makeText(QrCodeScannerActivity.this, "Invalid QR code data", Toast.LENGTH_SHORT).show();
-                        e.printStackTrace();
-                    }
+                    // Переход на новый фрагмент
+                    QrCodeInfoFragment fragment = new QrCodeInfoFragment(jsonObject);
+                    switchToFragment(fragment);
                 }
             }
             @Override
@@ -172,7 +153,7 @@ public class QrCodeScannerActivity extends AppCompatActivity implements QrCodeIn
         capture.initializeFromIntent(getIntent(), null);
         barcodeScannerView.getViewFinder().setLaserVisibility(false);
         barcodeScannerView.getViewFinder().setMaskColor(0x60000000); // Полупрозрачный черный фон
-        barcodeScannerView.getBarcodeView().setFramingRectSize(new Size(600, 600)); // Размер области сканирования
+        barcodeScannerView.getBarcodeView().setFramingRectSize(new Size(700, 700)); // Размер области сканирования
         barcodeScannerView.getBarcodeView().resume();
     }
 
@@ -190,6 +171,25 @@ public class QrCodeScannerActivity extends AppCompatActivity implements QrCodeIn
         }
     }
 
+    public void switchToFragment(Fragment fragment) {
+        if (fragment == null) return;
+
+        // Остановка сканера
+        barcodeScannerView.pause();
+
+        // Скрываем активность
+        findViewById(R.id.activity_container).setVisibility(View.GONE);
+        // Отображаем фрагмент
+        findViewById(R.id.fragment_container).setVisibility(View.VISIBLE);
+
+        // Вставка фрагмента в пустой fragment_container
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.fragment_container, fragment);
+        transaction.addToBackStack(null);
+        transaction.commit();
+    }
+
+
     @Override
     public void onFragmentClose() {
         // Восстанавливаем активность
@@ -200,6 +200,25 @@ public class QrCodeScannerActivity extends AppCompatActivity implements QrCodeIn
         // Возобновляем работу сканера
         barcodeScannerView.resume();
     }
+
+    public void btnCreateProduct(View v){
+        CreateProductFragment fragment = new CreateProductFragment();
+        switchToFragment(fragment);
+    }
+
+    //Переопределяем метод для возврата назад (встроенная кнопка на телефоне) из фрагмента к сканеру
+    @Override
+    public void onBackPressed() {
+        // Проверяем стек фрагментов
+        if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
+            getSupportFragmentManager().popBackStack();
+
+            onFragmentClose();
+        } else {
+            super.onBackPressed(); // Выход из активности
+        }
+    }
+
 
     @Override
     protected void onResume() {
