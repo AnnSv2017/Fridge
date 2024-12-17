@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/table_layout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:stretchColumns="1">
+
+    <LinearLayout
+        android:id="@+id/upper_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:orientation="vertical"
+        android:background="@color/main_color">
+
+        <ImageView
+            android:id="@+id/back_image_view"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginStart="20dp"
+            android:src="@drawable/ic_back"
+            android:contentDescription="Закрыть"
+            android:clickable="true"/>
+
+    </LinearLayout>
+
+    <TableRow>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Название:"
+            style="@style/TextStyleBold_16"/>
+
+        <TextView
+            android:id="@+id/text_view_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/TextStyle16"/>
+    </TableRow>
+
+    <TableRow>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Тип:"
+            style="@style/TextStyleBold_16" />
+
+        <TextView
+            android:id="@+id/text_view_type"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Хлеб"
+            style="@style/TextStyle16" />
+    </TableRow>
+
+    <TableRow>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Дата\nизготовления:"
+            style="@style/TextStyleBold_16" />
+
+        <TextView
+            android:id="@+id/text_view_manufacture_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/TextStyle16" />
+    </TableRow>
+
+    <TableRow>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Дата истечения\nсрока:"
+            style="@style/TextStyleBold_16" />
+
+        <TextView
+            android:id="@+id/text_view_expiry_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/TextStyle16" />
+    </TableRow>
+
+    <TableRow>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="масса/объём:"
+            style="@style/TextStyleBold_16" />
+
+        <TextView
+            android:id="@+id/text_view_mass"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/TextStyle16" />
+
+    </TableRow>
+
+    <TableRow>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Пищевая ценность:"
+            style="@style/TextStyleBold_16" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/text_view_proteins"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Белки: 7.0 г"
+                style="@style/TextStyle16" />
+
+            <TextView
+                android:id="@+id/text_view_fats"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Жиры: 3.5 г"
+                style="@style/TextStyle16" />
+
+            <TextView
+                android:id="@+id/text_view_carbohydrates"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Углеводы: 50.0 г"
+                style="@style/TextStyle16" />
+
+            <TextView
+                android:id="@+id/text_view_calories"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Калории: 201 ккал / 844 кДж"
+                style="@style/TextStyle16" />
+        </LinearLayout>
+
+    </TableRow>
+
+
+
+
+    <!-- Добавьте другие строки для остальных полей -->
+</TableLayout>

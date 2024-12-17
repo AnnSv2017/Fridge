@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".QrCodeInfoFragment">
+
+    <LinearLayout
+        android:id="@+id/upper_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@color/main_color">
+
+        <ImageView
+            android:id="@+id/back_image_view"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginStart="20dp"
+            android:src="@drawable/ic_back"
+            android:contentDescription="Закрыть"
+            android:clickable="true"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <TextView
+            android:id="@+id/text_view_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Название"
+            android:textSize="25sp" />
+        <TextView
+            android:id="@+id/text_view_type"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Тип"
+            android:textSize="25sp" />
+        <TextView
+            android:id="@+id/text_view_manufacture_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Дата изготовления"
+            android:textSize="25sp" />
+        <TextView
+            android:id="@+id/text_view_expiry_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Дата истечения срока"
+            android:textSize="25sp" />
+        <TextView
+            android:id="@+id/text_view_mass"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="масса/объём"
+            android:textSize="25sp" />
+        <TextView
+            android:id="@+id/text_view_food_value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Пищевая ценность"
+            android:textSize="25sp" />
+        <TextView
+            android:id="@+id/text_view_allergens"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Аллергены"
+            android:textSize="25sp" />
+        <TextView
+            android:id="@+id/text_view_measurement_type"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Тип измерения"
+            android:textSize="25sp" />
+
+        <Button
+            android:id="@+id/close_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="Close"
+            android:textSize="25sp"/>
+
+    </LinearLayout>
+
+</LinearLayout>
