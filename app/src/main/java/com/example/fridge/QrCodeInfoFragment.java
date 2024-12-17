@@ -27,8 +27,8 @@ public class QrCodeInfoFragment extends Fragment {
     private Integer calories_kcal, calories_KJ;
 
     private ImageView backImageView;
-    private TextView textViewName, textViewType, textViewManufactureDate, textViewExpiryDate, textViewMass, textViewFoodValue, textViewAllergens, textViewMeasurementType;
-    private Button closeButton;
+    private TextView textViewName, textViewType, textViewManufactureDate, textViewExpiryDate, textViewMass, textViewProteins, textViewFats, textViewCarbohydrates, textViewCalories, textViewAllergens, textViewMeasurementType;
+    private Button addButton, deleteButton;
 
     // Интерфейс для взаимодействия с активностью
     public interface OnFragmentInteractionListener {
@@ -102,36 +102,28 @@ public class QrCodeInfoFragment extends Fragment {
         textViewManufactureDate = view.findViewById(R.id.text_view_manufacture_date);
         textViewExpiryDate = view.findViewById(R.id.text_view_expiry_date);
         textViewMass = view.findViewById(R.id.text_view_mass);
-        textViewFoodValue = view.findViewById(R.id.text_view_food_value);
+        textViewProteins = view.findViewById(R.id.text_view_proteins);
+        textViewFats = view.findViewById(R.id.text_view_fats);
+        textViewCarbohydrates = view.findViewById(R.id.text_view_carbohydrates);
+        textViewCalories = view.findViewById(R.id.text_view_calories);
         textViewAllergens = view.findViewById(R.id.text_view_allergens);
         textViewMeasurementType = view.findViewById(R.id.text_view_measurement_type);
 
-        textViewName.setText("Название:\n" + name);
-        textViewType.setText("Тип:\n" + type);
-        textViewManufactureDate.setText("Дата изготовления:\n" + manufacture_date);
-        textViewExpiryDate.setText("Дата истечения срока:\n" + expiry_date);
-        textViewMass.setText("масса/объём:\n" + mass_value + " " + mass_unit);
-        textViewFoodValue.setText("Пищевая ценность, г:\n"
-                + "Белки: " + proteins + "\nЖиры: " + fats + "\nУглеводы: " + carbohydrates
-                + "\nКалории на 100г:\n " + calories_kcal + "ккал/" + calories_KJ + "кДж");
+        textViewName.setText(name);
+        textViewType.setText(type);
+        textViewManufactureDate.setText(manufacture_date);
+        textViewExpiryDate.setText(expiry_date);
+        textViewMass.setText(mass_value + " " + mass_unit);
+        textViewProteins.setText(String.valueOf(proteins) + " г");
+        textViewFats.setText(String.valueOf(fats) + " г");
+        textViewCarbohydrates.setText(String.valueOf(carbohydrates) + " г");
+        String calories_text = String.format("%s ккал/%s кДж", calories_kcal, calories_KJ);
+        textViewCalories.setText(calories_text);
 
-        closeButton = view.findViewById(R.id.close_button);
+        addButton = view.findViewById(R.id.add_button);
+        deleteButton = view.findViewById(R.id.delete_button);
 
-        backImageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // Вызываем метод активности для возобновления сканера
-                if (mListener != null) {
-                    mListener.onFragmentClose(); // Возвращаем управление активности
-                }
-                // Закрываем фрагмент
-                getActivity().getSupportFragmentManager().beginTransaction()
-                        .remove(QrCodeInfoFragment.this)
-                        .commit();
-            }
-        });
-
-        closeButton.setOnClickListener(v -> {
+        backImageView.setOnClickListener(view1 -> {
             // Вызываем метод активности для возобновления сканера
             if (mListener != null) {
                 mListener.onFragmentClose(); // Возвращаем управление активности

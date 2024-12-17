@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<TableLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/table_layout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context=".QrCodeInfoFragment">
+    android:layout_height="wrap_content"
+    android:stretchColumns="1">
 
     <LinearLayout
         android:id="@+id/upper_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
         android:orientation="vertical"
         android:background="@color/main_color">
 
@@ -24,69 +25,240 @@
 
     </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:padding="20dp">
+    <TableRow>
+        <TextView
+            style="@style/TextStyleBold_16"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Название:" />
 
         <TextView
             android:id="@+id/text_view_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Название"
-            android:textSize="25sp" />
+            style="@style/TextStyle16"/>
+    </TableRow>
+
+    <TableRow>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Тип:"
+            style="@style/TextStyleBold_16" />
+
         <TextView
             android:id="@+id/text_view_type"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Тип"
-            android:textSize="25sp" />
+            android:text="Хлеб"
+            style="@style/TextStyle16" />
+    </TableRow>
+
+    <TableRow>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Дата\nизготовления:"
+            style="@style/TextStyleBold_16" />
+
         <TextView
             android:id="@+id/text_view_manufacture_date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Дата изготовления"
-            android:textSize="25sp" />
+            style="@style/TextStyle16" />
+    </TableRow>
+
+    <TableRow>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Дата истечения\nсрока:"
+            style="@style/TextStyleBold_16" />
+
         <TextView
             android:id="@+id/text_view_expiry_date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Дата истечения срока"
-            android:textSize="25sp" />
+            style="@style/TextStyle16" />
+    </TableRow>
+
+    <TableRow>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="масса/объём:"
+            style="@style/TextStyleBold_16" />
+
         <TextView
             android:id="@+id/text_view_mass"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="масса/объём"
-            android:textSize="25sp" />
+            style="@style/TextStyle16" />
+
+    </TableRow>
+
+    <TableRow>
+
         <TextView
-            android:id="@+id/text_view_food_value"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Пищевая ценность"
-            android:textSize="25sp" />
+            android:text="Пищевая ценность:"
+            style="@style/TextStyleBold_16" />
+
+    </TableRow>
+
+    <TableLayout
+        android:layout_width="293dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:orientation="vertical">
+
+        <TableRow>
+
+            <TextView
+                style="@style/TextStyle16"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Белки:" />
+
+            <TextView
+                android:id="@+id/text_view_proteins"
+                style="@style/TextStyle16"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="7.0 г" />
+
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                style="@style/TextStyle16"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Жиры:" />
+
+            <TextView
+                android:id="@+id/text_view_fats"
+                style="@style/TextStyle16"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="3.5 г" />
+
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                style="@style/TextStyle16"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Углеводы:" />
+
+            <TextView
+                android:id="@+id/text_view_carbohydrates"
+                style="@style/TextStyle16"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="50.0 г" />
+
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                style="@style/TextStyle16"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Калории:" />
+
+            <TextView
+                android:id="@+id/text_view_calories"
+                style="@style/TextStyle16"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="201 ккал / 844 кДж" />
+
+        </TableRow>
+
+    </TableLayout>
+
+
+    <TableRow>
+
+        <TextView
+            style="@style/TextStyleBold_16"
+            android:layout_width="160dp"
+            android:layout_height="wrap_content"
+            android:text="Аллергены:" />
+
         <TextView
             android:id="@+id/text_view_allergens"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Аллергены"
-            android:textSize="25sp" />
+            android:text="арахис, глютен"
+            style="@style/TextStyle16" />
+
+    </TableRow>
+
+    <TableRow>
+
+        <TextView
+            style="@style/TextStyleBold_16"
+            android:layout_width="160dp"
+            android:layout_height="wrap_content"
+            android:text="Тип измерения:" />
+
         <TextView
             android:id="@+id/text_view_measurement_type"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Тип измерения"
-            android:textSize="25sp" />
+            android:text="вес"
+            style="@style/TextStyle16" />
+
+    </TableRow>
+
+    <TableRow>
+
+        <TextView
+            style="@style/TextStyleBold_16"
+            android:layout_width="160dp"
+            android:layout_height="wrap_content"
+            android:text="Количество:" />
+
+        <EditText
+            android:id="@+id/text_view_quantity"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:text="1"
+            style="@style/TextStyle16" />
+
+    </TableRow>
+
+    <LinearLayout
+        android:layout_marginVertical="30dp"
+        android:orientation="horizontal"
+        android:gravity="center">
 
         <Button
-            android:id="@+id/close_button"
-            android:layout_width="wrap_content"
+            android:id="@+id/add_button"
+            android:layout_width="130dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:text="Close"
-            android:textSize="25sp"/>
+            android:layout_marginEnd="30dp"
+            android:text="Добавить"
+            android:textSize="16sp"
+            android:backgroundTint="@color/green"/>
+
+        <Button
+            android:id="@+id/delete_button"
+            android:layout_width="130dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="30dp"
+            android:text="Удалить"
+            android:textSize="16sp"
+            android:backgroundTint="@color/red"/>
 
     </LinearLayout>
 
-</LinearLayout>
+    <!-- Добавьте другие строки для остальных полей -->
+</TableLayout>
