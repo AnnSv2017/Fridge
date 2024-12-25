@@ -25,10 +25,15 @@ import com.google.android.material.textfield.TextInputEditText;
 
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.Calendar;
 import java.util.Locale;
 
 public class CreateProductFragment extends Fragment {
+
+    private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
     private ImageView backImageView;
     private TextInputEditText editTextName, editTextFirm, editTextType, editTextManufactureDate, editTextExpiryDate, editTextDays, editTextWeight, editTextQuantity;
@@ -95,6 +100,22 @@ public class CreateProductFragment extends Fragment {
         editTextManufactureDate.setOnClickListener(view1 -> {showDatePicker(editTextManufactureDate);});
         editTextExpiryDate.setOnClickListener(view1 -> {showDatePicker(editTextExpiryDate);});
 
+        editTextDays.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                // Вызывается при каждом изменении текста
+                updateDates();
+                Toast.makeText(getContext(), "Даты изменились", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+            }
+        });
 
         backImageView.setOnClickListener(view1 -> {
             // Вызываем метод активности для возобновления сканера
@@ -148,8 +169,12 @@ public class CreateProductFragment extends Fragment {
                         Calendar selectedDate = Calendar.getInstance();
                         selectedDate.set(year, month, dayOfMonth);
 
-                        SimpleDateFormat formatter = new SimpleDateFormat("dd.MM.yyyy", Locale.getDefault());
-                        editText.setText(formatter.format(selectedDate.getTime()));
+                        // Преобразуем Calendar в LocalDate
+                        LocalDate localDate = LocalDate.of(year, month + 1, dayOfMonth);
+
+                        editText.setText(localDate.format(formatter));
+
+                        updateDays();
                     }
                 },
                 calendar.get(Calendar.YEAR), // Год по умолчанию
@@ -159,6 +184,41 @@ public class CreateProductFragment extends Fragment {
 
         // Показываем диалог
         datePickerDialog.show();
+    }
+
+    private void updateDays(){
+        if (editTextManufactureDate.getText().toString().trim().isEmpty() || editTextExpiryDate.getText().toString().trim().isEmpty()){
+            return;
+        }
+        LocalDate manufactureDate = LocalDate.parse(editTextManufactureDate.getText().toString(), formatter);
+        LocalDate expiryDate = LocalDate.parse(editTextExpiryDate.getText().toString(), formatter);
+
+        long differenceInDays = ChronoUnit.DAYS.between(manufactureDate, expiryDate);
+        editTextDays.setText(String.valueOf(differenceInDays));
+    }
+
+    private void updateDates(){
+        if(!editTextManufactureDate.getText().toString().trim().isEmpty()){
+            String manufactureDate = editTextManufactureDate.getText().toString();
+
+            long days;
+            try {
+                days = Long.parseLong(editTextDays.getText().toString());
+            } catch (NumberFormatException e) {
+                // Обработка ошибки: если строка не число
+                Toast.makeText(getContext(), "Введите корректное число!", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            String expiryDateText = getModifiedDate(manufactureDate, days);
+            editTextExpiryDate.setText(expiryDateText);
+        }
+    }
+
+    private String getModifiedDate(String date, long daysToAdd){
+        LocalDate initialDate = LocalDate.parse(date, formatter);
+        LocalDate modifiedDate = initialDate.plusDays(daysToAdd);
+        return modifiedDate.format(formatter);
     }
 
     private void addProduct(){

@@ -123,7 +123,8 @@
                     android:layout_height="match_parent"
                     android:gravity="center"
                     android:text="0"
-                    android:inputType="number"/>
+                    android:inputType="number"
+                    android:digits="0123456789-"/>
 
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -302,7 +303,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginVertical="5dp"
-                android:background="@drawable/table_background">
+                android:background="@drawable/table_row_background">
 
                 <TextView
                     style="@style/MainTextStyle"
@@ -341,7 +342,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginVertical="5dp"
-                android:background="@drawable/table_background">
+                android:background="@drawable/table_row_background">
 
                 <TextView
                     style="@style/MainTextStyle"
@@ -380,7 +381,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginVertical="5dp"
-                android:background="@drawable/table_background">
+                android:background="@drawable/table_row_background">
 
                 <TextView
                     style="@style/MainTextStyle"
@@ -419,7 +420,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginVertical="5dp"
-                android:background="@drawable/table_background">
+                android:background="@drawable/table_row_background">
 
                 <TextView
                     style="@style/MainTextStyle"
