@@ -1,13 +1,17 @@
 package com.example.fridge;
 
-public class DataProductHistory {
+public class DataProductLogs {
     private Integer id;
+    private String manufacture_date;
+    private String expiry_date;
     private Integer product_id;
     private String operation_type;
     private Double quantity;
 
-    public DataProductHistory(Integer id, Integer product_id, String operation_type, Double quantity) {
+    public DataProductLogs(Integer id, String manufacture_date, String expiry_date, Integer product_id, String operation_type, Double quantity) {
         this.id = id;
+        this.manufacture_date = manufacture_date;
+        this.expiry_date = expiry_date;
         this.product_id = product_id;
         this.operation_type = operation_type;
         this.quantity = quantity;
@@ -15,6 +19,14 @@ public class DataProductHistory {
 
     public Integer getId() {
         return id;
+    }
+
+    public String getManufacture_date() {
+        return manufacture_date;
+    }
+
+    public String getExpiry_date() {
+        return expiry_date;
     }
 
     public Integer getProduct_id() {

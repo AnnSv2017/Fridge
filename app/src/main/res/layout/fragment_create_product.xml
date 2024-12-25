@@ -1,226 +1,657 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
-    tools:context=".CreateProductFragment">
-
-    <LinearLayout
-        android:id="@+id/upper_bar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="10dp"
-        android:orientation="vertical"
-        android:background="@color/main_color">
-
-        <ImageView
-            android:id="@+id/back_image_view"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_marginStart="20dp"
-            android:src="@drawable/ic_back"
-            android:contentDescription="Назад"
-            android:clickable="true"/>
-
-    </LinearLayout>
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="5dp"
-        android:layout_marginVertical="5dp"
-        android:hint="Название"
-        style="@style/CustomTextInputLayout">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/edit_text_name"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
-    </com.google.android.material.textfield.TextInputLayout>
-
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="5dp"
-        android:layout_marginVertical="5dp"
-        android:hint="Тип"
-        style="@style/CustomTextInputLayout">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/edit_text_type"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Годен"
-        android:textSize="20sp"
-        android:textColor="@color/gray"
-        android:gravity="center"/>
+    tools:context=".CreateProductFragment"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="5dp">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/upper_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:orientation="vertical"
+            android:background="@color/main_color">
+
+            <ImageView
+                android:id="@+id/back_image_view"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_marginStart="20dp"
+                android:src="@drawable/ic_back"
+                android:contentDescription="Назад"
+                android:clickable="true"/>
+
+        </LinearLayout>
 
         <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="от"
-            style="@style/CustomTextInputLayout"
-            android:layout_weight="2">
+            android:layout_marginHorizontal="10dp"
+            android:layout_marginVertical="2.5dp"
+            android:hint="Название"
+            style="@style/CustomTextInputLayout">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/edit_text_manufacture_date"
-                android:layout_width="130dp"
+                android:id="@+id/edit_text_name"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Дн."
-            style="@style/CustomTextInputLayout"
-            android:layout_weight="1"
-            android:gravity="center">
+            android:layout_marginHorizontal="10dp"
+            android:layout_marginVertical="2.5dp"
+            android:hint="Фирма"
+            style="@style/CustomTextInputLayout">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/edit_text_days"
-                android:layout_width="60dp"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="0"
-                android:inputType="number"/>
-
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:hint="до"
-            style="@style/CustomTextInputLayout"
-            android:layout_weight="2"
-            android:gravity="end"
-            android:layout_gravity="">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/edit_text_expiry_date"
-                android:layout_width="130dp"
+                android:id="@+id/edit_text_firm"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
-    </LinearLayout>
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="10dp"
+            android:layout_marginVertical="2.5dp"
+            android:hint="Тип"
+            style="@style/CustomTextInputLayout">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="5dp">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edit_text_type"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+        </com.google.android.material.textfield.TextInputLayout>
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="20dp"
-            android:text="Количество в:"
+            android:text="Годен"
             android:textSize="20sp"
             android:textColor="@color/gray"
-            android:layout_gravity="center_vertical"/>
+            android:gravity="center"/>
 
-        <RadioGroup
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginHorizontal="10dp"
+            android:layout_marginVertical="2.5dp">
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="10dp"
+                android:hint="от"
+                style="@style/CustomTextInputLayout"
+                android:layout_weight="2">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/edit_text_manufacture_date"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:focusable="false"
+                    android:clickable="true"
+                    android:inputType="none"/>
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:hint="Дн."
+                style="@style/CustomTextInputLayout"
+                android:layout_weight="1"
+                android:gravity="center">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/edit_text_days"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="0"
+                    android:inputType="number"/>
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:hint="до"
+                style="@style/CustomTextInputLayout"
+                android:layout_weight="2"
+                android:gravity="end"
+                android:layout_gravity="">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/edit_text_expiry_date"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:focusable="false"
+                    android:clickable="true"
+                    android:inputType="none"/>
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginHorizontal="10dp"
+            android:layout_marginVertical="2.5dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="20dp"
+                android:text="Количество в:"
+                android:textSize="20sp"
+                android:textColor="@color/gray"
+                android:layout_gravity="center_vertical"/>
+
+            <RadioGroup
+                android:id="@+id/radio_group"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <RadioButton
+                    android:id="@+id/radio_btn_kg"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="5dp"
+                    android:text="кг"
+                    android:textSize="20sp"
+                    android:textColor="@color/gray"
+                    app:buttonTint="@color/gray"/>
+
+                <RadioButton
+                    android:id="@+id/radio_btn_l"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="5dp"
+                    android:text="л"
+                    android:textSize="20sp"
+                    android:textColor="@color/gray"
+                    app:buttonTint="@color/gray"/>
+
+            </RadioGroup>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-            <RadioButton
+            <ImageView
+                android:id="@+id/image_view_minus_weight"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_gravity="center_vertical"
+                android:src="@drawable/ic_minus"
+                android:contentDescription="Уменьшить количество"
+                android:clickable="true"
+                android:layout_weight="1"/>
+
+            <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="5dp"
-                android:text="кг"
-                android:textSize="20sp"
-                android:textColor="@color/gray"
-                app:buttonTint="@color/gray"/>
-
-            <RadioButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="5dp"
-                android:text="штуки"
-                android:textSize="20sp"
-                android:textColor="@color/gray"
-                app:buttonTint="@color/gray"/>
-
-        </RadioGroup>
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="5dp">
-
-        <ImageView
-            android:id="@+id/minus_image_view"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:layout_gravity="center_vertical"
-            android:src="@drawable/ic_minus"
-            android:contentDescription="Уменьшить количество"
-            android:clickable="true"
-            android:layout_weight="1"/>
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="5dp"
-            android:layout_marginVertical="5dp"
-            android:hint="Количество"
-            style="@style/CustomTextInputLayout"
-            android:gravity="center"
-            android:layout_weight="1">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/edit_text_quantity"
-                android:layout_width="140dp"
-                android:layout_height="wrap_content"
+                android:layout_marginVertical="5dp"
+                android:hint="Вес"
+                style="@style/CustomTextInputLayout"
                 android:gravity="center"
-                android:text="1"
-                android:inputType="numberDecimal"/>
+                android:layout_weight="1">
 
-        </com.google.android.material.textfield.TextInputLayout>
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/edit_text_weight"
+                    android:layout_width="140dp"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="1"
+                    android:inputType="numberDecimal"/>
 
-        <ImageView
-            android:id="@+id/plus_image_view"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:layout_gravity="center_vertical"
-            android:src="@drawable/ic_plus"
-            android:contentDescription="Увеличить количество"
-            android:clickable="true"
-            android:layout_weight="1"/>
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <ImageView
+                android:id="@+id/image_view_plus_weight"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_gravity="center_vertical"
+                android:src="@drawable/ic_plus"
+                android:contentDescription="Увеличить количество"
+                android:clickable="true"
+                android:layout_weight="1"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/image_view_minus_quantity"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_gravity="center_vertical"
+                android:src="@drawable/ic_minus"
+                android:contentDescription="Уменьшить количество"
+                android:clickable="true"
+                android:layout_weight="1"/>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="5dp"
+                android:layout_marginVertical="5dp"
+                android:hint="Количество"
+                style="@style/CustomTextInputLayout"
+                android:gravity="center"
+                android:layout_weight="1">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/edit_text_quantity"
+                    android:layout_width="140dp"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="1"
+                    android:inputType="number"
+                    android:digits="0123456789"/>
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <ImageView
+                android:id="@+id/image_view_plus_quantity"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_gravity="center_vertical"
+                android:src="@drawable/ic_plus"
+                android:contentDescription="Увеличить количество"
+                android:clickable="true"
+                android:layout_weight="1"/>
+
+        </LinearLayout>
+
+
+        <TableLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="10dp"
+            android:layout_marginVertical="2.5dp">
+
+            <!-- Первая строка -->
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="5dp"
+                android:background="@drawable/table_background">
+
+                <TextView
+                    style="@style/MainTextStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:text="Белки" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:orientation="horizontal"
+                    android:gravity="center">
+
+                    <EditText
+                        android:id="@+id/edit_text_proteins"
+                        android:layout_width="wrap_content"
+                        android:layout_height="48dp"
+                        android:inputType="numberDecimal"
+                        android:hint="0.0"
+                        style="@style/MainTextStyle"
+                        android:background="@null"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="5dp"
+                        android:text="г"
+                        style="@style/MainTextStyle" />
+                </LinearLayout>
+            </TableRow>
+
+            <!-- Вторая строка -->
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="5dp"
+                android:background="@drawable/table_background">
+
+                <TextView
+                    style="@style/MainTextStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:text="Жиры" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:orientation="horizontal"
+                    android:gravity="center">
+
+                    <EditText
+                        android:id="@+id/edit_text_fats"
+                        android:layout_width="wrap_content"
+                        android:layout_height="48dp"
+                        android:inputType="numberDecimal"
+                        android:hint="0.0"
+                        style="@style/MainTextStyle"
+                        android:background="@null" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="5dp"
+                        android:text="г"
+                        style="@style/MainTextStyle" />
+                </LinearLayout>
+            </TableRow>
+
+            <!-- Третья строка -->
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="5dp"
+                android:background="@drawable/table_background">
+
+                <TextView
+                    style="@style/MainTextStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:text="Углеводы" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:orientation="horizontal"
+                    android:gravity="center">
+
+                    <EditText
+                        android:id="@+id/edit_text_carbohydrates"
+                        android:layout_width="wrap_content"
+                        android:layout_height="48dp"
+                        android:inputType="numberDecimal"
+                        android:hint="0.0"
+                        style="@style/MainTextStyle"
+                        android:background="@null" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="5dp"
+                        android:text="г"
+                        style="@style/MainTextStyle" />
+                </LinearLayout>
+            </TableRow>
+
+            <!-- Четвертая строка -->
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="5dp"
+                android:background="@drawable/table_background">
+
+                <TextView
+                    style="@style/MainTextStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:text="Калории" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:orientation="horizontal"
+                    android:gravity="center">
+
+                    <EditText
+                        android:id="@+id/edit_text_calories_kcal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="48dp"
+                        android:inputType="numberDecimal"
+                        android:hint="0"
+                        style="@style/MainTextStyle"
+                        android:background="@null" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="5dp"
+                        android:text="ккал / "
+                        style="@style/MainTextStyle" />
+
+                    <EditText
+                        android:id="@+id/edit_text_calories_kj"
+                        android:layout_width="wrap_content"
+                        android:layout_height="48dp"
+                        android:inputType="numberDecimal"
+                        android:hint="0"
+                        style="@style/MainTextStyle"
+                        android:background="@null" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="5dp"
+                        android:text="кДж"
+                        style="@style/MainTextStyle" />
+                </LinearLayout>
+            </TableRow>
+
+        </TableLayout>
+
+
+
+
+        <!--        <com.google.android.material.textfield.TextInputLayout-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginHorizontal="10dp"-->
+<!--            android:layout_marginVertical="2.5dp"-->
+<!--            android:hint="Белки"-->
+<!--            style="@style/CustomTextInputLayout">-->
+
+<!--            <com.google.android.material.textfield.TextInputEditText-->
+<!--                android:id="@+id/edit_text_proteins"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:inputType="numberDecimal"-->
+<!--                android:digits="0123456789."/>-->
+
+<!--        </com.google.android.material.textfield.TextInputLayout>-->
+
+<!--        <com.google.android.material.textfield.TextInputLayout-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginHorizontal="10dp"-->
+<!--            android:layout_marginVertical="2.5dp"-->
+<!--            android:hint="Жиры"-->
+<!--            style="@style/CustomTextInputLayout">-->
+
+<!--            <com.google.android.material.textfield.TextInputEditText-->
+<!--                android:id="@+id/edit_text_fats"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content" />-->
+
+<!--        </com.google.android.material.textfield.TextInputLayout>-->
+
+<!--        <com.google.android.material.textfield.TextInputLayout-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginHorizontal="10dp"-->
+<!--            android:layout_marginVertical="2.5dp"-->
+<!--            android:hint="Углеводы"-->
+<!--            style="@style/CustomTextInputLayout">-->
+
+<!--            <com.google.android.material.textfield.TextInputEditText-->
+<!--                android:id="@+id/edit_text_carbohydrates"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content" />-->
+
+<!--        </com.google.android.material.textfield.TextInputLayout>-->
+
+<!--        <com.google.android.material.textfield.TextInputLayout-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginHorizontal="10dp"-->
+<!--            android:layout_marginVertical="2.5dp"-->
+<!--            android:hint="Калории"-->
+<!--            style="@style/CustomTextInputLayout">-->
+
+<!--            <com.google.android.material.textfield.TextInputEditText-->
+<!--                android:id="@+id/edit_text_calories"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content" />-->
+
+<!--        </com.google.android.material.textfield.TextInputLayout>-->
+
+
+
+
+<!--        <TableLayout-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:padding="5dp">-->
+
+<!--            <TableRow>-->
+<!--                <TextView-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:text="Белки"-->
+<!--                    style="@style/TextStyleBold_16"/>-->
+
+<!--                    <com.google.android.material.textfield.TextInputLayout-->
+<!--                        android:layout_width="match_parent"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:layout_marginHorizontal="10dp"-->
+<!--                        android:layout_marginVertical="2.5dp"-->
+<!--                        style="@style/CustomTextInputLayout">-->
+
+<!--                        <com.google.android.material.textfield.TextInputEditText-->
+<!--                            android:id="@+id/edit_text_proteins"-->
+<!--                            android:layout_width="match_parent"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:inputType="numberDecimal"-->
+<!--                            android:digits="0123456789."/>-->
+
+<!--                    </com.google.android.material.textfield.TextInputLayout>-->
+
+<!--            </TableRow>-->
+
+<!--            <TableRow>-->
+<!--                <TextView-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:text="Жиры"-->
+<!--                    style="@style/TextStyleBold_16"/>-->
+
+<!--                <EditText-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="48dp"-->
+<!--                    android:text="2.5 г"-->
+<!--                    style="@style/TextStyleBold_16"/>-->
+<!--            </TableRow>-->
+
+<!--            <TableRow>-->
+<!--                <TextView-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:text="Углеводы"-->
+<!--                    style="@style/TextStyleBold_16"/>-->
+
+<!--                <EditText-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="48dp"-->
+<!--                    android:text="5.6 г"-->
+<!--                    style="@style/TextStyleBold_16"/>-->
+<!--            </TableRow>-->
+
+<!--            <TableRow>-->
+<!--                <TextView-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:text="Каллории"-->
+<!--                    style="@style/TextStyleBold_16"/>-->
+
+<!--                <EditText-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="48dp"-->
+<!--                    android:text="560 ккал/960 кДж"-->
+<!--                    style="@style/TextStyleBold_16"/>-->
+<!--            </TableRow>-->
+
+<!--        </TableLayout>-->
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="10dp">
+
+            <Button
+                android:id="@+id/delete_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="10dp"
+                android:text="Удалить"
+                android:textSize="16sp"
+                android:backgroundTint="@color/red"
+                android:layout_weight="1"/>
+
+            <Button
+                android:id="@+id/add_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:text="Добавить"
+                android:textSize="16sp"
+                android:backgroundTint="@color/green"
+                android:layout_weight="1"/>
+
+        </LinearLayout>
+
+        <!--    <EditText-->
+        <!--        android:id="@+id/edit_text_mass"-->
+        <!--        android:layout_width="wrap_content"-->
+        <!--        android:layout_height="48dp"-->
+        <!--        android:layout_marginHorizontal="5dp"-->
+        <!--        android:layout_marginVertical="5dp"-->
+        <!--        android:background="@drawable/edit_text_border"-->
+        <!--        android:hint="масса/объём"-->
+        <!--        android:textColorHint="@color/gray"-->
+        <!--        android:textSize="16sp"/>-->
 
     </LinearLayout>
 
-
-<!--    <EditText-->
-<!--        android:id="@+id/edit_text_mass"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="48dp"-->
-<!--        android:layout_marginHorizontal="5dp"-->
-<!--        android:layout_marginVertical="5dp"-->
-<!--        android:background="@drawable/edit_text_border"-->
-<!--        android:hint="масса/объём"-->
-<!--        android:textColorHint="@color/gray"-->
-<!--        android:textSize="16sp"/>-->
-
-</LinearLayout>
+</ScrollView>

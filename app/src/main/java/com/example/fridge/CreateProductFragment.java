@@ -1,18 +1,43 @@
 package com.example.fridge;
 
+import android.app.DatePickerDialog;
 import android.content.Context;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.DatePicker;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
+import android.widget.Toast;
+
+import com.google.android.material.textfield.TextInputEditText;
+
+import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Locale;
 
 public class CreateProductFragment extends Fragment {
 
     private ImageView backImageView;
+    private TextInputEditText editTextName, editTextFirm, editTextType, editTextManufactureDate, editTextExpiryDate, editTextDays, editTextWeight, editTextQuantity;
+    private EditText editTextProteins, editTextFats, editTextCarbohydrates, editTextCaloriesKcal, editTextCaloriesKJ;
+    private RadioGroup radioGroup;
+    private RadioButton radioBtnKg, radioBtnL;
+    private ImageView imageViewMinusWeight, imageViewPlusWeight, imageViewMinusQuantity, imageViewPlusQuantity;
+    private Button deleteBtn, addBtn;
+
 
     private OnFragmentInteractionListener mListener;
 
@@ -34,6 +59,43 @@ public class CreateProductFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_create_product, container, false);
 
         backImageView = view.findViewById(R.id.back_image_view);
+
+        editTextName = view.findViewById(R.id.edit_text_name);
+        editTextFirm = view.findViewById(R.id.edit_text_firm);
+        editTextType = view.findViewById(R.id.edit_text_type);
+        editTextManufactureDate = view.findViewById(R.id.edit_text_manufacture_date);
+        editTextExpiryDate = view.findViewById(R.id.edit_text_expiry_date);
+        editTextDays = view.findViewById(R.id.edit_text_days);
+        editTextWeight = view.findViewById(R.id.edit_text_weight);
+        editTextQuantity = view.findViewById(R.id.edit_text_quantity);
+
+        editTextProteins = view.findViewById(R.id.edit_text_proteins);
+        editTextFats = view.findViewById(R.id.edit_text_fats);
+        editTextCarbohydrates = view.findViewById(R.id.edit_text_carbohydrates);
+        editTextCaloriesKcal = view.findViewById(R.id.edit_text_calories_kcal);
+        editTextCaloriesKJ = view.findViewById(R.id.edit_text_calories_kj);
+
+        radioGroup = view.findViewById(R.id.radio_group);
+        radioBtnKg = view.findViewById(R.id.radio_btn_kg);
+        radioBtnL = view.findViewById(R.id.radio_btn_l);
+
+        deleteBtn = view.findViewById(R.id.delete_btn);
+        addBtn = view.findViewById(R.id.add_btn);
+
+        imageViewMinusWeight = view.findViewById(R.id.image_view_minus_weight);
+        imageViewPlusWeight = view.findViewById(R.id.image_view_plus_weight);
+        imageViewMinusQuantity = view.findViewById(R.id.image_view_minus_quantity);
+        imageViewPlusQuantity = view.findViewById(R.id.image_view_plus_quantity);
+
+        imageViewMinusWeight.setOnClickListener(view1 -> {decreaseWeight(editTextWeight);});
+        imageViewPlusWeight.setOnClickListener(view1 -> {increaseWeight(editTextWeight);});
+        imageViewMinusQuantity.setOnClickListener(view1 -> {decreaseQuantity(editTextQuantity);});
+        imageViewPlusQuantity.setOnClickListener(view1 -> {increaseQuantity(editTextQuantity);});
+
+        editTextManufactureDate.setOnClickListener(view1 -> {showDatePicker(editTextManufactureDate);});
+        editTextExpiryDate.setOnClickListener(view1 -> {showDatePicker(editTextExpiryDate);});
+
+
         backImageView.setOnClickListener(view1 -> {
             // Вызываем метод активности для возобновления сканера
             if (mListener != null) {
@@ -45,7 +107,94 @@ public class CreateProductFragment extends Fragment {
                     .commit();
         });
 
+        addBtn.setOnClickListener(view1 -> {addProduct();});
+
         return view;
+    }
+
+    private void decreaseWeight(EditText editText){
+        BigDecimal currentValue = new BigDecimal(editText.getText().toString());
+        editText.setText(String.valueOf(currentValue.subtract(BigDecimal.ONE)));
+    }
+
+    private void decreaseQuantity(EditText editText){
+        Integer currentValue = Integer.valueOf(editText.getText().toString());
+        if (currentValue > 0)
+            editText.setText(String.valueOf(currentValue - 1));
+    }
+
+    private void increaseWeight(EditText editText){
+        BigDecimal currentValue = new BigDecimal(editText.getText().toString());
+        editText.setText(String.valueOf(currentValue.add(BigDecimal.ONE)));
+    }
+
+    private void increaseQuantity(EditText editText){
+        Integer currentValue = Integer.valueOf(editText.getText().toString());
+        editText.setText(String.valueOf(currentValue + 1));
+    }
+
+
+    private void showDatePicker(EditText editText) {
+        // Получаем текущую дату
+        Calendar calendar = Calendar.getInstance();
+
+        // Создаем DatePickerDialog
+        DatePickerDialog datePickerDialog = new DatePickerDialog(
+                requireContext(),
+                new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                        // Устанавливаем выбранную дату в EditText
+                        Calendar selectedDate = Calendar.getInstance();
+                        selectedDate.set(year, month, dayOfMonth);
+
+                        SimpleDateFormat formatter = new SimpleDateFormat("dd.MM.yyyy", Locale.getDefault());
+                        editText.setText(formatter.format(selectedDate.getTime()));
+                    }
+                },
+                calendar.get(Calendar.YEAR), // Год по умолчанию
+                calendar.get(Calendar.MONTH), // Месяц по умолчанию
+                calendar.get(Calendar.DAY_OF_MONTH) // День по умолчанию
+        );
+
+        // Показываем диалог
+        datePickerDialog.show();
+    }
+
+    private void addProduct(){
+        //Если какое-то поле было не заполнены, то продукт не добавляется
+        if (!areAllFieldsFilled()){
+            Toast.makeText(getContext(), "Заполните все поля!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        Toast.makeText(getContext(), "Продукт был успешно добавлен!", Toast.LENGTH_SHORT).show();
+    }
+
+    private boolean areAllFieldsFilled(){
+        // Список всех полей для проверки
+        EditText[] requiredFields = {
+                editTextName, editTextFirm, editTextType,
+                editTextManufactureDate, editTextExpiryDate,
+                editTextWeight, editTextQuantity,
+                editTextProteins, editTextFats,
+                editTextCarbohydrates, editTextCaloriesKcal,
+                editTextCaloriesKJ
+        };
+
+        // Проверка заполненности текстовых полей
+        for (EditText field : requiredFields) {
+            if (field.getText().toString().trim().isEmpty()) {
+                return false;
+            }
+        }
+
+        // Проверка выбора в RadioGroup
+        if (radioGroup.getCheckedRadioButtonId() == -1) {
+            return false;
+        }
+
+        // Все поля заполнены
+        return true;
     }
 
     //Метод вызывается, когда фрагмент отключается от активности.

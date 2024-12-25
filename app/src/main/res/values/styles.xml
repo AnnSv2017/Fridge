@@ -20,6 +20,13 @@
         <item name="android:background">@drawable/edit_text_border</item>
     </style>
 
+    <style name="MainTextStyle">
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">@color/colorOnPrimary</item>
+        <item name="android:textColorHint">@color/gray</item>
+        <item name="android:gravity">center</item>
+    </style>
+
     <!-- Стиль для TextInputLayout -->
     <style name="CustomTextInputLayout" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
         <!-- Режим рамки -->
@@ -42,6 +49,14 @@
 
         <!-- Подсказка при фокусе перемещается наверх -->
         <item name="hintAnimationEnabled">true</item>
+
+        <!-- Настройка размеров -->
+<!--        <item name="android:layout_width">match_parent</item>-->
+<!--        <item name="android:layout_height">56dp</item>-->
+        <item name="boxCornerRadiusTopStart">8dp</item>
+        <item name="boxCornerRadiusTopEnd">8dp</item>
+        <item name="boxCornerRadiusBottomStart">8dp</item>
+        <item name="boxCornerRadiusBottomEnd">8dp</item>
     </style>
 
     <!-- Стиль для формы с закруглёнными углами -->

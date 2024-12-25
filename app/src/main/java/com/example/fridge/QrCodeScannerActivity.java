@@ -172,21 +172,25 @@ public class QrCodeScannerActivity extends AppCompatActivity implements OnFragme
     }
 
     public void switchToFragment(Fragment fragment) {
-        if (fragment == null) return;
+        try {
+            if (fragment == null) return;
 
-        // Остановка сканера
-        barcodeScannerView.pause();
+            // Остановка сканера
+            barcodeScannerView.pause();
 
-        // Скрываем активность
-        findViewById(R.id.activity_container).setVisibility(View.GONE);
-        // Отображаем фрагмент
-        findViewById(R.id.fragment_container).setVisibility(View.VISIBLE);
+            // Скрываем активность
+            findViewById(R.id.activity_container).setVisibility(View.GONE);
+            // Отображаем фрагмент
+            findViewById(R.id.fragment_container).setVisibility(View.VISIBLE);
 
-        // Вставка фрагмента в пустой fragment_container
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.fragment_container, fragment);
-        transaction.addToBackStack(null);
-        transaction.commit();
+            // Вставка фрагмента в пустой fragment_container
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+            transaction.replace(R.id.fragment_container, fragment);
+            transaction.addToBackStack(null);
+            transaction.commit();
+        } catch (Exception e){
+            Log.e("switchToFragment", "Ошибка при переключении фрагмента", e);
+        }
     }
 
 
