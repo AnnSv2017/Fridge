@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".CheckAllergensFragment">
+
+        <LinearLayout
+            android:id="@+id/upper_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:orientation="vertical"
+            android:background="@color/main_color">
+
+            <ImageView
+                android:id="@+id/back_image_view"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_marginStart="20dp"
+                android:src="@drawable/ic_back"
+                android:contentDescription="Назад"
+                android:clickable="true"/>
+
+        </LinearLayout>
+
+        <ListView
+            android:id="@+id/list_view_allergens"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginHorizontal="10dp"
+            android:layout_marginVertical="2.5dp"
+            android:layout_below="@+id/upper_bar">
+
+        </ListView>
+
+        <ImageView
+            android:id="@+id/image_view_add_allergen"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginBottom="20dp"
+            android:clickable="true"
+            android:contentDescription="Добавить аллерген"
+            android:src="@drawable/ic_add" />
+
+</RelativeLayout>

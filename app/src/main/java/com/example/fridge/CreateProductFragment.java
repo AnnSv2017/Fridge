@@ -5,6 +5,8 @@ import android.content.Context;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -19,6 +21,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.textfield.TextInputEditText;
@@ -38,6 +41,7 @@ public class CreateProductFragment extends Fragment {
     private ImageView backImageView;
     private TextInputEditText editTextName, editTextFirm, editTextType, editTextManufactureDate, editTextExpiryDate, editTextDays, editTextWeight, editTextQuantity;
     private EditText editTextProteins, editTextFats, editTextCarbohydrates, editTextCaloriesKcal, editTextCaloriesKJ;
+    private TextView textViewAllergens;
     private RadioGroup radioGroup;
     private RadioButton radioBtnKg, radioBtnL;
     private ImageView imageViewMinusWeight, imageViewPlusWeight, imageViewMinusQuantity, imageViewPlusQuantity;
@@ -80,6 +84,8 @@ public class CreateProductFragment extends Fragment {
         editTextCaloriesKcal = view.findViewById(R.id.edit_text_calories_kcal);
         editTextCaloriesKJ = view.findViewById(R.id.edit_text_calories_kj);
 
+        textViewAllergens = view.findViewById(R.id.text_view_allergens);
+
         radioGroup = view.findViewById(R.id.radio_group);
         radioBtnKg = view.findViewById(R.id.radio_btn_kg);
         radioBtnL = view.findViewById(R.id.radio_btn_l);
@@ -109,13 +115,14 @@ public class CreateProductFragment extends Fragment {
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 // Вызывается при каждом изменении текста
                 updateDates();
-                Toast.makeText(getContext(), "Даты изменились", Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void afterTextChanged(Editable editable) {
             }
         });
+
+        textViewAllergens.setOnClickListener(view1 -> {switchToFragmentCheckAllergens();});
 
         backImageView.setOnClickListener(view1 -> {
             // Вызываем метод активности для возобновления сканера
@@ -255,6 +262,25 @@ public class CreateProductFragment extends Fragment {
 
         // Все поля заполнены
         return true;
+    }
+
+    // Метод для перехода в фрагмент, где можно выбрать аллергены
+    private void switchToFragmentCheckAllergens(){
+        // Получаем экземпляр FragmentManager
+        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+
+        // Начинаем транзакцию фрагмента
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+
+        // Заменяем текущий фрагмент на новый
+        transaction.replace(R.id.fragment_container, new CheckAllergensFragment());
+
+        // Добавляем транзакцию в стек, чтобы можно было вернуться назад
+        transaction.addToBackStack(null);
+
+        // Выполняем транзакцию
+        transaction.commit();
+
     }
 
     //Метод вызывается, когда фрагмент отключается от активности.

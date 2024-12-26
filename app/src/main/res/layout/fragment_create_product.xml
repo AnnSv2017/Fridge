@@ -472,147 +472,17 @@
 
         </TableLayout>
 
-
-
-
-        <!--        <com.google.android.material.textfield.TextInputLayout-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_marginHorizontal="10dp"-->
-<!--            android:layout_marginVertical="2.5dp"-->
-<!--            android:hint="Белки"-->
-<!--            style="@style/CustomTextInputLayout">-->
-
-<!--            <com.google.android.material.textfield.TextInputEditText-->
-<!--                android:id="@+id/edit_text_proteins"-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:inputType="numberDecimal"-->
-<!--                android:digits="0123456789."/>-->
-
-<!--        </com.google.android.material.textfield.TextInputLayout>-->
-
-<!--        <com.google.android.material.textfield.TextInputLayout-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_marginHorizontal="10dp"-->
-<!--            android:layout_marginVertical="2.5dp"-->
-<!--            android:hint="Жиры"-->
-<!--            style="@style/CustomTextInputLayout">-->
-
-<!--            <com.google.android.material.textfield.TextInputEditText-->
-<!--                android:id="@+id/edit_text_fats"-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="wrap_content" />-->
-
-<!--        </com.google.android.material.textfield.TextInputLayout>-->
-
-<!--        <com.google.android.material.textfield.TextInputLayout-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_marginHorizontal="10dp"-->
-<!--            android:layout_marginVertical="2.5dp"-->
-<!--            android:hint="Углеводы"-->
-<!--            style="@style/CustomTextInputLayout">-->
-
-<!--            <com.google.android.material.textfield.TextInputEditText-->
-<!--                android:id="@+id/edit_text_carbohydrates"-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="wrap_content" />-->
-
-<!--        </com.google.android.material.textfield.TextInputLayout>-->
-
-<!--        <com.google.android.material.textfield.TextInputLayout-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_marginHorizontal="10dp"-->
-<!--            android:layout_marginVertical="2.5dp"-->
-<!--            android:hint="Калории"-->
-<!--            style="@style/CustomTextInputLayout">-->
-
-<!--            <com.google.android.material.textfield.TextInputEditText-->
-<!--                android:id="@+id/edit_text_calories"-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="wrap_content" />-->
-
-<!--        </com.google.android.material.textfield.TextInputLayout>-->
-
-
-
-
-<!--        <TableLayout-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:padding="5dp">-->
-
-<!--            <TableRow>-->
-<!--                <TextView-->
-<!--                    android:layout_width="wrap_content"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:text="Белки"-->
-<!--                    style="@style/TextStyleBold_16"/>-->
-
-<!--                    <com.google.android.material.textfield.TextInputLayout-->
-<!--                        android:layout_width="match_parent"-->
-<!--                        android:layout_height="wrap_content"-->
-<!--                        android:layout_marginHorizontal="10dp"-->
-<!--                        android:layout_marginVertical="2.5dp"-->
-<!--                        style="@style/CustomTextInputLayout">-->
-
-<!--                        <com.google.android.material.textfield.TextInputEditText-->
-<!--                            android:id="@+id/edit_text_proteins"-->
-<!--                            android:layout_width="match_parent"-->
-<!--                            android:layout_height="wrap_content"-->
-<!--                            android:inputType="numberDecimal"-->
-<!--                            android:digits="0123456789."/>-->
-
-<!--                    </com.google.android.material.textfield.TextInputLayout>-->
-
-<!--            </TableRow>-->
-
-<!--            <TableRow>-->
-<!--                <TextView-->
-<!--                    android:layout_width="wrap_content"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:text="Жиры"-->
-<!--                    style="@style/TextStyleBold_16"/>-->
-
-<!--                <EditText-->
-<!--                    android:layout_width="wrap_content"-->
-<!--                    android:layout_height="48dp"-->
-<!--                    android:text="2.5 г"-->
-<!--                    style="@style/TextStyleBold_16"/>-->
-<!--            </TableRow>-->
-
-<!--            <TableRow>-->
-<!--                <TextView-->
-<!--                    android:layout_width="wrap_content"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:text="Углеводы"-->
-<!--                    style="@style/TextStyleBold_16"/>-->
-
-<!--                <EditText-->
-<!--                    android:layout_width="wrap_content"-->
-<!--                    android:layout_height="48dp"-->
-<!--                    android:text="5.6 г"-->
-<!--                    style="@style/TextStyleBold_16"/>-->
-<!--            </TableRow>-->
-
-<!--            <TableRow>-->
-<!--                <TextView-->
-<!--                    android:layout_width="wrap_content"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:text="Каллории"-->
-<!--                    style="@style/TextStyleBold_16"/>-->
-
-<!--                <EditText-->
-<!--                    android:layout_width="wrap_content"-->
-<!--                    android:layout_height="48dp"-->
-<!--                    android:text="560 ккал/960 кДж"-->
-<!--                    style="@style/TextStyleBold_16"/>-->
-<!--            </TableRow>-->
-
-<!--        </TableLayout>-->
+        <TextView
+            android:id="@+id/text_view_allergens"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="10dp"
+            android:layout_marginVertical="2.5dp"
+            android:padding="5dp"
+            android:text="+ Аллерген"
+            style="@style/MainTextStyle"
+            android:background="@drawable/table_row_background"
+            android:clickable="true"/>
 
         <LinearLayout
             android:layout_width="match_parent"

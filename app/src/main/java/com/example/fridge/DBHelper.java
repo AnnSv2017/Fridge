@@ -177,12 +177,41 @@ public class DBHelper extends SQLiteOpenHelper {
         return list;
     }
 
+    public ArrayList<DataAllergen> getAllAllergens(){
+        ArrayList<DataAllergen> list = new ArrayList<>();
+        SQLiteDatabase db = this.getWritableDatabase(); //getWritableDatabase() если не заработает
+
+        Cursor cursor = db.query(ALLERGENS_TABLE, null, null, null, null, null, "name ASC");
+        if(cursor.moveToFirst()){
+            int idIndex = cursor.getColumnIndex("id");
+            int nameIndex = cursor.getColumnIndex("name");
+            do{
+                int id = cursor.getInt(idIndex);
+                String name = cursor.getString(nameIndex);
+                DataAllergen data = new DataAllergen(id, name);
+                list.add(data);
+            }while(cursor.moveToNext());
+        }
+        cursor.close();
+        db.close();
+        return list;
+    }
+
     // Получение списка имён некоторых объектов
 
     public ArrayList<String> getAllTypeNames(){
         ArrayList<String> list = new ArrayList<>();
         ArrayList<DataType> data = getAllTypes();
         for(DataType d : data){
+            list.add(d.getName());
+        }
+        return list;
+    }
+
+    public ArrayList<String> getAllAllergensNames(){
+        ArrayList<String> list = new ArrayList<>();
+        ArrayList<DataAllergen> data = getAllAllergens();
+        for(DataAllergen d : data){
             list.add(d.getName());
         }
         return list;

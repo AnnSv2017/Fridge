@@ -213,14 +213,37 @@ public class QrCodeScannerActivity extends AppCompatActivity implements OnFragme
     //Переопределяем метод для возврата назад (встроенная кнопка на телефоне) из фрагмента к сканеру
     @Override
     public void onBackPressed() {
-        // Проверяем стек фрагментов
-        if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
-            getSupportFragmentManager().popBackStack();
 
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        if (fragmentManager.getBackStackEntryCount() > 0) {
+            // Если есть фрагменты в стеке, возвращаемся назад
+            fragmentManager.popBackStack();
             onFragmentClose();
         } else {
-            super.onBackPressed(); // Выход из активности
+            // Закрываем активность, если мы на корневом фрагменте
+            super.onBackPressed();
         }
+
+//        FragmentManager fragmentManager = getSupportFragmentManager();
+//        if (fragmentManager.getBackStackEntryCount() > 0) {
+//            // Если есть фрагменты в стеке, возвращаемся назад
+//            fragmentManager.popBackStack();
+//            onFragmentClose();
+//        } else {
+//            // Если стек пуст, проверяем текущий фрагмент
+//            Fragment currentFragment = fragmentManager.findFragmentById(R.id.fragment_container);
+//            if (!(currentFragment instanceof CreateProductFragment)) {
+//                Toast.makeText(this, "Из 1 во 2 фрагмент", Toast.LENGTH_SHORT).show();
+//                // Если текущий фрагмент — не первый, вручную возвращаемся к нему
+//                FragmentTransaction transaction = fragmentManager.beginTransaction();
+//                transaction.replace(R.id.fragment_container, new CreateProductFragment());
+//                transaction.commit();
+//            } else {
+//                // Закрываем активность
+//                super.onBackPressed();
+//            }
+//        }
+
     }
 
 

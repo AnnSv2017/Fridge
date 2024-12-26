@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="black">#FF000000</color>
-    <color name="button">#EE925C</color>
     <color name="gray">#787575</color>
     <color name="gray_light">#D7D3D3</color>
     <color name="green">#A8E87E</color>
     <color name="main_color">#97BFF1</color>
+    <color name="orange">#EE925C</color>
     <color name="text_color">#304BD0</color>
     <color name="red">#E95B5B</color>
     <color name="transparent">#33000000</color>

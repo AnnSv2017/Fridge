@@ -64,4 +64,9 @@
         <item name="cornerSize">12dp</item> <!-- Закруглённость углов -->
     </style>
 
+    <style name="dialog" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="android:windowBackground">@drawable/rounded_dialog</item>
+        <item name="windowMinWidthMinor">85%</item>
+    </style>
+
 </resources>

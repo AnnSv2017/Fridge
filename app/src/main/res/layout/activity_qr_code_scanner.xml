@@ -74,7 +74,7 @@
                 android:layout_marginHorizontal="10dp"
                 android:text="Создать продукт"
                 android:textSize="20sp"
-                android:backgroundTint="@color/button"
+                android:backgroundTint="@color/orange"
                 android:contentDescription="Создание qr кода"
                 android:onClick="btnCreateProduct"/>
 
