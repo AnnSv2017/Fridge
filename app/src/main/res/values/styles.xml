@@ -51,8 +51,6 @@
         <item name="hintAnimationEnabled">true</item>
 
         <!-- Настройка размеров -->
-<!--        <item name="android:layout_width">match_parent</item>-->
-<!--        <item name="android:layout_height">56dp</item>-->
         <item name="boxCornerRadiusTopStart">8dp</item>
         <item name="boxCornerRadiusTopEnd">8dp</item>
         <item name="boxCornerRadiusBottomStart">8dp</item>
@@ -67,6 +65,11 @@
     <style name="dialog" parent="Theme.AppCompat.Light.Dialog.Alert">
         <item name="android:windowBackground">@drawable/rounded_dialog</item>
         <item name="windowMinWidthMinor">85%</item>
+    </style>
+
+    <style name="Theme.QrScanner" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowNoTitle">true</item>
     </style>
 
 </resources>

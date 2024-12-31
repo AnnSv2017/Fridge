@@ -3,12 +3,12 @@ package com.example.fridge;
 public class DataProductAllergens {
     private Integer id;
     private Integer product_id;
-    private Integer allergen_id;
+    private String allergen;
 
-    public DataProductAllergens(Integer id, Integer product_id, Integer allergen_id) {
+    public DataProductAllergens(Integer id, Integer product_id, String allergen) {
         this.id = id;
         this.product_id = product_id;
-        this.allergen_id = allergen_id;
+        this.allergen = allergen;
     }
 
     public Integer getId() {
@@ -19,7 +19,7 @@ public class DataProductAllergens {
         return product_id;
     }
 
-    public Integer getAllergen_id() {
-        return allergen_id;
+    public String getAllergen() {
+        return allergen;
     }
 }

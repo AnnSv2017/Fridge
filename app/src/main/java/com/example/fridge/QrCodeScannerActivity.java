@@ -72,7 +72,7 @@ public class QrCodeScannerActivity extends AppCompatActivity implements OnFragme
         capture.initializeFromIntent(getIntent(), null);
 
         // Устанавливаем размер области сканирования
-        barcodeScannerView.getBarcodeView().setFramingRectSize(new Size(600, 600));
+        barcodeScannerView.getBarcodeView().setFramingRectSize(new Size(700, 700));
 
         barcodeScannerView.getBarcodeView().resume();
 

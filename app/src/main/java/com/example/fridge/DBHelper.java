@@ -13,28 +13,31 @@ import java.util.ArrayList;
 public class DBHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "helper.db";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
 
     // SQL-запросы для создания таблиц
 
-    private static final String TYPE_TABLE =
-            "CREATE TABLE type(" +
+    private static final String TYPE_TABLE = "type_table";
+    private static final String CREATE_TYPE_TABLE =
+            "CREATE TABLE " + TYPE_TABLE + "(" +
                     "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
                     "name TEXT" +
                     ");";
 
-    private static final String FIRM_TABLE =
-            "CREATE TABLE firm(" +
+    private static final String FIRM_TABLE = "firm_table";
+    private static final String CREATE_FIRM_TABLE =
+            "CREATE TABLE " + FIRM_TABLE + "(" +
                     "id INTEGER PRIMARY KEY, " +
                     "name TEXT" +
                     ");";
 
-    private static final String PRODUCT_TABLE =
-            "CREATE TABLE product_type (" +
+    private static final String PRODUCT_TABLE = "product_table";
+    private static final String CREATE_PRODUCT_TABLE =
+            "CREATE TABLE " + PRODUCT_TABLE + " (" +
                     "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                    "type_id INTEGER, " +
+                    "type TEXT, " +
                     "name TEXT, " +
-                    "firm_id INTEGER, " +
+                    "firm TEXT, " +
                     "mass_value DOUBLE, " +
                     "mass_unit TEXT, " +
                     "proteins DOUBLE, " +
@@ -42,28 +45,28 @@ public class DBHelper extends SQLiteOpenHelper {
                     "carbohydrates DOUBLE, " +
                     "calories_kcal INTEGER, " +
                     "calories_KJ INTEGER, " +
-                    "measurement_type TEXT, " +
-                    "FOREIGN KEY(type_id) REFERENCES type(id), " +
-                    "FOREIGN KEY(firm_id) REFERENCES firm(id)" +
+                    "measurement_type TEXT" +
                     ");";
 
-    private static final String ALLERGENS_TABLE =
-            "CREATE TABLE allergens(" +
+    private static final String ALLERGENS_TABLE = "allergens_table";
+    private static final String CREATE_ALLERGENS_TABLE =
+            "CREATE TABLE " + ALLERGENS_TABLE + " (" +
                     "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
                     "name TEXT" +
                     ");";
 
-    private static final String PRODUCT_ALLERGENS_TABLE =
-            "CREATE TABLE product_allergens(" +
+    private static final String PRODUCT_ALLERGENS_TABLE = "product_allergens_table";
+    private static final String CREATE_PRODUCT_ALLERGENS_TABLE =
+            "CREATE TABLE " + PRODUCT_ALLERGENS_TABLE + " (" +
                     "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
                     "product_id INTEGER, " +
-                    "allergen_id INTEGER, " +
-                    "FOREIGN KEY(product_id) REFERENCES product(id), " +
-                    "FOREIGN KEY(allergen_id) REFERENCES allergen(id)" +
+                    "allergen TEXT, " +
+                    "FOREIGN KEY(product_id) REFERENCES product(id)" +
                     ");";
 
-    private static final String PRODUCT_LOGS_TABLE =
-            "CREATE TABLE product_logs(" +
+    private static final String PRODUCT_LOGS_TABLE = "product_logs_table";
+    private static final String CREATE_PRODUCT_LOGS_TABLE =
+            "CREATE TABLE " + PRODUCT_LOGS_TABLE + " (" +
                     "id INTEGER, " +
                     "manufacture_date TEXT, " + // Формат ISO 8601
                     "expiry_date TEXT, " +
@@ -80,12 +83,12 @@ public class DBHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         // Выполнение SQL-запроса для создания таблицы
-        db.execSQL(TYPE_TABLE);
-        db.execSQL(FIRM_TABLE);
-        db.execSQL(PRODUCT_TABLE);
-        db.execSQL(ALLERGENS_TABLE);
-        db.execSQL(PRODUCT_ALLERGENS_TABLE);
-        db.execSQL(PRODUCT_LOGS_TABLE);
+        db.execSQL(CREATE_TYPE_TABLE);
+        db.execSQL(CREATE_FIRM_TABLE);
+        db.execSQL(CREATE_PRODUCT_TABLE);
+        db.execSQL(CREATE_ALLERGENS_TABLE);
+        db.execSQL(CREATE_PRODUCT_ALLERGENS_TABLE);
+        db.execSQL(CREATE_PRODUCT_LOGS_TABLE);
     }
 
     // Добавления новых объектов в таблицы
@@ -104,9 +107,9 @@ public class DBHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues cv = new ContentValues();
-        cv.put("type_id", data.getType_id());
+        cv.put("type", data.getType());
         cv.put("name", data.getName());
-        cv.put("firm_id", data.getFirm_id());
+        cv.put("firm", data.getFirm());
         cv.put("mass_value", data.getMass_value());
         cv.put("mass_unit", data.getMass_unit());
         cv.put("proteins", data.getProteins());
@@ -135,7 +138,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
         ContentValues cv = new ContentValues();
         cv.put("product_id", data.getProduct_id());
-        cv.put("allergen_id", data.getAllergen_id());
+        cv.put("allergen", data.getAllergen());
 
         db.insert(PRODUCT_ALLERGENS_TABLE, null, cv);
         db.close();
@@ -217,16 +220,24 @@ public class DBHelper extends SQLiteOpenHelper {
         return list;
     }
 
+    // Удаление объектов из БД
+    public void deleteAllergenByName(String name){
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        db.delete(ALLERGENS_TABLE, "name = ?", new String[]{name});
+        db.close();
+    }
+
     // Обновление БД
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         // Удаление старых таблиц
-        db.execSQL("DROP TABLE IF EXISTS type");
-        db.execSQL("DROP TABLE IF EXISTS firm");
-        db.execSQL("DROP TABLE IF EXISTS product");
-        db.execSQL("DROP TABLE IF EXISTS allergen");
-        db.execSQL("DROP TABLE IF EXISTS product_allergens");
-        db.execSQL("DROP TABLE IF EXISTS product_logs");
+        db.execSQL("DROP TABLE IF EXISTS " + TYPE_TABLE);
+        db.execSQL("DROP TABLE IF EXISTS " + FIRM_TABLE);
+        db.execSQL("DROP TABLE IF EXISTS " + PRODUCT_TABLE);
+        db.execSQL("DROP TABLE IF EXISTS " + ALLERGENS_TABLE);
+        db.execSQL("DROP TABLE IF EXISTS " + PRODUCT_ALLERGENS_TABLE);
+        db.execSQL("DROP TABLE IF EXISTS " + PRODUCT_LOGS_TABLE);
         onCreate(db); // Создание новой БД
     }
 }

@@ -227,6 +227,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:text="1"
+                    android:minEms="0"
                     android:inputType="numberDecimal"/>
 
             </com.google.android.material.textfield.TextInputLayout>
@@ -275,6 +276,7 @@
                     android:gravity="center"
                     android:text="1"
                     android:inputType="number"
+                    android:minEms="0"
                     android:digits="0123456789"/>
 
             </com.google.android.material.textfield.TextInputLayout>
@@ -321,7 +323,7 @@
 
                     <EditText
                         android:id="@+id/edit_text_proteins"
-                        android:layout_width="wrap_content"
+                        android:layout_width="48dp"
                         android:layout_height="48dp"
                         android:inputType="numberDecimal"
                         android:hint="0.0"
@@ -360,7 +362,7 @@
 
                     <EditText
                         android:id="@+id/edit_text_fats"
-                        android:layout_width="wrap_content"
+                        android:layout_width="48dp"
                         android:layout_height="48dp"
                         android:inputType="numberDecimal"
                         android:hint="0.0"
@@ -399,7 +401,7 @@
 
                     <EditText
                         android:id="@+id/edit_text_carbohydrates"
-                        android:layout_width="wrap_content"
+                        android:layout_width="48dp"
                         android:layout_height="48dp"
                         android:inputType="numberDecimal"
                         android:hint="0.0"

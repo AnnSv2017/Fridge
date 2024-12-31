@@ -2,9 +2,9 @@ package com.example.fridge;
 
 public class DataProduct {
     private Integer id;
-    private Integer type_id;
+    private String type;
     private String name;
-    private Integer firm_id;
+    private String firm;
     private Double mass_value;
     private String mass_unit;
     private Double proteins;
@@ -16,11 +16,11 @@ public class DataProduct {
 
     private String full_name;
 
-    public DataProduct(Integer id, Integer type_id, String name, Integer firm_id, Double mass_value, String mass_unit, Double proteins, Double fats, Double carbohydrates, Integer calories_kcal, Integer calories_KJ, String measurement_type) {
+    public DataProduct(Integer id, String type, String name, String firm, Double mass_value, String mass_unit, Double proteins, Double fats, Double carbohydrates, Integer calories_kcal, Integer calories_KJ, String measurement_type) {
         this.id = id;
-        this.type_id = type_id;
+        this.type = type;
         this.name = name;
-        this.firm_id = firm_id;
+        this.firm = firm;
         this.mass_value = mass_value;
         this.mass_unit = mass_unit;
         this.proteins = proteins;
@@ -35,16 +35,16 @@ public class DataProduct {
         return id;
     }
 
-    public Integer getType_id() {
-        return type_id;
+    public String getType() {
+        return type;
     }
 
     public String getName() {
         return name;
     }
 
-    public Integer getFirm_id() {
-        return firm_id;
+    public String getFirm() {
+        return firm;
     }
 
     public Double getMass_value() {
