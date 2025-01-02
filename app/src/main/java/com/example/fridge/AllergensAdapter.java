@@ -10,6 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class AllergensAdapter extends BaseAdapter {
 
@@ -60,6 +61,18 @@ public class AllergensAdapter extends BaseAdapter {
         return convertView;
     }
 
+    // Метод для предустановки галочек на те что были выбраны раннее
+    public void setPreselectedItems(List<String> preselectedAllergens) {
+        selectedItems.clear(); // Сбрасываем предыдущий выбор
+        for (int i = 0; i < allergensList.size(); i++) {
+            if (preselectedAllergens.contains(allergensList.get(i))) {
+                selectedItems.put(i, true); // Отмечаем элемент как выбранный
+            }
+        }
+        notifyDataSetChanged(); // Обновляем ListView
+    }
+
+
     // Обновление состояния видимости галочки
     public void toggleSelection(int position) {
         if (selectedItems.get(position, false)) {
@@ -69,4 +82,17 @@ public class AllergensAdapter extends BaseAdapter {
         }
         notifyDataSetChanged(); // Обновляем ListView
     }
+
+    // Возвращает список выбранных элементов
+    public List<String> getSelectedAllergens() {
+        List<String> selectedList = new ArrayList<>();
+        for (int i = 0; i < selectedItems.size(); i++) {
+            int position = selectedItems.keyAt(i);
+            if (selectedItems.valueAt(i)) {
+                selectedList.add(allergensList.get(position));
+            }
+        }
+        return selectedList;
+    }
+
 }

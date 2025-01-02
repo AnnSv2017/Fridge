@@ -158,6 +158,20 @@ public class DBHelper extends SQLiteOpenHelper {
         db.close();
     }
 
+    // Получение id объекта по имени
+    public int getAllergenIdByName(String name){
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        int allergenId = -1;
+        Cursor cursor = db.query(ALLERGENS_TABLE, new String[]{"id"}, "name = ?", new String[]{name}, null, null, null);
+        if(cursor != null && cursor.moveToFirst()){
+            int allergenIdIndex = cursor.getColumnIndex("id");
+            allergenId = cursor.getInt(allergenIdIndex);
+        }
+
+        return allergenId;
+    }
+
     // Получение списка различных объектов
 
     public ArrayList<DataType> getAllTypes(){
@@ -218,6 +232,19 @@ public class DBHelper extends SQLiteOpenHelper {
             list.add(d.getName());
         }
         return list;
+    }
+
+    // Изменение объектов
+    public void editAllergenNameById(int allergenId, String newName){
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues cv = new ContentValues();
+
+        cv.put("name", newName);
+
+        db.update(ALLERGENS_TABLE, cv, "id = ?", new String[]{String.valueOf(allergenId)});
+
+        db.close();
     }
 
     // Удаление объектов из БД

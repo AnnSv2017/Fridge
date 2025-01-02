@@ -12,7 +12,9 @@
         <item name="android:statusBarColor">@color/main_color</item>
 
         <!-- Основные цвета темы -->
-        <item name="colorPrimary">@color/colorPrimary</item>
+<!--        <item name="colorPrimary">@color/colorPrimary</item>-->
+        <item name="colorPrimary">@color/main_color</item>
+
         <item name="colorPrimaryVariant">@color/colorPrimaryVariant</item>
         <item name="colorAccent">@color/colorAccent</item>
 

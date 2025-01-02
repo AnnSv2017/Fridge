@@ -5,6 +5,7 @@ import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.ViewModelProvider;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -21,12 +22,15 @@ import android.widget.PopupMenu;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class CheckAllergensFragment extends Fragment {
 
+    private SharedViewModel viewModel;
     private DBHelper dbHelper;
 
     private ArrayList<String> allergensArr;
+    private List<String> selectedAllergens;
     private AllergensAdapter adapterAllergens;
 
     private ListView listViewAllergens;
@@ -36,6 +40,9 @@ public class CheckAllergensFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_check_allergens, container, false);
 
+        // Настройка ViewModel
+        viewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
+
         dbHelper = new DBHelper(getContext());
 
         allergensArr = dbHelper.getAllAllergensNames();
@@ -43,6 +50,11 @@ public class CheckAllergensFragment extends Fragment {
         adapterAllergens = new AllergensAdapter(getContext(), allergensArr);
 
         listViewAllergens = view.findViewById(R.id.list_view_allergens);
+
+        viewModel.getSelectedAllergens().observe(getViewLifecycleOwner(), allergens -> {
+            selectedAllergens = allergens;
+            adapterAllergens.setPreselectedItems(selectedAllergens);
+        });
 
         listViewAllergens.setAdapter(adapterAllergens);
 
@@ -65,9 +77,11 @@ public class CheckAllergensFragment extends Fragment {
 
                 popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
+
                     public boolean onMenuItemClick(MenuItem menuItem) {
                             if(menuItem.getItemId() == R.id.action_edit){
                                 Toast.makeText(getContext(), "Изменение", Toast.LENGTH_SHORT).show();
+                                showEditAllergenAlertDialog(allergenName);
                             }
                             else if(menuItem.getItemId() == R.id.action_delete){
                                 Toast.makeText(getContext(), "Удаление", Toast.LENGTH_SHORT).show();
@@ -89,6 +103,10 @@ public class CheckAllergensFragment extends Fragment {
         backImageView = view.findViewById(R.id.back_image_view);
 
         backImageView.setOnClickListener(view1 -> {
+            // При выходе из второго фрагмента
+            selectedAllergens = adapterAllergens.getSelectedAllergens();
+            viewModel.setSelectedAllergens(selectedAllergens); // Обновляем данные в ViewModel
+
             // Возвращаемся к предыдущему фрагменту
             getActivity().getSupportFragmentManager().popBackStack();
         });
@@ -100,7 +118,7 @@ public class CheckAllergensFragment extends Fragment {
         return view;
     }
 
-    private void showEditAllergenAlertDialog(String editAllergenName){
+    private void showEditAllergenAlertDialog(String customAllergenName){
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext(), R.style.dialog);
 
         LayoutInflater inflater = this.getLayoutInflater();
@@ -110,7 +128,7 @@ public class CheckAllergensFragment extends Fragment {
         EditText editTextAllergen = dialogView.findViewById(R.id.edit_text_allergen);
         Button addBtn = dialogView.findViewById(R.id.edit_btn);
 
-        editTextAllergen.setText(editAllergenName);
+        editTextAllergen.setText(customAllergenName);
 
         builder.setView(dialogView);
         AlertDialog dialog = builder.create();
@@ -119,10 +137,12 @@ public class CheckAllergensFragment extends Fragment {
             String allergen = editTextAllergen.getText().toString();
             if (!allergen.trim().isEmpty()){
                 // Изменение аллергена
-                //DataAllergen data = new DataAllergen(0, allergen);
-                //dbHelper.addAllergen(data);
+                String newAllergenName = editTextAllergen.getText().toString();
+                int allergenId = dbHelper.getAllergenIdByName(customAllergenName);
+
+                dbHelper.editAllergenNameById(allergenId, newAllergenName);
+
                 updateAllergensArr();
-                //allergensArr.add(allergen);
             }
             dialog.dismiss();
         });

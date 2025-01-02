@@ -7,6 +7,7 @@ import android.os.Bundle;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.ViewModelProvider;
 
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -36,16 +37,17 @@ import java.util.Locale;
 
 public class CreateProductFragment extends Fragment {
 
+    private SharedViewModel viewModel;
     private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
     private ImageView backImageView;
     private TextInputEditText editTextName, editTextFirm, editTextType, editTextManufactureDate, editTextExpiryDate, editTextDays, editTextWeight, editTextQuantity;
     private EditText editTextProteins, editTextFats, editTextCarbohydrates, editTextCaloriesKcal, editTextCaloriesKJ;
-    private TextView textViewAllergens;
+    private TextView textViewAllergensList;
     private RadioGroup radioGroup;
     private RadioButton radioBtnKg, radioBtnL;
     private ImageView imageViewMinusWeight, imageViewPlusWeight, imageViewMinusQuantity, imageViewPlusQuantity;
-    private Button deleteBtn, addBtn;
+    private Button deleteBtn, addBtn, changeAllergensBtn;
 
 
     private OnFragmentInteractionListener mListener;
@@ -84,12 +86,13 @@ public class CreateProductFragment extends Fragment {
         editTextCaloriesKcal = view.findViewById(R.id.edit_text_calories_kcal);
         editTextCaloriesKJ = view.findViewById(R.id.edit_text_calories_kj);
 
-        textViewAllergens = view.findViewById(R.id.text_view_allergens);
+        textViewAllergensList = view.findViewById(R.id.text_view_allergens_list);
 
         radioGroup = view.findViewById(R.id.radio_group);
         radioBtnKg = view.findViewById(R.id.radio_btn_kg);
         radioBtnL = view.findViewById(R.id.radio_btn_l);
 
+        changeAllergensBtn = view.findViewById(R.id.change_allergens_btn);
         deleteBtn = view.findViewById(R.id.delete_btn);
         addBtn = view.findViewById(R.id.add_btn);
 
@@ -122,7 +125,20 @@ public class CreateProductFragment extends Fragment {
             }
         });
 
-        textViewAllergens.setOnClickListener(view1 -> {switchToFragmentCheckAllergens();});
+
+        // Получаем ViewModel
+        viewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
+
+        // Наблюдаем за изменениями списка аллергенов
+        viewModel.getSelectedAllergens().observe(getViewLifecycleOwner(), allergens -> {
+            if (allergens.isEmpty()) {
+                textViewAllergensList.setText("Аллергенов нет");
+            } else {
+                textViewAllergensList.setText(String.join(", ", allergens));
+            }
+        });
+
+        changeAllergensBtn.setOnClickListener(view1 -> {switchToFragmentCheckAllergens();});
 
         backImageView.setOnClickListener(view1 -> {
             // Вызываем метод активности для возобновления сканера
