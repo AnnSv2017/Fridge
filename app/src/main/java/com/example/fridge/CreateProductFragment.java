@@ -33,19 +33,22 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Locale;
 
 public class CreateProductFragment extends Fragment {
 
     private SharedViewModel viewModel;
+    private View view;
+    private DBHelper dbHelper;
     private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
     private ImageView backImageView;
     private TextInputEditText editTextName, editTextFirm, editTextType, editTextManufactureDate, editTextExpiryDate, editTextDays, editTextWeight, editTextQuantity;
     private EditText editTextProteins, editTextFats, editTextCarbohydrates, editTextCaloriesKcal, editTextCaloriesKJ;
     private TextView textViewAllergensList;
-    private RadioGroup radioGroup;
-    private RadioButton radioBtnKg, radioBtnL;
+    private RadioGroup radioGroupWeight, radioGroupMeasurementTYpe;
+    private RadioButton radioBtnKg, radioBtnL, radioBtnWeight, radioBtnQuantity;
     private ImageView imageViewMinusWeight, imageViewPlusWeight, imageViewMinusQuantity, imageViewPlusQuantity;
     private Button deleteBtn, addBtn, changeAllergensBtn;
 
@@ -67,7 +70,9 @@ public class CreateProductFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_create_product, container, false);
+        view = inflater.inflate(R.layout.fragment_create_product, container, false);
+
+        dbHelper = DBHelper.getInstance(requireContext());
 
         backImageView = view.findViewById(R.id.back_image_view);
 
@@ -88,9 +93,13 @@ public class CreateProductFragment extends Fragment {
 
         textViewAllergensList = view.findViewById(R.id.text_view_allergens_list);
 
-        radioGroup = view.findViewById(R.id.radio_group);
+        radioGroupWeight = view.findViewById(R.id.radio_group_weight);
         radioBtnKg = view.findViewById(R.id.radio_btn_kg);
         radioBtnL = view.findViewById(R.id.radio_btn_l);
+
+        radioGroupMeasurementTYpe = view.findViewById(R.id.radio_group_measurement_type);
+        radioBtnWeight = view.findViewById(R.id.radio_btn_weight);
+        radioBtnQuantity = view.findViewById(R.id.radio_btn_quantity);
 
         changeAllergensBtn = view.findViewById(R.id.change_allergens_btn);
         deleteBtn = view.findViewById(R.id.delete_btn);
@@ -247,9 +256,55 @@ public class CreateProductFragment extends Fragment {
     private void addProduct(){
         //Если какое-то поле было не заполнены, то продукт не добавляется
         if (!areAllFieldsFilled()){
-            Toast.makeText(getContext(), "Заполните все поля!", Toast.LENGTH_SHORT).show();
             return;
         }
+        String type = editTextType.getText().toString().trim();
+        String name = editTextName.getText().toString().trim();
+        String firm = editTextFirm.getText().toString().trim();
+        Double mass_value = Double.parseDouble(editTextWeight.getText().toString().trim());
+
+        RadioButton selectedRadioButton1 = view.findViewById(radioGroupWeight.getCheckedRadioButtonId());
+        String mass_unit = selectedRadioButton1.getText().toString();
+
+        Double proteins = Double.parseDouble(editTextProteins.getText().toString().trim());
+        Double fats = Double.parseDouble(editTextFats.getText().toString().trim());
+        Double carbohydrates = Double.parseDouble(editTextCarbohydrates.getText().toString().trim());
+        int caloriesKcal = Integer.parseInt(editTextCaloriesKcal.getText().toString().trim());
+        int caloriesKJ = Integer.parseInt(editTextCaloriesKJ.getText().toString().trim());
+
+        RadioButton radioButton2 = view.findViewById(radioGroupMeasurementTYpe.getCheckedRadioButtonId());
+        String measurement_type = radioButton2.getText().toString();
+
+        // Добавление продукта как разновидности в БД если ещё не добавлен
+        DataProduct dataProduct = new DataProduct(0, type, name, firm, mass_value, mass_unit, proteins, fats, carbohydrates, caloriesKcal, caloriesKJ, measurement_type);
+
+        // Если продукта ещё нет в БД
+        if(!dbHelper.productAlreadyExist(dataProduct)){
+            // Добавляем продукт
+            dbHelper.addProductIfNotExist(dataProduct);
+
+            // Получение id продукта и Связывание продукта со списком аллергенов
+            int productId = dbHelper.getProductIdByInfo(type, name, firm, mass_value, mass_unit);
+            viewModel.getSelectedAllergens().observe(getViewLifecycleOwner(), allergensList ->{
+                for(String allergen : allergensList){
+                    DataProductAllergens dataProductAllergens = new DataProductAllergens(0, productId, allergen);
+                    dbHelper.addProductAllergens(dataProductAllergens);
+                }
+            });
+        }
+
+        // Добавление продукта в холодильник
+        String manufacture_date = editTextManufactureDate.getText().toString();
+        String expiry_date = editTextExpiryDate.getText().toString();
+        int productId = dbHelper.getProductIdByInfo(type, name, firm, mass_value, mass_unit);
+        int quantity = Integer.parseInt(editTextQuantity.getText().toString());
+        DataProductInFridge dataProductInFridge = new DataProductInFridge(0, manufacture_date, expiry_date, productId, quantity);
+        dbHelper.addProductInFridge(dataProductInFridge);
+
+        // Добавление продукта в логи с датой
+        DataProductLogs dataProductLogs = new DataProductLogs(0, manufacture_date, expiry_date, productId, "add", quantity);
+        dbHelper.addProductLogs(dataProductLogs);
+
         Toast.makeText(getContext(), "Продукт был успешно добавлен!", Toast.LENGTH_SHORT).show();
     }
 
@@ -267,12 +322,45 @@ public class CreateProductFragment extends Fragment {
         // Проверка заполненности текстовых полей
         for (EditText field : requiredFields) {
             if (field.getText().toString().trim().isEmpty()) {
+                Toast.makeText(getContext(), "Заполните все поля!", Toast.LENGTH_SHORT).show();
                 return false;
             }
         }
 
-        // Проверка выбора в RadioGroup
-        if (radioGroup.getCheckedRadioButtonId() == -1) {
+        // Проверка корректности введённых данных в поля editTextWeight, editTextQuantity и пищевой ценности
+        try{
+            Double.parseDouble(editTextWeight.getText().toString());
+        } catch (Exception e){
+            Toast.makeText(getContext(), "Введите корректный вес товара!", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        try{
+            Integer.parseInt(editTextQuantity.getText().toString());
+        } catch (Exception e){
+            Toast.makeText(getContext(), "Введите корректное количество товара!", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        try {
+            Double.parseDouble(editTextProteins.getText().toString());
+            Double.parseDouble(editTextFats.getText().toString());
+            Double.parseDouble(editTextCarbohydrates.getText().toString());
+            Integer.parseInt(editTextCaloriesKcal.getText().toString());
+            Integer.parseInt(editTextCaloriesKJ.getText().toString());
+        } catch (Exception e){
+            Toast.makeText(getContext(), "Введите корректную пищевую/энергетическую ценность!", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        // Проверка выбора в RadioGroupWeight и RadioGroupMeasurementType
+        if (radioGroupWeight.getCheckedRadioButtonId() == -1) {
+            Toast.makeText(getContext(), "Выберите единицу измерения количества товара (л/кг)", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        if(radioGroupMeasurementTYpe.getCheckedRadioButtonId() == -1){
+            Toast.makeText(getContext(), "Выберите тип измерения!", Toast.LENGTH_SHORT).show();
             return false;
         }
 

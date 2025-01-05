@@ -161,13 +161,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="20dp"
-                android:text="Количество в:"
+                android:text="Вес в:"
                 android:textSize="20sp"
                 android:textColor="@color/gray"
                 android:layout_gravity="center_vertical"/>
 
             <RadioGroup
-                android:id="@+id/radio_group"
+                android:id="@+id/radio_group_weight"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
@@ -227,7 +227,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:text="1"
-                    android:minEms="0"
+                    android:digits="0123456789."
                     android:inputType="numberDecimal"/>
 
             </com.google.android.material.textfield.TextInputLayout>
@@ -276,8 +276,7 @@
                     android:gravity="center"
                     android:text="1"
                     android:inputType="number"
-                    android:minEms="0"
-                    android:digits="0123456789"/>
+                    android:digits="0123456789" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -293,6 +292,51 @@
 
         </LinearLayout>
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginHorizontal="10dp"
+            android:layout_marginVertical="2.5dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="20dp"
+                android:text="Тип измерения:"
+                android:textSize="20sp"
+                android:textColor="@color/gray"
+                android:layout_gravity="center_vertical"/>
+
+            <RadioGroup
+                android:id="@+id/radio_group_measurement_type"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <RadioButton
+                    android:id="@+id/radio_btn_weight"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="5dp"
+                    android:text="вес"
+                    android:textSize="20sp"
+                    android:textColor="@color/gray"
+                    app:buttonTint="@color/gray"/>
+
+                <RadioButton
+                    android:id="@+id/radio_btn_quantity"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="5dp"
+                    android:text="штуки"
+                    android:textSize="20sp"
+                    android:textColor="@color/gray"
+                    app:buttonTint="@color/gray"/>
+
+            </RadioGroup>
+
+        </LinearLayout>
 
         <TableLayout
             android:layout_width="match_parent"
@@ -442,7 +486,7 @@
                         android:id="@+id/edit_text_calories_kcal"
                         android:layout_width="wrap_content"
                         android:layout_height="48dp"
-                        android:inputType="numberDecimal"
+                        android:inputType="number"
                         android:hint="0"
                         style="@style/MainTextStyle"
                         android:background="@null" />
@@ -458,7 +502,7 @@
                         android:id="@+id/edit_text_calories_kj"
                         android:layout_width="wrap_content"
                         android:layout_height="48dp"
-                        android:inputType="numberDecimal"
+                        android:inputType="number"
                         android:hint="0"
                         style="@style/MainTextStyle"
                         android:background="@null" />

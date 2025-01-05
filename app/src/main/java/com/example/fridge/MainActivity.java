@@ -25,4 +25,11 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(this, QrCodeScannerActivity.class);
         startActivity(intent);
     }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        // Закрываем БД
+        DBManager.getInstance(this).closeDatabase();
+    }
 }

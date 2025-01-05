@@ -43,7 +43,7 @@ public class CheckAllergensFragment extends Fragment {
         // Настройка ViewModel
         viewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
 
-        dbHelper = new DBHelper(getContext());
+        dbHelper = DBHelper.getInstance(requireContext());
 
         allergensArr = dbHelper.getAllAllergensNames();
 

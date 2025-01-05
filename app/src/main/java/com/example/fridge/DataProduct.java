@@ -31,6 +31,10 @@ public class DataProduct {
         this.measurement_type = measurement_type;
     }
 
+    public String getFull_name(){
+        return name + firm + ", " + mass_value + " " + mass_unit;
+    }
+
     public Integer getId() {
         return id;
     }
