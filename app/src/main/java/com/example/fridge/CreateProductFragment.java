@@ -2,12 +2,16 @@ package com.example.fridge;
 
 import android.app.DatePickerDialog;
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -20,6 +24,8 @@ import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.PopupMenu;
+import android.widget.PopupWindow;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -32,6 +38,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
@@ -47,13 +54,17 @@ public class CreateProductFragment extends Fragment {
     private TextInputEditText editTextName, editTextFirm, editTextType, editTextManufactureDate, editTextExpiryDate, editTextDays, editTextWeight, editTextQuantity;
     private EditText editTextProteins, editTextFats, editTextCarbohydrates, editTextCaloriesKcal, editTextCaloriesKJ;
     private TextView textViewAllergensList;
-    private RadioGroup radioGroupWeight, radioGroupMeasurementTYpe;
+    private RadioGroup radioGroupWeight, radioGroupMeasurementType;
     private RadioButton radioBtnKg, radioBtnL, radioBtnWeight, radioBtnQuantity;
     private ImageView imageViewMinusWeight, imageViewPlusWeight, imageViewMinusQuantity, imageViewPlusQuantity;
     private Button deleteBtn, addBtn, changeAllergensBtn;
 
 
     private OnFragmentInteractionListener mListener;
+
+    // Для подсказок (поиска)
+    private PopupWindow popupWindow;
+    private RecyclerView.Adapter adapter;
 
     //Этот метод вызывается, когда фрагмент подключается к активности.
     @Override
@@ -97,7 +108,7 @@ public class CreateProductFragment extends Fragment {
         radioBtnKg = view.findViewById(R.id.radio_btn_kg);
         radioBtnL = view.findViewById(R.id.radio_btn_l);
 
-        radioGroupMeasurementTYpe = view.findViewById(R.id.radio_group_measurement_type);
+        radioGroupMeasurementType = view.findViewById(R.id.radio_group_measurement_type);
         radioBtnWeight = view.findViewById(R.id.radio_btn_weight);
         radioBtnQuantity = view.findViewById(R.id.radio_btn_quantity);
 
@@ -117,6 +128,29 @@ public class CreateProductFragment extends Fragment {
 
         editTextManufactureDate.setOnClickListener(view1 -> {showDatePicker(editTextManufactureDate);});
         editTextExpiryDate.setOnClickListener(view1 -> {showDatePicker(editTextExpiryDate);});
+
+        editTextName.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+//                ArrayList<String> filteredSuggestions = getSuggestionsFromDatabase(s.toString());
+//                suggestionsAdapter.updateData(filteredSuggestions);
+//
+//                if (!popupWindow.isShowing() && !filteredSuggestions.isEmpty()) {
+//                    popupWindow.showAsDropDown(editTextName);
+//                }
+                showSuggestionNames(charSequence.toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
 
         editTextDays.addTextChangedListener(new TextWatcher() {
             @Override
@@ -272,7 +306,7 @@ public class CreateProductFragment extends Fragment {
         int caloriesKcal = Integer.parseInt(editTextCaloriesKcal.getText().toString().trim());
         int caloriesKJ = Integer.parseInt(editTextCaloriesKJ.getText().toString().trim());
 
-        RadioButton radioButton2 = view.findViewById(radioGroupMeasurementTYpe.getCheckedRadioButtonId());
+        RadioButton radioButton2 = view.findViewById(radioGroupMeasurementType.getCheckedRadioButtonId());
         String measurement_type = radioButton2.getText().toString();
 
         // Добавление продукта как разновидности в БД если ещё не добавлен
@@ -284,7 +318,7 @@ public class CreateProductFragment extends Fragment {
             dbHelper.addProductIfNotExist(dataProduct);
 
             // Получение id продукта и Связывание продукта со списком аллергенов
-            int productId = dbHelper.getProductIdByInfo(type, name, firm, mass_value, mass_unit);
+            int productId = dbHelper.getProductIdByFullName(type, name, firm, mass_value, mass_unit);
             viewModel.getSelectedAllergens().observe(getViewLifecycleOwner(), allergensList ->{
                 for(String allergen : allergensList){
                     DataProductAllergens dataProductAllergens = new DataProductAllergens(0, productId, allergen);
@@ -296,7 +330,7 @@ public class CreateProductFragment extends Fragment {
         // Добавление продукта в холодильник
         String manufacture_date = editTextManufactureDate.getText().toString();
         String expiry_date = editTextExpiryDate.getText().toString();
-        int productId = dbHelper.getProductIdByInfo(type, name, firm, mass_value, mass_unit);
+        int productId = dbHelper.getProductIdByFullName(type, name, firm, mass_value, mass_unit);
         int quantity = Integer.parseInt(editTextQuantity.getText().toString());
         DataProductInFridge dataProductInFridge = new DataProductInFridge(0, manufacture_date, expiry_date, productId, quantity);
         dbHelper.addProductInFridge(dataProductInFridge);
@@ -359,7 +393,7 @@ public class CreateProductFragment extends Fragment {
             return false;
         }
 
-        if(radioGroupMeasurementTYpe.getCheckedRadioButtonId() == -1){
+        if(radioGroupMeasurementType.getCheckedRadioButtonId() == -1){
             Toast.makeText(getContext(), "Выберите тип измерения!", Toast.LENGTH_SHORT).show();
             return false;
         }
@@ -385,6 +419,83 @@ public class CreateProductFragment extends Fragment {
         // Выполняем транзакцию
         transaction.commit();
 
+    }
+
+    // TODO: Всплывающие подсказки
+    // Поиск по полному имени
+    private void showSuggestionNames(String query) {
+        ArrayList<String> suggestionNames = dbHelper.searchProducts(query);
+
+        if (suggestionNames.isEmpty()) {
+            if (popupWindow != null && popupWindow.isShowing()) {
+                popupWindow.dismiss();
+            }
+            return;
+        }
+
+        if (popupWindow == null || !popupWindow.isShowing()) {
+            RecyclerView recyclerView = new RecyclerView(requireContext());
+            recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
+
+            adapter = new SuggestionNamesAdapter(suggestionNames, selectedValue -> {
+                fillFields(selectedValue);
+                //editTextName.setText(selectedValue);
+                popupWindow.dismiss();
+            });
+
+            recyclerView.setAdapter(adapter);
+
+            popupWindow = new PopupWindow(recyclerView, editTextName.getWidth(), ViewGroup.LayoutParams.WRAP_CONTENT, true);
+            popupWindow.setBackgroundDrawable(new ColorDrawable(Color.WHITE));
+            popupWindow.setElevation(10); // Задаем стиль
+            popupWindow.setFocusable(false); // Окно не перехватывает фоку
+            popupWindow.setOutsideTouchable(true); // Позволяет закрывать окно при нажатии вне его области
+
+            popupWindow.showAsDropDown(editTextName);
+        } else {
+            ((SuggestionNamesAdapter) adapter).updateData(suggestionNames);
+        }
+    }
+
+    private void fillFields(String fullName){
+        String[] parts = fullName.split(", ");
+        String type = parts[0];
+        String name = parts[1];
+        String firm = parts[2];
+        String mass_value = parts[3].split(" ")[0];
+        String mass_unit = parts[3].split(" ")[1];
+
+        int productId = dbHelper.getProductIdByFullName(type, name, firm, Double.parseDouble(mass_value), mass_unit);
+        DataProduct dataProduct = dbHelper.getProductById(productId);
+
+        editTextName.setText(dataProduct.getName());
+        editTextType.setText(dataProduct.getType());
+        editTextFirm.setText(dataProduct.getFirm());
+        editTextWeight.setText(mass_value);
+        switch (mass_unit){
+            case "кг":
+                radioGroupWeight.check(R.id.radio_btn_kg);
+                break;
+            case "л":
+                radioGroupWeight.check(R.id.radio_btn_l);
+                break;
+        }
+        switch (dataProduct.getMeasurement_type()){
+            case "вес":
+                radioGroupMeasurementType.check(R.id.radio_btn_weight);
+                break;
+            case "штуки":
+                radioGroupMeasurementType.check(R.id.radio_btn_quantity);
+                break;
+        }
+        editTextProteins.setText(String.valueOf(dataProduct.getProteins()));
+        editTextFats.setText(String.valueOf(dataProduct.getFats()));
+        editTextCarbohydrates.setText(String.valueOf(dataProduct.getCarbohydrates()));
+        editTextCaloriesKcal.setText(String.valueOf(dataProduct.getCalories_kcal()));
+        editTextCaloriesKJ.setText(String.valueOf(dataProduct.getCalories_KJ()));
+
+        ArrayList<String> allergens = dbHelper.getAllAllergensByProductId(productId);
+        viewModel.setSelectedAllergens(allergens);
     }
 
     //Метод вызывается, когда фрагмент отключается от активности.

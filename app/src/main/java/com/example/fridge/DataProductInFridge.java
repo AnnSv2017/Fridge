@@ -1,13 +1,13 @@
 package com.example.fridge;
 
 public class DataProductInFridge {
-    private Integer id;
+    private int id;
     private String manufacture_date;
     private String expiry_date;
-    private Integer product_id;
-    private Integer quantity;
+    private int product_id;
+    private int quantity;
 
-    public DataProductInFridge(Integer id, String manufacture_date, String expiry_date, Integer product_id, Integer quantity) {
+    public DataProductInFridge(int id, String manufacture_date, String expiry_date, int product_id, int quantity) {
         this.id = id;
         this.manufacture_date = manufacture_date;
         this.expiry_date = expiry_date;
@@ -15,7 +15,7 @@ public class DataProductInFridge {
         this.quantity = quantity;
     }
 
-    public Integer getId() {
+    public int getId() {
         return id;
     }
 
@@ -27,11 +27,11 @@ public class DataProductInFridge {
         return expiry_date;
     }
 
-    public Integer getProduct_id() {
+    public int getProduct_id() {
         return product_id;
     }
 
-    public Integer getQuantity() {
+    public int getQuantity() {
         return quantity;
     }
 }

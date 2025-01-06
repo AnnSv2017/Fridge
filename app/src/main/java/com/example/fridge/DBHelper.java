@@ -18,7 +18,7 @@ public class DBHelper extends SQLiteOpenHelper {
     private Context context;
     DBManager dbManager;
     private static final String DATABASE_NAME = "helper.db";
-    private static final int DATABASE_VERSION = 4;
+    private static final int DATABASE_VERSION = 6;
 
     // SQL-запросы для создания таблиц
 
@@ -49,7 +49,7 @@ public class DBHelper extends SQLiteOpenHelper {
                     "fats REAL, " +
                     "carbohydrates REAL, " +
                     "calories_kcal INTEGER, " +
-                    "calories_KJ INTEGER, " +
+                    "calories_kj INTEGER, " +
                     "measurement_type TEXT" +
                     ");";
 
@@ -70,7 +70,7 @@ public class DBHelper extends SQLiteOpenHelper {
                     ");";
 
 
-    private static final String PRODUCTS_IN_FRIDGE_TABLE = "product_in_fridge_table";
+    private static final String PRODUCTS_IN_FRIDGE_TABLE = "products_in_fridge_table";
     private static final String CREATE_PRODUCTS_IN_FRIDGE_TABLE =
             "CREATE TABLE " + PRODUCTS_IN_FRIDGE_TABLE + " (" +
                     "id INTEGER, " +
@@ -139,6 +139,52 @@ public class DBHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + PRODUCTS_IN_FRIDGE_TABLE);
         db.execSQL("DROP TABLE IF EXISTS " + PRODUCT_LOGS_TABLE);
         onCreate(db); // Создание новой БД
+    }
+
+    // Курсоры
+    private DataProduct mapCursorToDataProduct(Cursor cursor) {
+        int idIndex = cursor.getColumnIndex("id");
+        int typeIndex = cursor.getColumnIndex("type");
+        int nameIndex = cursor.getColumnIndex("name");
+        int firmIndex = cursor.getColumnIndex("firm");
+        int massValueIndex = cursor.getColumnIndex("mass_value");
+        int massUnitIndex = cursor.getColumnIndex("mass_unit");
+        int proteinsIndex = cursor.getColumnIndex("proteins");
+        int fatsIndex = cursor.getColumnIndex("fats");
+        int carbohydratesIndex = cursor.getColumnIndex("carbohydrates");
+        int caloriesKcalIndex = cursor.getColumnIndex("calories_kcal");
+        int caloriesKJIndex = cursor.getColumnIndex("calories_kj");
+        int measurementTypeIndex = cursor.getColumnIndex("measurement_type");
+
+        int id = cursor.getInt(idIndex);
+        String type = cursor.getString(typeIndex);
+        String name = cursor.getString(nameIndex);
+        String firm = cursor.getString(firmIndex);
+        Double mass_value = cursor.getDouble(massValueIndex);
+        String mass_unit = cursor.getString(massUnitIndex);
+        Double proteins = cursor.getDouble(proteinsIndex);
+        Double fats = cursor.getDouble(fatsIndex);
+        Double carbohydrates = cursor.getDouble(carbohydratesIndex);
+        int calories_kcal = cursor.getInt(caloriesKcalIndex);
+        int calories_kj = cursor.getInt(caloriesKJIndex);
+        String measurement_type = cursor.getString(measurementTypeIndex);
+        return new DataProduct(id, type, name, firm, mass_value, mass_unit, proteins, fats, carbohydrates, calories_kcal, calories_kj, measurement_type);
+    }
+
+    private DataProductInFridge mapCursorToDataProductInFridge(Cursor cursor){
+        int idIndex = cursor.getColumnIndex("id");
+        int manufactureDateIndex = cursor.getColumnIndex("manufacture_date");
+        int expiryDateIndex = cursor.getColumnIndex("expiry_date");
+        int productIdIndex = cursor.getColumnIndex("product_id");
+        int quantityIndex = cursor.getColumnIndex("quantity");
+
+        int id = cursor.getInt(idIndex);
+        String manufacture_date = cursor.getString(manufactureDateIndex);
+        String expiry_date = cursor.getString(expiryDateIndex);
+        int product_id = cursor.getInt(productIdIndex);
+        int quantity = cursor.getInt(quantityIndex);
+
+        return new DataProductInFridge(id, manufacture_date, expiry_date, product_id, quantity);
     }
 
     // Добавления новых объектов в таблицы
@@ -247,7 +293,7 @@ public class DBHelper extends SQLiteOpenHelper {
         return allergenId;
     }
 
-    public int getProductIdByInfo(String type, String name, String firm, Double mass_value, String mass_unit){
+    public int getProductIdByFullName(String type, String name, String firm, Double mass_value, String mass_unit){
         SQLiteDatabase db = getDbManager().getDatabase();
 
         int productId = -1;
@@ -316,6 +362,28 @@ public class DBHelper extends SQLiteOpenHelper {
 
 
     // Получение объекта по его id в БД
+    public DataProduct getProductById(int idPK){
+        SQLiteDatabase db = getDbManager().getDatabase();
+
+        Cursor cursor = db.query(
+                PRODUCT_TABLE,
+                null,
+                "id = ?",
+                new String[]{String.valueOf(idPK)},
+                null,
+                null,
+                null
+        );
+        DataProduct data = null;
+        if(cursor != null && cursor.moveToFirst()) {
+            data = mapCursorToDataProduct(cursor);
+        }
+        if(cursor != null){
+            cursor.close();
+        }
+        return data;
+    }
+
     public DataProductInFridge getProductInFridgeById(int idPK){
         SQLiteDatabase db = getDbManager().getDatabase();
 
@@ -330,19 +398,7 @@ public class DBHelper extends SQLiteOpenHelper {
         );
         DataProductInFridge data = null;
         if(cursor != null && cursor.moveToFirst()){
-            int idIndex = cursor.getColumnIndex("id");
-            int manufactureDateIndex = cursor.getColumnIndex("manufacture_date");
-            int expiryDateIndex = cursor.getColumnIndex("expiry_date");
-            int productIdIndex = cursor.getColumnIndex("product_id");
-            int quantityIndex = cursor.getColumnIndex("quantity");
-
-            int id = cursor.getInt(idIndex);
-            String manufacture_date = cursor.getString(manufactureDateIndex);
-            String expiry_date = cursor.getString(expiryDateIndex);
-            int product_id = cursor.getInt(productIdIndex);
-            int quantity = cursor.getInt(quantityIndex);
-
-            data = new DataProductInFridge(id, manufacture_date, expiry_date, product_id, quantity);
+            data = mapCursorToDataProductInFridge(cursor);
         }
         cursor.close();
 
@@ -389,45 +445,65 @@ public class DBHelper extends SQLiteOpenHelper {
         return list;
     }
 
+    public ArrayList<String> getAllAllergensByProductId(int productId){
+        ArrayList<String> list = new ArrayList<>();
+        SQLiteDatabase db = getDbManager().getDatabase();
+
+        Cursor cursor = db.query(
+                PRODUCT_ALLERGENS_TABLE,
+                new String[]{"allergen"},
+                "product_id = ?",
+                new String[]{String.valueOf(productId)},
+                null,
+                null,
+                "allergen ASC"
+        );
+        if(cursor.moveToFirst()){
+            do{
+                int allergenIndex = cursor.getColumnIndex("allergen");
+                String allergen = cursor.getString(allergenIndex);
+                list.add(allergen);
+            }while (cursor.moveToNext());
+            cursor.close();
+        }
+        return list;
+    }
+
     public ArrayList<DataProduct> getAllProducts(){
         ArrayList<DataProduct> list = new ArrayList<>();
         SQLiteDatabase db = getDbManager().getDatabase();
 
         Cursor cursor = db.query(PRODUCT_TABLE, null, null, null, null, null, "name ASC");
         if(cursor.moveToFirst()){
-            int idIndex = cursor.getColumnIndex("id");
-            int typeIndex = cursor.getColumnIndex("type");
-            int nameIndex = cursor.getColumnIndex("name");
-            int firmIndex = cursor.getColumnIndex("firm");
-            int massValueIndex = cursor.getColumnIndex("mass_value");
-            int massUnitIndex = cursor.getColumnIndex("mass_unit");
-            int proteinsIndex = cursor.getColumnIndex("proteins");
-            int fatsIndex = cursor.getColumnIndex("fats");
-            int carbohydratesIndex = cursor.getColumnIndex("carbohydrates");
-            int caloriesKcalIndex = cursor.getColumnIndex("calories_kcal");
-            int caloriesKJIndex = cursor.getColumnIndex("calories_kj");
-            int measurementTypeIndex = cursor.getColumnIndex("measurement_type");
             do{
-                int id = cursor.getInt(idIndex);
-                String type = cursor.getString(typeIndex);
-                String name = cursor.getString(nameIndex);
-                String firm = cursor.getString(firmIndex);
-                Double mass_value = cursor.getDouble(massValueIndex);
-                String mass_unit = cursor.getString(massUnitIndex);
-                Double proteins = cursor.getDouble(proteinsIndex);
-                Double fats = cursor.getDouble(fatsIndex);
-                Double carbohydrates = cursor.getDouble(carbohydratesIndex);
-                int calories_kcal = cursor.getInt(caloriesKcalIndex);
-                int calories_kj = cursor.getInt(caloriesKJIndex);
-                String measurement_type = cursor.getString(measurementTypeIndex);
-                DataProduct data = new DataProduct(id, type, name, firm, mass_value, mass_unit, proteins, fats, carbohydrates, calories_kcal, calories_kj, measurement_type);
-                list.add(data);
+                list.add(mapCursorToDataProduct(cursor));
             }while (cursor.moveToNext());
+            cursor.close();
         }
-        cursor.close();
         return list;
     }
 
+    public ArrayList<DataProductInFridge> getAllProductsInFridge(){
+        ArrayList<DataProductInFridge> list = new ArrayList<>();
+        SQLiteDatabase db = getDbManager().getDatabase();
+
+        // Запрос с JOIN для соединения двух таблиц и сортировки по имени
+        String query = "SELECT pif.*, p.name AS product_name " +
+                "FROM " + PRODUCTS_IN_FRIDGE_TABLE + " pif " +
+                "JOIN " + PRODUCT_TABLE + " p " +
+                "ON pif.product_id = p.id " +
+                "ORDER BY p.name ASC";
+
+        Cursor cursor = db.rawQuery(query, null);
+
+        if(cursor.moveToFirst()){
+            do{
+                list.add(mapCursorToDataProductInFridge(cursor));
+            }while (cursor.moveToNext());
+            cursor.close();
+        }
+        return list;
+    }
     // Получение списка имён некоторых объектов
 
     public ArrayList<String> getAllTypeNames(){
@@ -465,5 +541,28 @@ public class DBHelper extends SQLiteOpenHelper {
 
         db.delete(ALLERGENS_TABLE, "name = ?", new String[]{name});
     }
+
+    // Поиск объектов
+    public ArrayList<String> searchProducts(String query) {
+        ArrayList<String> results = new ArrayList<>();
+        SQLiteDatabase db = getDbManager().getDatabase();
+
+        String sqlQuery = "SELECT type || ', ' || name || ', ' || firm || ', ' || mass_value || ' ' || mass_unit AS full_name " +
+                "FROM product_table WHERE full_name LIKE ? ORDER BY name ASC";
+        Cursor cursor = db.rawQuery(sqlQuery, new String[]{"%" + query + "%"});
+
+        if (cursor.moveToFirst()) {
+            do {
+                int fullNameIndex = cursor.getColumnIndex("full_name");
+                String full_name = cursor.getString(fullNameIndex);
+                results.add(full_name);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+
+        return results;
+    }
+
+
 }
 

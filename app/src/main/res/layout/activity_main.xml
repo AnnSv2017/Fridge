@@ -12,6 +12,7 @@
         android:id="@+id/list_view_products"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
         android:layout_above="@+id/bottom_menu"
         android:layout_marginVertical="10dp"
         android:layout_marginHorizontal="10dp"
