@@ -53,9 +53,9 @@ public class ProductAdapter extends BaseAdapter {
         String name = dataProduct.getName();
 
         // Получения количества дней до истечения срока
-        LocalDate manufactureDate = LocalDate.parse(dataProductInFridge.getManufacture_date(), formatter);
+        LocalDate currentDate = LocalDate.now();
         LocalDate expiryDate = LocalDate.parse(dataProductInFridge.getExpiry_date(), formatter);
-        long days = ChronoUnit.DAYS.between(manufactureDate, expiryDate);
+        long days = ChronoUnit.DAYS.between(currentDate, expiryDate);
 
         // Получение количества товара
         int quantity = (Integer) dataProductInFridge.getQuantity();

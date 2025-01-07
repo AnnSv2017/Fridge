@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -18,7 +19,7 @@ public class DBHelper extends SQLiteOpenHelper {
     private Context context;
     DBManager dbManager;
     private static final String DATABASE_NAME = "helper.db";
-    private static final int DATABASE_VERSION = 6;
+    private static final int DATABASE_VERSION = 7;
 
     // SQL-запросы для создания таблиц
 
@@ -73,7 +74,7 @@ public class DBHelper extends SQLiteOpenHelper {
     private static final String PRODUCTS_IN_FRIDGE_TABLE = "products_in_fridge_table";
     private static final String CREATE_PRODUCTS_IN_FRIDGE_TABLE =
             "CREATE TABLE " + PRODUCTS_IN_FRIDGE_TABLE + " (" +
-                    "id INTEGER, " +
+                    "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
                     "manufacture_date TEXT, " +
                     "expiry_date TEXT, " +
                     "product_id INTEGER, " +
@@ -84,7 +85,7 @@ public class DBHelper extends SQLiteOpenHelper {
     private static final String PRODUCT_LOGS_TABLE = "product_logs_table";
     private static final String CREATE_PRODUCT_LOGS_TABLE =
             "CREATE TABLE " + PRODUCT_LOGS_TABLE + " (" +
-                    "id INTEGER, " +
+                    "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
                     "manufacture_date TEXT, " + // Формат ISO 8601
                     "expiry_date TEXT, " +
                     "product_id INTEGER, " +
@@ -242,6 +243,10 @@ public class DBHelper extends SQLiteOpenHelper {
     }
 
     public void addProductInFridge(DataProductInFridge data){
+        if (data == null) {
+            throw new IllegalArgumentException("DataProductInFridge cannot be null");
+        }
+
         SQLiteDatabase db = getDbManager().getDatabase();
 
         int productInFridgeId = getProductInFridgeIdIfItInFridge(data.getManufacture_date(), data.getExpiry_date(), data.getProduct_id());
@@ -259,9 +264,14 @@ public class DBHelper extends SQLiteOpenHelper {
         }
         // Если продукт есть в холодильнике, то мы обновляем его количество
         else {
-            int quantity = getProductInFridgeById(productInFridgeId).getQuantity() + data.getQuantity();
-            cv.put("quantity", quantity);
-            db.update(PRODUCTS_IN_FRIDGE_TABLE, cv, "id = ?", new String[]{String.valueOf(productInFridgeId)});
+            DataProductInFridge existingProduct = getProductInFridgeById(productInFridgeId);
+            if (existingProduct != null) {
+                int quantity = existingProduct.getQuantity() + data.getQuantity();
+                cv.put("quantity", quantity);
+                db.update(PRODUCTS_IN_FRIDGE_TABLE, cv, "id = ?", new String[]{String.valueOf(productInFridgeId)});
+            } else {
+                throw new IllegalStateException("Product with ID " + productInFridgeId + " not found in the database");
+            }
         }
     }
 
@@ -396,11 +406,22 @@ public class DBHelper extends SQLiteOpenHelper {
                 null,
                 null
         );
+
+        if (cursor == null || !cursor.moveToFirst()) {
+            Log.e("DBHelper", "No product found with ID: " + idPK);
+            if (cursor != null) {
+                cursor.close();
+            }
+            return null;
+        }
+
         DataProductInFridge data = null;
         if(cursor != null && cursor.moveToFirst()){
             data = mapCursorToDataProductInFridge(cursor);
         }
-        cursor.close();
+        if(cursor != null){
+            cursor.close();
+        }
 
         return data;
     }

@@ -183,16 +183,7 @@ public class CreateProductFragment extends Fragment {
 
         changeAllergensBtn.setOnClickListener(view1 -> {switchToFragmentCheckAllergens();});
 
-        backImageView.setOnClickListener(view1 -> {
-            // Вызываем метод активности для возобновления сканера
-            if (mListener != null) {
-                mListener.onFragmentClose(); // Возвращаем управление активности
-            }
-            // Закрываем фрагмент
-            getActivity().getSupportFragmentManager().beginTransaction()
-                    .remove(CreateProductFragment.this)
-                    .commit();
-        });
+        backImageView.setOnClickListener(view1 -> {backToQrCodeScannerActivity();});
 
         addBtn.setOnClickListener(view1 -> {addProduct();});
 
@@ -340,6 +331,9 @@ public class CreateProductFragment extends Fragment {
         dbHelper.addProductLogs(dataProductLogs);
 
         Toast.makeText(getContext(), "Продукт был успешно добавлен!", Toast.LENGTH_SHORT).show();
+
+        // Выходим из фрагмента
+        backToQrCodeScannerActivity();
     }
 
     private boolean areAllFieldsFilled(){
@@ -496,6 +490,18 @@ public class CreateProductFragment extends Fragment {
 
         ArrayList<String> allergens = dbHelper.getAllAllergensByProductId(productId);
         viewModel.setSelectedAllergens(allergens);
+    }
+
+    // Метод для выхода из фрагмента
+    private void backToQrCodeScannerActivity(){
+        // Вызываем метод активности для возобновления сканера
+        if (mListener != null) {
+            mListener.onFragmentClose(); // Возвращаем управление активности
+        }
+        // Закрываем фрагмент
+        getActivity().getSupportFragmentManager().beginTransaction()
+                .remove(CreateProductFragment.this)
+                .commit();
     }
 
     //Метод вызывается, когда фрагмент отключается от активности.
