@@ -1,37 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="5dp">
+    android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/text_view_name"
-        android:layout_width="wrap_content"
+    <RelativeLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Название"
-        android:textSize="20sp"
-        style="@style/MainTextStyle"/>
+        android:layout_marginVertical="2.5dp"
+        android:padding="5dp"
+        android:background="@drawable/product_border">
 
-    <TextView
-        android:id="@+id/text_view_days"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_toStartOf="@+id/text_view_quantity"
-        android:layout_marginEnd="30dp"
-        android:text="0 дн."
-        android:textSize="20sp"
-        style="@style/MainTextStyle"
-        android:background="@drawable/days_background"/>
+        <TextView
+            android:id="@+id/text_view_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:text="Название"
+            android:textSize="20sp"
+            style="@style/MainTextStyle"/>
 
-    <TextView
-        android:id="@+id/text_view_quantity"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_marginEnd="10dp"
-        android:text="1"
-        android:textSize="20sp"
-        style="@style/MainTextStyle"
-        android:background="@drawable/circle_background"/>
+        <TextView
+            android:id="@+id/text_view_days"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toStartOf="@+id/text_view_quantity"
+            android:layout_marginEnd="30dp"
+            android:paddingHorizontal="10dp"
+            android:text="0 дн."
+            android:textSize="20sp"
+            style="@style/MainTextStyle"
+            android:background="@drawable/oval_background"/>
 
-</RelativeLayout>
+        <TextView
+            android:id="@+id/text_view_quantity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="10dp"
+            android:text="1"
+            android:textSize="20sp"
+            style="@style/MainTextStyle"
+            android:background="@drawable/circle_background"/>
+
+    </RelativeLayout>
+
+</LinearLayout>

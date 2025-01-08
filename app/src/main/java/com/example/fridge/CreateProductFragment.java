@@ -15,16 +15,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.PopupMenu;
 import android.widget.PopupWindow;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -34,18 +31,16 @@ import android.widget.Toast;
 import com.google.android.material.textfield.TextInputEditText;
 
 import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-import java.util.Locale;
 
 public class CreateProductFragment extends Fragment {
 
-    private SharedViewModel viewModel;
+    private SharedViewModel sharedViewModel;
     private View view;
     private DBHelper dbHelper;
     private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
@@ -169,11 +164,11 @@ public class CreateProductFragment extends Fragment {
         });
 
 
-        // Получаем ViewModel
-        viewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
+        // Получаем SharedViewModel
+        sharedViewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
 
         // Наблюдаем за изменениями списка аллергенов
-        viewModel.getSelectedAllergens().observe(getViewLifecycleOwner(), allergens -> {
+        sharedViewModel.getSelectedAllergens().observe(getViewLifecycleOwner(), allergens -> {
             if (allergens.isEmpty()) {
                 textViewAllergensList.setText("Аллергенов нет");
             } else {
@@ -308,9 +303,17 @@ public class CreateProductFragment extends Fragment {
             // Добавляем продукт
             dbHelper.addProductIfNotExist(dataProduct);
 
+            // Добавляем тип в типы если нет
+            DataType dataType = new DataType(0, type);
+            dbHelper.addType(dataType);
+
+            // Добавляем фирму в фирмы если нет
+            DataFirm dataFirm = new DataFirm(0, firm);
+            dbHelper.addFirm(dataFirm);
+
             // Получение id продукта и Связывание продукта со списком аллергенов
             int productId = dbHelper.getProductIdByFullName(type, name, firm, mass_value, mass_unit);
-            viewModel.getSelectedAllergens().observe(getViewLifecycleOwner(), allergensList ->{
+            sharedViewModel.getSelectedAllergens().observe(getViewLifecycleOwner(), allergensList ->{
                 for(String allergen : allergensList){
                     DataProductAllergens dataProductAllergens = new DataProductAllergens(0, productId, allergen);
                     dbHelper.addProductAllergens(dataProductAllergens);
@@ -489,7 +492,7 @@ public class CreateProductFragment extends Fragment {
         editTextCaloriesKJ.setText(String.valueOf(dataProduct.getCalories_KJ()));
 
         ArrayList<String> allergens = dbHelper.getAllAllergensByProductId(productId);
-        viewModel.setSelectedAllergens(allergens);
+        sharedViewModel.setSelectedAllergens(allergens);
     }
 
     // Метод для выхода из фрагмента

@@ -32,6 +32,9 @@
         <!-- Режим рамки -->
         <item name="boxBackgroundMode">outline</item>
 
+        <!-- Цвет самого элемента -->
+        <item name="boxBackgroundColor">@color/white</item>
+
         <!-- Цвет обводки при фокусе -->
         <item name="boxStrokeColor">@color/main_color</item>
 

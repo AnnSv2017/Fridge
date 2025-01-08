@@ -193,10 +193,26 @@ public class DBHelper extends SQLiteOpenHelper {
     public void addType(DataType data){
         SQLiteDatabase db = getDbManager().getDatabase();
 
+        if(typeAlreadyExist(data)){
+            return;
+        }
+
         ContentValues cv = new ContentValues();
         cv.put("name", data.getName());
 
         db.insert(TYPE_TABLE, null, cv);
+    }
+
+    public void addFirm(DataFirm data){
+        SQLiteDatabase db = getDbManager().getDatabase();
+
+        if(firmAlreadyExist(data)){
+            return;
+        }
+
+        ContentValues cv = new ContentValues();
+        cv.put("name", data.getName());
+        db.insert(FIRM_TABLE, null, cv);
     }
 
     public void addProductIfNotExist(DataProduct data){
@@ -243,15 +259,14 @@ public class DBHelper extends SQLiteOpenHelper {
     }
 
     public void addProductInFridge(DataProductInFridge data){
-        if (data == null) {
-            throw new IllegalArgumentException("DataProductInFridge cannot be null");
-        }
 
         SQLiteDatabase db = getDbManager().getDatabase();
 
         int productInFridgeId = getProductInFridgeIdIfItInFridge(data.getManufacture_date(), data.getExpiry_date(), data.getProduct_id());
 
         ContentValues cv = new ContentValues();
+
+
 
         // Если продукта нет в холодильнике, то мы его добавляем
         if(productInFridgeId == -1){
@@ -347,6 +362,34 @@ public class DBHelper extends SQLiteOpenHelper {
         return productInFridgeId;
     }
     // Получение ответа на вопрос существует ли данный объект уже или нет
+    public boolean typeAlreadyExist(DataType data){
+        SQLiteDatabase db = getDbManager().getDatabase();
+        String query = "SELECT COUNT(*) FROM " + TYPE_TABLE + " WHERE name = ?";
+        String[] selectionArgs = new String[]{data.getName()};
+
+        Cursor cursor = db.rawQuery(query, selectionArgs);
+        boolean exists = false;
+        if (cursor.moveToFirst()) {
+            exists = cursor.getInt(0) > 0;
+        }
+        cursor.close();
+        return exists;
+    }
+
+    public boolean firmAlreadyExist(DataFirm data){
+        SQLiteDatabase db = getDbManager().getDatabase();
+        String query = "SELECT COUNT(*) FROM " + FIRM_TABLE + " WHERE name = ?";
+        String[] selectionArgs = new String[]{data.getName()};
+
+        Cursor cursor = db.rawQuery(query, selectionArgs);
+        boolean exists = false;
+        if (cursor.moveToFirst()) {
+            exists = cursor.getInt(0) > 0;
+        }
+        cursor.close();
+        return exists;
+    }
+
     public boolean productAlreadyExist(DataProduct data) {
         SQLiteDatabase db = getDbManager().getDatabase();
         String query = "SELECT COUNT(*) FROM " + PRODUCT_TABLE +
@@ -425,6 +468,8 @@ public class DBHelper extends SQLiteOpenHelper {
 
         return data;
     }
+
+
 
     // Получение списка различных объектов
 
@@ -525,9 +570,39 @@ public class DBHelper extends SQLiteOpenHelper {
         }
         return list;
     }
+
+    public ArrayList<DataProductInFridge> getAllProductsInFridgeByType(String type){
+        ArrayList<DataProductInFridge> list = new ArrayList<>();
+        SQLiteDatabase db = getDbManager().getDatabase();
+
+        // Запрос с JOIN для соединения двух таблиц и сортировки по имени
+        String query = "SELECT pif.*, p.name AS product_name " +
+                "FROM " + PRODUCTS_IN_FRIDGE_TABLE + " pif " +
+                "JOIN " + PRODUCT_TABLE + " p " +
+                "ON pif.product_id = p.id " +
+                "WHERE p.type = ?" +
+                "ORDER BY p.name ASC";
+
+        Cursor cursor = null;
+        try {
+            cursor = db.rawQuery(query, new String[]{type});
+            if (cursor.moveToFirst()) {
+                do {
+                    list.add(mapCursorToDataProductInFridge(cursor));
+                } while (cursor.moveToNext());
+            }
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+
+        return list;
+    }
+
     // Получение списка имён некоторых объектов
 
-    public ArrayList<String> getAllTypeNames(){
+    public ArrayList<String> getAllTypesNames(){
         ArrayList<String> list = new ArrayList<>();
         ArrayList<DataType> data = getAllTypes();
         for(DataType d : data){
@@ -584,6 +659,18 @@ public class DBHelper extends SQLiteOpenHelper {
         return results;
     }
 
+    // Методы без запросов к БД
+    public ArrayList<Category> getAllCategories(){
+        ArrayList<Category> categories = new ArrayList<>();
+        ArrayList<String> types = getAllTypesNames();
+        ArrayList<DataProductInFridge> products;
+        for(String type : types){
+            products = getAllProductsInFridgeByType(type);
+            Category category = new Category(type, R.drawable.ic_close_list, products);
+            categories.add(category);
+        }
+        return categories;
+    }
 
 }
 
