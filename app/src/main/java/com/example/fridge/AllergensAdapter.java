@@ -3,25 +3,29 @@ package com.example.fridge;
 import android.content.Context;
 import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.PopupMenu;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 public class AllergensAdapter extends BaseAdapter {
 
     private final Context context;
     private final ArrayList<String> allergensList;
-    private final SparseBooleanArray selectedItems; // Для отслеживания выбранных элементов
+    private final HashSet<String> selectedItems; // Для отслеживания выбранных элементов
 
     public AllergensAdapter(Context context, ArrayList<String> allergensList) {
         this.context = context;
         this.allergensList = allergensList;
-        this.selectedItems = new SparseBooleanArray();
+        this.selectedItems = new HashSet<>();
     }
 
     @Override
@@ -49,50 +53,51 @@ public class AllergensAdapter extends BaseAdapter {
         TextView textViewName = convertView.findViewById(R.id.text_view_name);
         ImageView checkMarkImageView = convertView.findViewById(R.id.check_mark_image_view);
 
-        textViewName.setText(allergensList.get(position));
+        String allergen = allergensList.get(position);
+        textViewName.setText(allergen);
 
         // Устанавливаем видимость галочки на основе состояния
-        if (selectedItems.get(position, false)) {
+        if (selectedItems.contains(allergen)) {
             checkMarkImageView.setVisibility(View.VISIBLE);
         } else {
             checkMarkImageView.setVisibility(View.GONE);
         }
 
+        // Обработчик нажатия для переключения состояния
+        //convertView.setOnClickListener(v -> toggleSelection(allergen));
+
         return convertView;
+    }
+
+    // Обновление состояния выбранности элемента
+    public void toggleSelection(String allergen) {
+        if (selectedItems.contains(allergen)) {
+            selectedItems.remove(allergen); // Убираем из выбранных
+        } else {
+            selectedItems.add(allergen); // Добавляем в выбранные
+        }
+        notifyDataSetChanged(); // Обновляем ListView
+    }
+
+    public void recheckAllergenInSelected(String currentName, String newName){
+        selectedItems.remove(currentName);
+        selectedItems.add(newName);
+    }
+
+    public void deleteAllergenFromSelected(String deletedName){
+        selectedItems.remove(deletedName);
     }
 
     // Метод для предустановки галочек на те что были выбраны раннее
     public void setPreselectedItems(List<String> preselectedAllergens) {
         selectedItems.clear(); // Сбрасываем предыдущий выбор
-        for (int i = 0; i < allergensList.size(); i++) {
-            if (preselectedAllergens.contains(allergensList.get(i))) {
-                selectedItems.put(i, true); // Отмечаем элемент как выбранный
-            }
-        }
-        notifyDataSetChanged(); // Обновляем ListView
-    }
-
-
-    // Обновление состояния видимости галочки
-    public void toggleSelection(int position) {
-        if (selectedItems.get(position, false)) {
-            selectedItems.delete(position); // Убираем выбор
-        } else {
-            selectedItems.put(position, true); // Добавляем выбор
-        }
+        selectedItems.addAll(preselectedAllergens);
         notifyDataSetChanged(); // Обновляем ListView
     }
 
     // Возвращает список выбранных элементов
     public List<String> getSelectedAllergens() {
-        List<String> selectedList = new ArrayList<>();
-        for (int i = 0; i < selectedItems.size(); i++) {
-            int position = selectedItems.keyAt(i);
-            if (selectedItems.valueAt(i)) {
-                selectedList.add(allergensList.get(position));
-            }
-        }
-        return selectedList;
+        return new ArrayList<>(selectedItems);
     }
 
 }

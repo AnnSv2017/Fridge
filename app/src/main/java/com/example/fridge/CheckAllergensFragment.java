@@ -62,7 +62,8 @@ public class CheckAllergensFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 // Переключаем состояние элемента
-                adapterAllergens.toggleSelection(i);
+                String allergenName = (String) adapterView.getItemAtPosition(i);
+                adapterAllergens.toggleSelection(allergenName);
             }
         });
 
@@ -86,6 +87,7 @@ public class CheckAllergensFragment extends Fragment {
                             else if(menuItem.getItemId() == R.id.action_delete){
                                 Toast.makeText(getContext(), "Удаление", Toast.LENGTH_SHORT).show();
                                 dbHelper.deleteAllergenByName(allergenName);
+                                adapterAllergens.deleteAllergenFromSelected(allergenName);
                                 updateAllergensArr();
                             }
                             else{
@@ -141,6 +143,8 @@ public class CheckAllergensFragment extends Fragment {
                 int allergenId = dbHelper.getAllergenIdByName(customAllergenName);
 
                 dbHelper.editAllergenNameById(allergenId, newAllergenName);
+
+                adapterAllergens.recheckAllergenInSelected(customAllergenName, newAllergenName);
 
                 updateAllergensArr();
             }

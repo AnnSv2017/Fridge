@@ -2,4 +2,20 @@
     <string name="app_name">Fridge</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <!-- Строки для полей продукта -->
+    <string name="name">Название</string>
+    <string name="type">Тип</string>
+    <string name="firm">Фирма</string>
+    <string name="manufacture_date">Дата изготовления</string>
+    <string name="expiry_date">Дата истечения срока</string>
+    <string name="weight_volume">масса/объём</string>
+    <string name="food_value">Пищевая ценность</string>
+    <string name="proteins">Белки</string>
+    <string name="fats">Жиры</string>
+    <string name="carbohydrates">Углеводы</string>
+    <string name="calories">Калории</string>
+    <string name="allergens">Аллергены</string>
+    <string name="measurement_type">Тип измерения</string>
+    <string name="quantity">Количество</string>
 </resources>

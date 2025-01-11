@@ -2,8 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <uses-feature android:name="android.hardware.camera"/>
-    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-feature android:name="android.hardware.camera" />
+
+    <uses-permission android:name="android.permission.CAMERA" />
 
     <application
         android:allowBackup="true"
@@ -16,15 +17,18 @@
         android:theme="@style/Theme.Fridge"
         tools:targetApi="31">
         <activity
-            android:name=".MyCaptureActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/Theme.Fridge"
+            android:name=".TestActivity"
             android:exported="false" />
         <activity
-            android:name=".QrCodeScannerActivity"
+            android:name=".MyCaptureActivity"
+            android:exported="false"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.Fridge"
-            android:exported="false" />
+            android:theme="@style/Theme.Fridge" />
+        <activity
+            android:name=".QrCodeScannerActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.Fridge" />
         <activity
             android:name=".MainActivity"
             android:exported="true">
