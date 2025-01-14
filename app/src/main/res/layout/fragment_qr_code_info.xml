@@ -1,265 +1,210 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TableLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/table_layout"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:stretchColumns="1"
+    android:layout_height="match_parent"
     android:background="@color/gray_light">
 
     <LinearLayout
-        android:id="@+id/upper_bar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="10dp"
-        android:orientation="vertical"
-        android:background="@color/main_color">
-
-        <ImageView
-            android:id="@+id/back_image_view"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_marginStart="20dp"
-            android:src="@drawable/ic_back"
-            android:contentDescription="Назад"
-            android:clickable="true"/>
-
-    </LinearLayout>
-
-    <TableRow>
-        <TextView
-            style="@style/TextStyleBold_16"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Название:" />
-
-        <TextView
-            android:id="@+id/text_view_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            style="@style/TextStyle16"/>
-    </TableRow>
-
-    <TableRow>
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Тип:"
-            style="@style/TextStyleBold_16" />
-
-        <TextView
-            android:id="@+id/text_view_type"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Хлеб"
-            style="@style/TextStyle16" />
-    </TableRow>
-
-    <TableRow>
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Дата\nизготовления:"
-            style="@style/TextStyleBold_16" />
-
-        <TextView
-            android:id="@+id/text_view_manufacture_date"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            style="@style/TextStyle16" />
-    </TableRow>
-
-    <TableRow>
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Дата истечения\nсрока:"
-            style="@style/TextStyleBold_16" />
-
-        <TextView
-            android:id="@+id/text_view_expiry_date"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            style="@style/TextStyle16" />
-    </TableRow>
-
-    <TableRow>
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="масса/объём:"
-            style="@style/TextStyleBold_16" />
-
-        <TextView
-            android:id="@+id/text_view_mass"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            style="@style/TextStyle16" />
-
-    </TableRow>
-
-    <TableRow>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Пищевая ценность:"
-            style="@style/TextStyleBold_16" />
-
-    </TableRow>
-
-    <TableLayout
-        android:layout_width="293dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
+        android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <TableRow>
-
-            <TextView
-                style="@style/TextStyle16"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Белки:" />
-
-            <TextView
-                android:id="@+id/text_view_proteins"
-                style="@style/TextStyle16"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="7.0 г" />
-
-        </TableRow>
-
-        <TableRow>
-
-            <TextView
-                style="@style/TextStyle16"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Жиры:" />
-
-            <TextView
-                android:id="@+id/text_view_fats"
-                style="@style/TextStyle16"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="3.5 г" />
-
-        </TableRow>
-
-        <TableRow>
-
-            <TextView
-                style="@style/TextStyle16"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Углеводы:" />
-
-            <TextView
-                android:id="@+id/text_view_carbohydrates"
-                style="@style/TextStyle16"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="50.0 г" />
-
-        </TableRow>
-
-        <TableRow>
-
-            <TextView
-                style="@style/TextStyle16"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Калории:" />
-
-            <TextView
-                android:id="@+id/text_view_calories"
-                style="@style/TextStyle16"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="201 ккал / 844 кДж" />
-
-        </TableRow>
-
-    </TableLayout>
-
-
-    <TableRow>
-
-        <TextView
-            style="@style/TextStyleBold_16"
-            android:layout_width="160dp"
+        <LinearLayout
+            android:id="@+id/upper_bar"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Аллергены:" />
+            android:orientation="vertical"
+            android:background="@color/main_color">
 
-        <TextView
-            android:id="@+id/text_view_allergens"
-            android:layout_width="wrap_content"
+            <ImageView
+                android:id="@+id/back_image_view"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_marginStart="20dp"
+                android:src="@drawable/ic_back"
+                android:contentDescription="Назад"
+                android:clickable="true"/>
+
+        </LinearLayout>
+
+        <GridLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="арахис, глютен"
-            style="@style/TextStyle16" />
+            android:padding="5dp"
+            tools:context=".QrCodeInfoFragment"
+            android:columnCount="2">
 
-    </TableRow>
+            <TextView
+                android:id="@+id/text_view_full_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="fill_horizontal"
+                android:gravity="center"
+                android:layout_row="0"
+                android:layout_column="0"
+                android:layout_columnSpan="2"
+                android:text="Полное название"
+                style="@style/TextStyleBold_16"
+                android:background="@drawable/cell_border"/>
 
-    <TableRow>
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_columnWeight="1"
+                android:text="Вес единицы продукта"
+                style="@style/TextStyleBold_16"
+                android:background="@drawable/cell_border"/>
 
-        <TextView
-            style="@style/TextStyleBold_16"
-            android:layout_width="160dp"
-            android:layout_height="wrap_content"
-            android:text="Тип измерения:" />
+            <TextView
+                android:id="@+id/text_view_weight_one"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_columnWeight="1"
+                android:gravity="center"
+                android:text="1.5 кг"
+                style="@style/TextStyleBold_16"
+                android:background="@drawable/cell_border"/>
 
-        <TextView
-            android:id="@+id/text_view_measurement_type"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="вес"
-            style="@style/TextStyle16" />
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="fill_horizontal"
+                android:layout_row="2"
+                android:layout_column="0"
+                android:layout_columnSpan="2"
+                android:orientation="horizontal"
+                android:background="@drawable/cell_border">
 
-    </TableRow>
+                <ImageView
+                    android:id="@+id/image_view_minus_quantity"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_gravity="center_vertical"
+                    android:src="@drawable/ic_minus_blue"
+                    android:contentDescription="Уменьшить количество"
+                    android:clickable="true"
+                    android:layout_weight="1"/>
 
-    <TableRow>
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="5dp"
+                    android:layout_marginVertical="5dp"
+                    android:hint="Количество"
+                    style="@style/CustomTextInputLayout"
+                    android:gravity="center"
+                    android:layout_weight="1">
 
-        <TextView
-            style="@style/TextStyleBold_16"
-            android:layout_width="160dp"
-            android:layout_height="wrap_content"
-            android:text="Количество:" />
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/edit_text_quantity"
+                        android:layout_width="140dp"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text="1"
+                        android:inputType="number"
+                        android:digits="0123456789" />
 
-        <EditText
-            android:id="@+id/text_view_quantity"
-            android:layout_width="wrap_content"
-            android:layout_height="48dp"
-            android:text="1"
-            style="@style/TextStyle16" />
+                </com.google.android.material.textfield.TextInputLayout>
 
-    </TableRow>
+                <ImageView
+                    android:id="@+id/image_view_plus_quantity"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_gravity="center_vertical"
+                    android:src="@drawable/ic_plus_blue"
+                    android:contentDescription="Увеличить количество"
+                    android:clickable="true"
+                    android:layout_weight="1"/>
 
-    <LinearLayout
-        android:layout_marginVertical="30dp"
-        android:orientation="horizontal"
-        android:gravity="center">
+            </LinearLayout>
 
-        <Button
-            android:id="@+id/add_button"
-            android:layout_width="130dp"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="30dp"
-            android:text="Добавить"
-            android:textSize="16sp"
-            android:backgroundTint="@color/green"/>
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_columnWeight="1"
+                android:text="Общий вес"
+                style="@style/TextStyleBold_16"
+                android:background="@drawable/cell_border"/>
 
-        <Button
-            android:id="@+id/delete_button"
-            android:layout_width="130dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="30dp"
-            android:text="Удалить"
-            android:textSize="16sp"
-            android:backgroundTint="@color/red"/>
+            <TextView
+                android:id="@+id/text_view_total_weight"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_columnWeight="1"
+                android:gravity="center"
+                android:text="3 кг"
+                style="@style/TextStyleBold_16"
+                android:background="@drawable/cell_border"/>
+
+            <RelativeLayout
+                android:id="@+id/rl_show_info_product"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="fill_horizontal"
+                android:layout_row="4"
+                android:layout_column="0"
+                android:layout_columnSpan="2"
+                android:background="@drawable/cell_border">
+
+                <ImageView
+                    android:id="@+id/image_view_list_switch"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:src="@drawable/ic_close_list" />
+
+                <TextView
+                    android:id="@+id/text_view_type"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toEndOf="@+id/image_view_list_switch"
+                    android:layout_centerVertical="true"
+                    android:text="Информация о продукте"
+                    style="@style/TextStyleBold_16"/>
+
+            </RelativeLayout>
+
+            <FrameLayout
+                android:id="@+id/info_product_fragment_container"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="fill_horizontal"
+                android:layout_row="5"
+                android:layout_column="0"
+                android:layout_columnSpan="2" />
+
+            <!--        <fragment-->
+            <!--            android:id="@+id/info_product_fragment"-->
+            <!--            android:name="com.example.fridge.InfoProductFragment"-->
+            <!--            android:layout_width="wrap_content"-->
+            <!--            android:layout_height="wrap_content"-->
+            <!--            android:layout_gravity="fill_horizontal"-->
+            <!--            android:layout_row="5"-->
+            <!--            android:layout_column="0"-->
+            <!--            android:layout_columnSpan="2"-->
+            <!--            tools:layout="@layout/fragment_info_product" />-->
+
+            <Button
+                android:id="@+id/delete_btn"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_columnWeight="1"
+                android:layout_marginTop="10dp"
+                android:text="Удалить"
+                android:backgroundTint="@color/red" />
+
+            <Button
+                android:id="@+id/add_btn"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_columnWeight="1"
+                android:layout_marginTop="10dp"
+                android:text="Добавить"
+                android:backgroundTint="@color/green"/>
+
+        </GridLayout>
 
     </LinearLayout>
 
-    <!-- Добавьте другие строки для остальных полей -->
-</TableLayout>
+
+</ScrollView>

@@ -401,11 +401,8 @@ public class CreateProductFragment extends Fragment {
 
     // Метод для перехода в фрагмент, где можно выбрать аллергены
     private void switchToFragmentCheckAllergens(){
-        // Получаем экземпляр FragmentManager
-        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-
         // Начинаем транзакцию фрагмента
-        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
 
         // Заменяем текущий фрагмент на новый
         transaction.replace(R.id.fragment_container, new CheckAllergensFragment());

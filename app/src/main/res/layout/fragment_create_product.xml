@@ -207,7 +207,7 @@
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:layout_gravity="center_vertical"
-                android:src="@drawable/ic_minus"
+                android:src="@drawable/ic_minus_blue"
                 android:contentDescription="Уменьшить количество"
                 android:clickable="true"
                 android:layout_weight="1"/>
@@ -238,7 +238,7 @@
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:layout_gravity="center_vertical"
-                android:src="@drawable/ic_plus"
+                android:src="@drawable/ic_plus_blue"
                 android:contentDescription="Увеличить количество"
                 android:clickable="true"
                 android:layout_weight="1"/>
@@ -255,7 +255,7 @@
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:layout_gravity="center_vertical"
-                android:src="@drawable/ic_minus"
+                android:src="@drawable/ic_minus_blue"
                 android:contentDescription="Уменьшить количество"
                 android:clickable="true"
                 android:layout_weight="1"/>
@@ -286,7 +286,7 @@
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:layout_gravity="center_vertical"
-                android:src="@drawable/ic_plus"
+                android:src="@drawable/ic_plus_blue"
                 android:contentDescription="Увеличить количество"
                 android:clickable="true"
                 android:layout_weight="1"/>

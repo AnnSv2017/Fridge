@@ -4,7 +4,7 @@
     android:id="@+id/main_grid_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    tools:context=".QrCodeCreateProductFragment"
+    tools:context=".InfoProductFragment"
     android:columnCount="2">
 
     <TextView
@@ -101,7 +101,7 @@
         android:background="@drawable/cell_border"/>
 
     <TextView
-        android:id="@+id/text_view_weight_volume"
+        android:id="@+id/text_view_mass"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="fill"
@@ -192,7 +192,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="fill"
             android:gravity="center"
-            android:text="33.0 г"
+            android:text="560 ккал/\n800 кДж"
             style="@style/TextStyle16"
             android:background="@drawable/cell_border"/>
 
