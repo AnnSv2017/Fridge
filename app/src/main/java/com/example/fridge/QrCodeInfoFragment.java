@@ -33,6 +33,7 @@ import java.util.concurrent.TimeoutException;
 
 public class QrCodeInfoFragment extends Fragment {
 
+    private DBHelper dbHelper;
     private JsonObject jsonData;
     private String name, firm, type, manufacture_date, expiry_date, mass_unit, measurement_type;
     private Double mass_value, proteins, fats, carbohydrates;
@@ -73,6 +74,8 @@ public class QrCodeInfoFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Загружаем готовый макет фрагмента
         View view = inflater.inflate(R.layout.fragment_qr_code_info, container, false);
+
+        dbHelper = DBHelper.getInstance(requireContext());
 
         // Инициализация данных
         if (jsonData != null) {
@@ -182,20 +185,13 @@ public class QrCodeInfoFragment extends Fragment {
 
         rlShowInfoProduct.setOnClickListener(v -> {infoProductOnClick();});
 
-//        addButton = view.findViewById(R.id.add_button);
-//        deleteButton = view.findViewById(R.id.delete_button);
+        addButton = view.findViewById(R.id.add_button);
+        deleteButton = view.findViewById(R.id.delete_button);
 
-        backImageView.setOnClickListener(view1 -> {
-            // Вызываем метод активности для возобновления сканера
-            if (mListener != null) {
-                mListener.onFragmentClose(); // Возвращаем управление активности
-            }
-            // Закрываем фрагмент
-            getActivity().getSupportFragmentManager().beginTransaction()
-                    .remove(QrCodeInfoFragment.this)
-                    .commit();
-        });
+        backImageView.setOnClickListener(v -> {backOnClick();});
 
+        addButton.setOnClickListener(v -> {addProductOnClick();});
+        deleteButton.setOnClickListener(v -> {deleteProductOnClick();});
         return view;
     }
 
@@ -277,6 +273,54 @@ public class QrCodeInfoFragment extends Fragment {
             textViewAllergens.setText("Нет аллергенов");
         }
         textViewMeasurementType.setText(measurement_type);
+    }
+
+    private void backOnClick(){
+        // Вызываем метод активности для возобновления сканера
+        if (mListener != null) {
+            mListener.onFragmentClose(); // Возвращаем управление активности
+        }
+        // Закрываем фрагмент
+        getActivity().getSupportFragmentManager().beginTransaction()
+                .remove(QrCodeInfoFragment.this)
+                .commit();
+    }
+
+    private void addProductOnClick(){
+        // Добавление в холодильник
+        int product_id = dbHelper.getProductIdByFullName(type, name, firm, mass_value, mass_unit);
+        int quantity = Integer.parseInt(editTextQuantity.getText().toString());
+        DataProductInFridge dataProductInFridge = new DataProductInFridge(0, manufacture_date,expiry_date, product_id, quantity);
+        dbHelper.addProductInFridge(dataProductInFridge);
+
+        // Добавление в логи
+        DataProductLogs dataProductLogs = new DataProductLogs(0, manufacture_date, expiry_date, product_id, "add", quantity);
+        dbHelper.addProductLogs(dataProductLogs);
+
+        Toast.makeText(requireContext(), "Продукт был успешно добавлен!", Toast.LENGTH_SHORT).show();
+
+        backOnClick();
+    }
+
+    private void deleteProductOnClick(){
+        // Удаление из холодильника, поскольку если у нас есть qr-код, значит этот продукт существует или существовал в холодильнике
+        int productId = dbHelper.getProductIdByFullName(type, name, firm, mass_value, mass_unit);
+        if(dbHelper.getProductInFridgeIdIfItInFridge(manufacture_date, expiry_date, productId) == -1){
+            // Продукта нет в холодильнике
+            Toast.makeText(requireContext(), "Данного продукта нет в холодильнике!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        // Продукт в холодильнике есть
+        int productInFridgeId = dbHelper.getProductInFridgeIdIfItInFridge(manufacture_date, expiry_date, productId);
+        int quantityToDelete = Integer.parseInt(editTextQuantity.getText().toString());
+        boolean isDeleted = dbHelper.deleteProductFromFridge(productInFridgeId, quantityToDelete);
+        if(isDeleted){
+            Toast.makeText(requireContext(), "Продукт был успешно удалён!", Toast.LENGTH_SHORT).show();
+        } else{
+            Toast.makeText(requireContext(), "Продукта в холодильнике нет в таком количестве!", Toast.LENGTH_SHORT).show();
+        }
+
+        backOnClick();
     }
 
     //Метод вызывается, когда фрагмент отключается от активности.

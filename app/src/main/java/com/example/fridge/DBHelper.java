@@ -266,8 +266,6 @@ public class DBHelper extends SQLiteOpenHelper {
 
         ContentValues cv = new ContentValues();
 
-
-
         // Если продукта нет в холодильнике, то мы его добавляем
         if(productInFridgeId == -1){
             cv.put("manufacture_date", data.getManufacture_date());
@@ -636,6 +634,39 @@ public class DBHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = getDbManager().getDatabase();
 
         db.delete(ALLERGENS_TABLE, "name = ?", new String[]{name});
+    }
+
+    public boolean deleteProductFromFridge(int idPK, int quantityToDelete){
+        SQLiteDatabase db = getDbManager().getDatabase();
+
+        Cursor cursor = db.query(
+                PRODUCTS_IN_FRIDGE_TABLE,
+                new String[]{"id", "quantity"},
+                "id = ?",
+                new String[]{String.valueOf(idPK)},
+                null,
+                null,
+                null
+                );
+        boolean isDeleted = false;
+        if(cursor != null && cursor.moveToFirst()){
+            int quantityIndex = cursor.getColumnIndex("quantity");
+            int quantity = cursor.getInt(quantityIndex);
+            if(quantity == quantityToDelete){
+                db.delete(PRODUCTS_IN_FRIDGE_TABLE, "id = ?", new String[]{String.valueOf(idPK)});
+                isDeleted = true;
+            }
+            else if(quantity > quantityToDelete){
+                ContentValues cv = new ContentValues();
+                cv.put("quantity", quantity - quantityToDelete);
+                db.update(PRODUCTS_IN_FRIDGE_TABLE, cv, "id = ?", new String[]{String.valueOf(idPK)});
+                isDeleted = true;
+            }
+        }
+        if(cursor != null){
+            cursor.close();
+        }
+        return isDeleted;
     }
 
     // Поиск объектов

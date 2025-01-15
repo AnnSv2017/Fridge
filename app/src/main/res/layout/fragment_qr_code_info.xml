@@ -185,7 +185,7 @@
             <!--            tools:layout="@layout/fragment_info_product" />-->
 
             <Button
-                android:id="@+id/delete_btn"
+                android:id="@+id/delete_button"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_columnWeight="1"
@@ -194,7 +194,7 @@
                 android:backgroundTint="@color/red" />
 
             <Button
-                android:id="@+id/add_btn"
+                android:id="@+id/add_button"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_columnWeight="1"

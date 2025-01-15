@@ -181,6 +181,7 @@ public class CreateProductFragment extends Fragment {
         backImageView.setOnClickListener(view1 -> {backToQrCodeScannerActivity();});
 
         addBtn.setOnClickListener(view1 -> {addProduct();});
+        deleteBtn.setOnClickListener(view1 -> {deleteProduct();});
 
         return view;
     }
@@ -337,6 +338,54 @@ public class CreateProductFragment extends Fragment {
 
         // Выходим из фрагмента
         backToQrCodeScannerActivity();
+    }
+
+    private void deleteProduct(){
+        if(!areAllFieldsFilled()){
+            return;
+        }
+        String type = editTextType.getText().toString().trim();
+        String name = editTextName.getText().toString().trim();
+        String firm = editTextFirm.getText().toString().trim();
+        Double mass_value = Double.parseDouble(editTextWeight.getText().toString().trim());
+
+        RadioButton selectedRadioButton1 = view.findViewById(radioGroupWeight.getCheckedRadioButtonId());
+        String mass_unit = selectedRadioButton1.getText().toString();
+
+        Double proteins = Double.parseDouble(editTextProteins.getText().toString().trim());
+        Double fats = Double.parseDouble(editTextFats.getText().toString().trim());
+        Double carbohydrates = Double.parseDouble(editTextCarbohydrates.getText().toString().trim());
+        int caloriesKcal = Integer.parseInt(editTextCaloriesKcal.getText().toString().trim());
+        int caloriesKJ = Integer.parseInt(editTextCaloriesKJ.getText().toString().trim());
+
+        RadioButton radioButton2 = view.findViewById(radioGroupMeasurementType.getCheckedRadioButtonId());
+        String measurement_type = radioButton2.getText().toString();
+
+        // Проверка существует ли данный продукт вообще(ProductTable)
+        DataProduct dataProduct = new DataProduct(0, type, name, firm, mass_value, mass_unit, proteins, fats, carbohydrates, caloriesKcal, caloriesKJ, measurement_type);
+        if(!dbHelper.productAlreadyExist(dataProduct)){
+            Toast.makeText(requireContext(), "Данного продукта нет в холодильнике!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        // Проверка существует ли он в холодильнике и достаточно ли его для удаления
+        String manufacture_date = editTextManufactureDate.getText().toString();
+        String expiry_date = editTextExpiryDate.getText().toString();
+        int productId = dbHelper.getProductIdByFullName(type, name, firm, mass_value, mass_unit);
+        if(dbHelper.getProductInFridgeIdIfItInFridge(manufacture_date, expiry_date, productId) == -1){
+            // Продукта нет в холодильнике
+            Toast.makeText(requireContext(), "Данного продукта нет в холодильнике!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        // Продукт в холодильнике есть
+        int productInFridgeId = dbHelper.getProductInFridgeIdIfItInFridge(manufacture_date, expiry_date, productId);
+        int quantityToDelete = Integer.parseInt(editTextQuantity.getText().toString());
+        boolean isDeleted = dbHelper.deleteProductFromFridge(productInFridgeId, quantityToDelete);
+        if(isDeleted){
+            Toast.makeText(requireContext(), "Продукт был успешно удалён!", Toast.LENGTH_SHORT).show();
+            backToQrCodeScannerActivity();
+        } else{
+            Toast.makeText(requireContext(), "Продукта в холодильнике нет в таком количестве!", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private boolean areAllFieldsFilled(){
