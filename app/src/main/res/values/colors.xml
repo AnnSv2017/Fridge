@@ -4,10 +4,12 @@
     <color name="gray">#787575</color>
     <color name="gray_light">#80E3DFDF</color>
     <color name="green">#A8E87E</color>
+    <color name="green_light">#CFEABF</color>
     <color name="main_color">#97BFF1</color>
     <color name="orange">#EE925C</color>
     <color name="text_color">#304BD0</color>
     <color name="red">#E95B5B</color>
+    <color name="red_light">#F1D1D1</color>
     <color name="transparent">#33000000</color>
     <color name="white">#FFFFFFFF</color>
 

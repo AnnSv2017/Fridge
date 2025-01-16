@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.time.LocalDate;
@@ -63,11 +64,39 @@ public class ProductAdapter extends BaseAdapter {
         TextView textViewName = view.findViewById(R.id.text_view_name);
         TextView textViewDays = view.findViewById(R.id.text_view_days);
         TextView textViewQuantity = view.findViewById(R.id.text_view_quantity);
+        RelativeLayout rlProduct = view.findViewById(R.id.rl_product);
 
         textViewName.setText(name);
         textViewDays.setText(String.valueOf(days) + " дн.");
         textViewQuantity.setText(String.valueOf(quantity));
 
+        if(days > 0){
+            rlProduct.setBackgroundResource(R.drawable.product_border_green);
+        } else{
+            rlProduct.setBackgroundResource(R.drawable.product_border_red);
+        }
+
         return view;
+    }
+
+    // Метод для подсчета зелёных и красных элементов
+    public int[] countGreenAndRed() {
+        int greenCount = 0;
+        int redCount = 0;
+
+        LocalDate currentDate = LocalDate.now();
+
+        for (DataProductInFridge product : productsList) {
+            LocalDate expiryDate = LocalDate.parse(product.getExpiry_date(), formatter);
+            long days = ChronoUnit.DAYS.between(currentDate, expiryDate);
+
+            if (days > 0) {
+                greenCount++;
+            } else {
+                redCount++;
+            }
+        }
+
+        return new int[]{greenCount, redCount}; // Возвращаем массив: [зелёные, красные]
     }
 }

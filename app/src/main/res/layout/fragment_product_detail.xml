@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".CheckAllergensFragment"
+    android:background="@color/gray_light">
+
+    <LinearLayout
+        android:id="@+id/upper_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:orientation="vertical"
+        android:background="@color/main_color">
+
+        <ImageView
+            android:id="@+id/back_image_view"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginStart="20dp"
+            android:src="@drawable/ic_back"
+            android:contentDescription="Назад"
+            android:clickable="true"/>
+
+    </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/info_product_fragment_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/upper_bar"
+        android:layout_margin="5dp"/>
+
+</RelativeLayout>

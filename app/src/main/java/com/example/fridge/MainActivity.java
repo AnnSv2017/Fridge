@@ -1,6 +1,8 @@
 package com.example.fridge;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.content.Intent;
@@ -9,7 +11,9 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Adapter;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 
@@ -17,7 +21,7 @@ import com.example.fridge.R;
 
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements CategoryAdapter.OnProductClickListener, OnFragmentInteractionListener {
 
     private DBHelper dbHelper;
 
@@ -41,10 +45,43 @@ public class MainActivity extends AppCompatActivity {
             Log.d("MainActivity", "categoriesList size: " + categoriesList.size());
             Log.d("MainActivity", "productsInFridgeList size: " + dbHelper.getAllProductsInFridge().size());
         }
-        categoryAdapter = new CategoryAdapter(this, categoriesList);
+        categoryAdapter = new CategoryAdapter(this, categoriesList, this);
 
         listViewCategories = findViewById(R.id.list_view_categories);
         listViewCategories.setAdapter(categoryAdapter);
+    }
+
+    @Override
+    public void onProductClick(DataProductInFridge product) {
+        // Вызываем публичный метод активности
+        ProductDetailFragment productDetailFragment = ProductDetailFragment.newInstance(product);
+        switchToFragment(productDetailFragment);
+    }
+
+    public void switchToFragment(Fragment fragment) {
+        try {
+            if (fragment == null) return;
+            // Скрываем активность
+            findViewById(R.id.activity_container).setVisibility(View.GONE);
+            // Отображаем фрагмент
+            findViewById(R.id.fragment_container).setVisibility(View.VISIBLE);
+
+            // Вставка фрагмента в пустой fragment_container
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+            transaction.replace(R.id.fragment_container, fragment);
+            transaction.addToBackStack(null);
+            transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+            transaction.commit();
+        } catch (Exception e){
+            Log.e("switchToFragment", "Ошибка при переключении фрагмента", e);
+        }
+    }
+
+    public void onFragmentClose() {
+        // Восстанавливаем активность
+        findViewById(R.id.activity_container).setVisibility(View.VISIBLE);
+        // Скрываем контейнер фрагмента
+        findViewById(R.id.fragment_container).setVisibility(View.GONE);
     }
 
     public void btnQrCodeScanner(View v){

@@ -127,15 +127,19 @@ public class QrCodeInfoFragment extends Fragment {
         rlShowInfoProduct = view.findViewById(R.id.rl_show_info_product);
         listSwitchImageView = view.findViewById(R.id.image_view_list_switch);
 
+        // Транзакция
         FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
-        transaction.replace(R.id.info_product_fragment_container, new InfoProductFragment());
+        int product_id = dbHelper.getProductIdByFullName(type, name, firm, mass_value, mass_unit);
+        int productInFridgeId = dbHelper.getProductInFridgeIdIfItInFridge(manufacture_date, expiry_date, product_id);
+        DataProductInFridge dataProductInFridge = dbHelper.getProductInFridgeById(productInFridgeId);
+        //infoProductFragCont = new InfoProductFragment(dataProductInFridge);
+        infoProductFragCont = InfoProductFragment.newInstance(dataProductInFridge);
+        transaction.replace(R.id.info_product_fragment_container, infoProductFragCont);
         transaction.commit(); // Асинхронная транзакция
 
         // Ожидаем завершения транзакции
         new Handler(Looper.getMainLooper()).post(() -> {
-            infoProductFragCont = getChildFragmentManager().findFragmentById(R.id.info_product_fragment_container);
             if (infoProductFragCont != null && infoProductFragCont.getView() != null) {
-                fillAllFieldsInfoProduct(infoProductFragCont.getView());
                 infoProductFragCont.getView().setVisibility(View.GONE);
                 infoProductFragCont.getView().requestLayout();
                 Log.d("FragmentDebug", "Fragment hidden successfully");
@@ -290,7 +294,7 @@ public class QrCodeInfoFragment extends Fragment {
         // Добавление в холодильник
         int product_id = dbHelper.getProductIdByFullName(type, name, firm, mass_value, mass_unit);
         int quantity = Integer.parseInt(editTextQuantity.getText().toString());
-        DataProductInFridge dataProductInFridge = new DataProductInFridge(0, manufacture_date,expiry_date, product_id, quantity);
+        DataProductInFridge dataProductInFridge = new DataProductInFridge(0, manufacture_date, expiry_date, product_id, quantity);
         dbHelper.addProductInFridge(dataProductInFridge);
 
         // Добавление в логи

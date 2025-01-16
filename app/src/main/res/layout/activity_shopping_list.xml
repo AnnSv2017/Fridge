@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ShoppingListActivity">
+
+
+
+    <LinearLayout
+        android:id="@+id/bottom_menu"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:layout_alignParentBottom="true"
+        android:background="@color/main_color">
+
+        <ImageView
+            android:id="@+id/btn_home"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginHorizontal="20dp"
+            android:src="@drawable/ic_home"
+            android:layout_weight="1"
+            android:contentDescription="Главная"
+            android:clickable="true"/>
+
+        <ImageView
+            android:id="@+id/btn_qr_code_scanner"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginHorizontal="20dp"
+            android:src="@drawable/ic_qr_code_scanner"
+            android:layout_weight="1"
+            android:contentDescription="Сканнер qr кодов"
+            android:clickable="true"
+            android:onClick="btnQrCodeScanner"/>
+
+        <ImageView
+            android:id="@+id/btn_logs"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginHorizontal="20dp"
+            android:src="@drawable/ic_analytics"
+            android:layout_weight="1"
+            android:contentDescription="Аналитика потребления товаров"
+            android:clickable="true"/>
+
+        <ImageView
+            android:id="@+id/btn_shopping_list"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginHorizontal="20dp"
+            android:src="@drawable/ic_shopping_list"
+            android:layout_weight="1"
+            android:contentDescription="Список покупок"
+            android:clickable="true"/>
+    </LinearLayout>
+
+</RelativeLayout>

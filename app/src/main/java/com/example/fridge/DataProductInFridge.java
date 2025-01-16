@@ -1,6 +1,11 @@
 package com.example.fridge;
 
-public class DataProductInFridge {
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import androidx.annotation.NonNull;
+
+public class DataProductInFridge implements Parcelable {
     private int id;
     private String manufacture_date;
     private String expiry_date;
@@ -34,4 +39,41 @@ public class DataProductInFridge {
     public int getQuantity() {
         return quantity;
     }
+
+
+    // Конструктор для восстановления объекта из Parcel
+    protected DataProductInFridge(Parcel in) {
+        id = in.readInt();
+        manufacture_date = in.readString();
+        expiry_date = in.readString();
+        product_id = in.readInt();
+        quantity = in.readInt();
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(@NonNull Parcel parcel, int i) {
+        parcel.writeInt(id);
+        parcel.writeString(manufacture_date);
+        parcel.writeString(expiry_date);
+        parcel.writeInt(product_id);
+        parcel.writeInt(quantity);
+    }
+
+    // Статический CREATOR
+    public static final Creator<DataProductInFridge> CREATOR = new Creator<DataProductInFridge>() {
+        @Override
+        public DataProductInFridge createFromParcel(Parcel in) {
+            return new DataProductInFridge(in);
+        }
+
+        @Override
+        public DataProductInFridge[] newArray(int size) {
+            return new DataProductInFridge[size];
+        }
+    };
 }
