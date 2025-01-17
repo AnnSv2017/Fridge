@@ -77,6 +77,7 @@ public class MainActivity extends AppCompatActivity implements CategoryAdapter.O
         }
     }
 
+    @Override
     public void onFragmentClose() {
         // Восстанавливаем активность
         findViewById(R.id.activity_container).setVisibility(View.VISIBLE);
@@ -84,8 +85,30 @@ public class MainActivity extends AppCompatActivity implements CategoryAdapter.O
         findViewById(R.id.fragment_container).setVisibility(View.GONE);
     }
 
+    @Override
+    public void onBackPressed() {
+        // Проверяем, есть ли фрагменты в стеке
+        if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
+            // Если есть, убираем верхний фрагмент из стека
+            getSupportFragmentManager().popBackStack();
+        } else {
+            // Если стека нет, завершаем активность
+            super.onBackPressed();
+        }
+        // Восстанавливаем активность
+        findViewById(R.id.activity_container).setVisibility(View.VISIBLE);
+        // Скрываем контейнер фрагмента
+        findViewById(R.id.fragment_container).setVisibility(View.GONE);
+    }
+
+
     public void btnQrCodeScanner(View v){
         Intent intent = new Intent(this, QrCodeScannerActivity.class);
+        startActivity(intent);
+    }
+
+    public void btnShoppingList(View v){
+        Intent intent = new Intent(this, ShoppingListActivity.class);
         startActivity(intent);
     }
 

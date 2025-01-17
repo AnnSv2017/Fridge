@@ -4,61 +4,99 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ShoppingListActivity">
+    tools:context=".ShoppingListActivity"
+    android:background="@color/gray_light">
 
-
-
-    <LinearLayout
-        android:id="@+id/bottom_menu"
+    <FrameLayout
+        android:id="@+id/fragment_container"
         android:layout_width="match_parent"
-        android:layout_height="80dp"
-        android:layout_alignParentBottom="true"
-        android:background="@color/main_color">
+        android:layout_height="match_parent" />
 
-        <ImageView
-            android:id="@+id/btn_home"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_gravity="center_vertical"
-            android:layout_marginHorizontal="20dp"
-            android:src="@drawable/ic_home"
-            android:layout_weight="1"
-            android:contentDescription="Главная"
-            android:clickable="true"/>
+    <RelativeLayout
+        android:id="@+id/activity_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-        <ImageView
-            android:id="@+id/btn_qr_code_scanner"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_gravity="center_vertical"
-            android:layout_marginHorizontal="20dp"
-            android:src="@drawable/ic_qr_code_scanner"
-            android:layout_weight="1"
-            android:contentDescription="Сканнер qr кодов"
+        <ListView
+            android:id="@+id/list_view_categories"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_above="@+id/bottom_menu"
+            android:layout_marginVertical="10dp"
+            android:layout_marginHorizontal="10dp"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
             android:clickable="true"
-            android:onClick="btnQrCodeScanner"/>
+            android:divider="@android:color/transparent"
+            android:dividerHeight="5dp"/>
 
         <ImageView
-            android:id="@+id/btn_logs"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_gravity="center_vertical"
-            android:layout_marginHorizontal="20dp"
-            android:src="@drawable/ic_analytics"
-            android:layout_weight="1"
-            android:contentDescription="Аналитика потребления товаров"
-            android:clickable="true"/>
+            android:id="@+id/image_view_add_product"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:layout_above="@+id/bottom_menu"
+            android:layout_alignParentEnd="true"
+            android:layout_margin="20dp"
+            android:clickable="true"
+            android:contentDescription="Добавить продукт в список"
+            android:src="@drawable/ic_add" />
 
-        <ImageView
-            android:id="@+id/btn_shopping_list"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_gravity="center_vertical"
-            android:layout_marginHorizontal="20dp"
-            android:src="@drawable/ic_shopping_list"
-            android:layout_weight="1"
-            android:contentDescription="Список покупок"
-            android:clickable="true"/>
-    </LinearLayout>
+        <LinearLayout
+            android:id="@+id/bottom_menu"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+
+            android:layout_alignParentBottom="true"
+            android:background="@color/main_color">
+
+            <ImageView
+                android:id="@+id/btn_home"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginHorizontal="20dp"
+                android:src="@drawable/ic_home"
+                android:layout_weight="1"
+                android:contentDescription="Главная"
+                android:clickable="true"
+                android:onClick="btnHome"/>
+
+            <ImageView
+                android:id="@+id/btn_qr_code_scanner"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginHorizontal="20dp"
+                android:src="@drawable/ic_qr_code_scanner"
+                android:layout_weight="1"
+                android:contentDescription="Сканнер qr кодов"
+                android:clickable="true"
+                android:onClick="btnQrCodeScanner"/>
+
+            <ImageView
+                android:id="@+id/btn_logs"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginHorizontal="20dp"
+                android:src="@drawable/ic_analytics"
+                android:layout_weight="1"
+                android:contentDescription="Аналитика потребления товаров"
+                android:clickable="true"/>
+
+            <ImageView
+                android:id="@+id/btn_shopping_list"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginHorizontal="20dp"
+                android:src="@drawable/ic_shopping_list"
+                android:layout_weight="1"
+                android:contentDescription="Список покупок"
+                android:clickable="true" />
+        </LinearLayout>
+
+    </RelativeLayout>
 
 </RelativeLayout>

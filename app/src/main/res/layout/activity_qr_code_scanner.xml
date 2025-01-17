@@ -110,7 +110,8 @@
                 android:src="@drawable/ic_qr_code_scanner"
                 android:layout_weight="1"
                 android:contentDescription="Сканнер qr кодов"
-                android:clickable="true" />
+                android:clickable="true"
+                android:onClick="btnQrCodeScanner"/>
 
             <ImageView
                 android:id="@+id/btn_analytics"
@@ -132,7 +133,8 @@
                 android:src="@drawable/ic_shopping_list"
                 android:layout_weight="1"
                 android:contentDescription="Список покупок"
-                android:clickable="true"/>
+                android:clickable="true"
+                android:onClick="btnShoppingList"/>
         </LinearLayout>
 
     </RelativeLayout>

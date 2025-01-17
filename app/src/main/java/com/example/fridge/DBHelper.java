@@ -19,7 +19,7 @@ public class DBHelper extends SQLiteOpenHelper {
     private Context context;
     DBManager dbManager;
     private static final String DATABASE_NAME = "helper.db";
-    private static final int DATABASE_VERSION = 7;
+    private static final int DATABASE_VERSION = 8;
 
     // SQL-запросы для создания таблиц
 
@@ -70,7 +70,6 @@ public class DBHelper extends SQLiteOpenHelper {
                     "FOREIGN KEY(product_id) REFERENCES product_table(id)" +
                     ");";
 
-
     private static final String PRODUCTS_IN_FRIDGE_TABLE = "products_in_fridge_table";
     private static final String CREATE_PRODUCTS_IN_FRIDGE_TABLE =
             "CREATE TABLE " + PRODUCTS_IN_FRIDGE_TABLE + " (" +
@@ -94,12 +93,21 @@ public class DBHelper extends SQLiteOpenHelper {
                     "FOREIGN KEY(product_id) REFERENCES product_table(id)" +
                     ");";
 
+    private static final String PRODUCTS_IN_SHOPPING_LIST_TABLE = "products_in_shopping_list_table";
+    private static final String CREATE_PRODUCTS_IN_SHOPPING_LIST_TABLE =
+            "CREATE TABLE " + PRODUCTS_IN_SHOPPING_LIST_TABLE + " (" +
+                    "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                    "manufacture_date TEXT, " +
+                    "expiry_date TEXT, " +
+                    "product_id INTEGER, " +
+                    "quantity INTEGER, " +
+                    "FOREIGN KEY(product_id) REFERENCES product_table(id)" +
+                    ");";
+
+
     public DBHelper(@Nullable Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
         this.context = context.getApplicationContext(); // Убедитесь, что это ApplicationContext
-        //dbManager = DBManager.getInstance(this.context); // Нельзя! Иначе всё зациклится!
-        //this.context = context;
-        //dbManager = DBManager.getInstance(this.context);
     }
 
     public static synchronized DBHelper getInstance(Context context) {
@@ -126,6 +134,7 @@ public class DBHelper extends SQLiteOpenHelper {
         db.execSQL(CREATE_PRODUCT_ALLERGENS_TABLE);
         db.execSQL(CREATE_PRODUCTS_IN_FRIDGE_TABLE);
         db.execSQL(CREATE_PRODUCT_LOGS_TABLE);
+        db.execSQL(CREATE_PRODUCTS_IN_SHOPPING_LIST_TABLE);
     }
 
     // Обновление БД
@@ -139,11 +148,12 @@ public class DBHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + PRODUCT_ALLERGENS_TABLE);
         db.execSQL("DROP TABLE IF EXISTS " + PRODUCTS_IN_FRIDGE_TABLE);
         db.execSQL("DROP TABLE IF EXISTS " + PRODUCT_LOGS_TABLE);
+        db.execSQL("DROP TABLE IF EXISTS " + PRODUCTS_IN_SHOPPING_LIST_TABLE);
         onCreate(db); // Создание новой БД
     }
 
     // Курсоры
-    private DataProduct mapCursorToDataProduct(Cursor cursor) {
+    private DataProduct getDataProductFromCursor(Cursor cursor) {
         int idIndex = cursor.getColumnIndex("id");
         int typeIndex = cursor.getColumnIndex("type");
         int nameIndex = cursor.getColumnIndex("name");
@@ -172,7 +182,7 @@ public class DBHelper extends SQLiteOpenHelper {
         return new DataProduct(id, type, name, firm, mass_value, mass_unit, proteins, fats, carbohydrates, calories_kcal, calories_kj, measurement_type);
     }
 
-    private DataProductInFridge mapCursorToDataProductInFridge(Cursor cursor){
+    private DataProductInFridge getDataProductInFridgeFromCursor(Cursor cursor){
         int idIndex = cursor.getColumnIndex("id");
         int manufactureDateIndex = cursor.getColumnIndex("manufacture_date");
         int expiryDateIndex = cursor.getColumnIndex("expiry_date");
@@ -186,6 +196,22 @@ public class DBHelper extends SQLiteOpenHelper {
         int quantity = cursor.getInt(quantityIndex);
 
         return new DataProductInFridge(id, manufacture_date, expiry_date, product_id, quantity);
+    }
+
+    private DataProductInShoppingList getDataProductInShoppingListFromCursor(Cursor cursor){
+        int idIndex = cursor.getColumnIndex("id");
+        int manufactureDateIndex = cursor.getColumnIndex("manufacture_date");
+        int expiryDateIndex = cursor.getColumnIndex("expiry_date");
+        int productIdIndex = cursor.getColumnIndex("product_id");
+        int quantityIndex = cursor.getColumnIndex("quantity");
+
+        int id = cursor.getInt(idIndex);
+        String manufacture_date = cursor.getString(manufactureDateIndex);
+        String expiry_date = cursor.getString(expiryDateIndex);
+        int product_id = cursor.getInt(productIdIndex);
+        int quantity = cursor.getInt(quantityIndex);
+
+        return new DataProductInShoppingList(id, manufacture_date, expiry_date, product_id, quantity);
     }
 
     // Добавления новых объектов в таблицы
@@ -288,6 +314,35 @@ public class DBHelper extends SQLiteOpenHelper {
         }
     }
 
+    public void addProductInShoppingList(DataProductInShoppingList data){
+        SQLiteDatabase db = getDbManager().getDatabase();
+
+        int productInShoppingListId = getProductInShoppingListId(data.getManufacture_date(), data.getExpiry_date(), data.getProduct_id());
+
+        ContentValues cv = new ContentValues();
+
+        // Если продукта нет в холодильнике, то мы его добавляем
+        if(productInShoppingListId == -1){
+            cv.put("manufacture_date", data.getManufacture_date());
+            cv.put("expiry_date", data.getExpiry_date());
+            cv.put("product_id", data.getProduct_id());
+            cv.put("quantity", data.getQuantity());
+
+            db.insert(PRODUCTS_IN_SHOPPING_LIST_TABLE, null, cv);
+        }
+        // Если продукт есть в списке покупок, то мы обновляем его количество
+        else {
+            DataProductInShoppingList existingProduct = getProductInShoppingListById(productInShoppingListId);
+            if (existingProduct != null) {
+                int quantity = existingProduct.getQuantity() + data.getQuantity();
+                cv.put("quantity", quantity);
+                db.update(PRODUCTS_IN_SHOPPING_LIST_TABLE, cv, "id = ?", new String[]{String.valueOf(productInShoppingListId)});
+            } else {
+                throw new IllegalStateException("Product with ID " + productInShoppingListId + " not found in the database");
+            }
+        }
+    }
+
     public void addProductLogs(DataProductLogs data){
         SQLiteDatabase db = getDbManager().getDatabase();
 
@@ -359,6 +414,29 @@ public class DBHelper extends SQLiteOpenHelper {
 
         return productInFridgeId;
     }
+
+    public int getProductInShoppingListId(String manufacture_date, String expiry_date, int product_id){
+        SQLiteDatabase db = getDbManager().getDatabase();
+
+        int productInShoppingListId = -1;
+        Cursor cursor = db.query(
+                PRODUCTS_IN_SHOPPING_LIST_TABLE,
+                new String[]{"id"},
+                "manufacture_date = ? AND expiry_date = ? AND product_id = ?",
+                new String[]{manufacture_date, expiry_date, String.valueOf(product_id)},
+                null,
+                null,
+                null
+        );
+        if(cursor.moveToFirst()){
+            int productInShoppingListIdIndex = cursor.getColumnIndex("id");
+            productInShoppingListId = cursor.getInt(productInShoppingListIdIndex);
+        }
+        cursor.close();
+
+        return productInShoppingListId;
+    }
+
     // Получение ответа на вопрос существует ли данный объект уже или нет
     public boolean typeAlreadyExist(DataType data){
         SQLiteDatabase db = getDbManager().getDatabase();
@@ -427,7 +505,7 @@ public class DBHelper extends SQLiteOpenHelper {
         );
         DataProduct data = null;
         if(cursor != null && cursor.moveToFirst()) {
-            data = mapCursorToDataProduct(cursor);
+            data = getDataProductFromCursor(cursor);
         }
         if(cursor != null){
             cursor.close();
@@ -458,7 +536,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
         DataProductInFridge data = null;
         if(cursor != null && cursor.moveToFirst()){
-            data = mapCursorToDataProductInFridge(cursor);
+            data = getDataProductInFridgeFromCursor(cursor);
         }
         if(cursor != null){
             cursor.close();
@@ -467,7 +545,37 @@ public class DBHelper extends SQLiteOpenHelper {
         return data;
     }
 
+    public DataProductInShoppingList getProductInShoppingListById(int idPK){
+        SQLiteDatabase db = getDbManager().getDatabase();
 
+        Cursor cursor = db.query(
+                PRODUCTS_IN_SHOPPING_LIST_TABLE,
+                null,
+                "id = ?",
+                new String[]{String.valueOf(idPK)},
+                null,
+                null,
+                null
+        );
+
+        if (cursor == null || !cursor.moveToFirst()) {
+            Log.e("DBHelper", "No product found with ID: " + idPK);
+            if (cursor != null) {
+                cursor.close();
+            }
+            return null;
+        }
+
+        DataProductInShoppingList data = null;
+        if(cursor != null && cursor.moveToFirst()){
+            data = getDataProductInShoppingListFromCursor(cursor);
+        }
+        if(cursor != null){
+            cursor.close();
+        }
+
+        return data;
+    }
 
     // Получение списка различных объектов
 
@@ -540,7 +648,7 @@ public class DBHelper extends SQLiteOpenHelper {
         Cursor cursor = db.query(PRODUCT_TABLE, null, null, null, null, null, "name ASC");
         if(cursor.moveToFirst()){
             do{
-                list.add(mapCursorToDataProduct(cursor));
+                list.add(getDataProductFromCursor(cursor));
             }while (cursor.moveToNext());
             cursor.close();
         }
@@ -562,7 +670,29 @@ public class DBHelper extends SQLiteOpenHelper {
 
         if(cursor.moveToFirst()){
             do{
-                list.add(mapCursorToDataProductInFridge(cursor));
+                list.add(getDataProductInFridgeFromCursor(cursor));
+            }while (cursor.moveToNext());
+            cursor.close();
+        }
+        return list;
+    }
+
+    public ArrayList<DataProductInShoppingList> getAllProductsInShoppingList(){
+        ArrayList<DataProductInShoppingList> list = new ArrayList<>();
+        SQLiteDatabase db = getDbManager().getDatabase();
+
+        // Запрос с JOIN для соединения двух таблиц и сортировки по имени
+        String query = "SELECT pif.*, p.name AS product_name " +
+                "FROM " + PRODUCTS_IN_SHOPPING_LIST_TABLE + " pif " +
+                "JOIN " + PRODUCT_TABLE + " p " +
+                "ON pif.product_id = p.id " +
+                "ORDER BY p.name ASC";
+
+        Cursor cursor = db.rawQuery(query, null);
+
+        if(cursor.moveToFirst()){
+            do{
+                list.add(getDataProductInShoppingListFromCursor(cursor));
             }while (cursor.moveToNext());
             cursor.close();
         }
@@ -586,7 +716,36 @@ public class DBHelper extends SQLiteOpenHelper {
             cursor = db.rawQuery(query, new String[]{type});
             if (cursor.moveToFirst()) {
                 do {
-                    list.add(mapCursorToDataProductInFridge(cursor));
+                    list.add(getDataProductInFridgeFromCursor(cursor));
+                } while (cursor.moveToNext());
+            }
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+
+        return list;
+    }
+
+    public ArrayList<DataProductInShoppingList> getAllProductsInShoppingListByType(String type){
+        ArrayList<DataProductInShoppingList> list = new ArrayList<>();
+        SQLiteDatabase db = getDbManager().getDatabase();
+
+        // Запрос с JOIN для соединения двух таблиц и сортировки по имени
+        String query = "SELECT pif.*, p.name AS product_name " +
+                "FROM " + PRODUCTS_IN_SHOPPING_LIST_TABLE + " pif " +
+                "JOIN " + PRODUCT_TABLE + " p " +
+                "ON pif.product_id = p.id " +
+                "WHERE p.type = ?" +
+                "ORDER BY p.name ASC";
+
+        Cursor cursor = null;
+        try {
+            cursor = db.rawQuery(query, new String[]{type});
+            if (cursor.moveToFirst()) {
+                do {
+                    list.add(getDataProductInShoppingListFromCursor(cursor));
                 } while (cursor.moveToNext());
             }
         } finally {
@@ -697,6 +856,18 @@ public class DBHelper extends SQLiteOpenHelper {
         ArrayList<DataProductInFridge> products;
         for(String type : types){
             products = getAllProductsInFridgeByType(type);
+            Category category = new Category(type, R.drawable.ic_close_list, products);
+            categories.add(category);
+        }
+        return categories;
+    }
+
+    public ArrayList<Category> getAllCategoriesForShoppingList(){
+        ArrayList<Category> categories = new ArrayList<>();
+        ArrayList<String> types = getAllTypesNames();
+        ArrayList<DataProductInShoppingList> products;
+        for(String type : types){
+            products = getAllProductsInShoppingListByType(type);
             Category category = new Category(type, R.drawable.ic_close_list, products);
             categories.add(category);
         }

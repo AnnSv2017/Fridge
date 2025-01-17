@@ -83,7 +83,8 @@
                 android:src="@drawable/ic_shopping_list"
                 android:layout_weight="1"
                 android:contentDescription="Список покупок"
-                android:clickable="true"/>
+                android:clickable="true"
+                android:onClick="btnShoppingList"/>
         </LinearLayout>
 
     </RelativeLayout>

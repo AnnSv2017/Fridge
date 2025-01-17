@@ -178,7 +178,7 @@ public class CreateProductFragment extends Fragment {
 
         changeAllergensBtn.setOnClickListener(view1 -> {switchToFragmentCheckAllergens();});
 
-        backImageView.setOnClickListener(view1 -> {backToQrCodeScannerActivity();});
+        backImageView.setOnClickListener(view1 -> {backToActivity();});
 
         addBtn.setOnClickListener(view1 -> {addProduct();});
         deleteBtn.setOnClickListener(view1 -> {deleteProduct();});
@@ -337,7 +337,7 @@ public class CreateProductFragment extends Fragment {
         Toast.makeText(getContext(), "Продукт был успешно добавлен!", Toast.LENGTH_SHORT).show();
 
         // Выходим из фрагмента
-        backToQrCodeScannerActivity();
+        backToActivity();
     }
 
     private void deleteProduct(){
@@ -376,16 +376,23 @@ public class CreateProductFragment extends Fragment {
             Toast.makeText(requireContext(), "Данного продукта нет в холодильнике!", Toast.LENGTH_SHORT).show();
             return;
         }
+        // Удаление продукта
         // Продукт в холодильнике есть
         int productInFridgeId = dbHelper.getProductInFridgeIdIfItInFridge(manufacture_date, expiry_date, productId);
         int quantityToDelete = Integer.parseInt(editTextQuantity.getText().toString());
         boolean isDeleted = dbHelper.deleteProductFromFridge(productInFridgeId, quantityToDelete);
         if(isDeleted){
             Toast.makeText(requireContext(), "Продукт был успешно удалён!", Toast.LENGTH_SHORT).show();
-            backToQrCodeScannerActivity();
         } else{
             Toast.makeText(requireContext(), "Продукта в холодильнике нет в таком количестве!", Toast.LENGTH_SHORT).show();
+            return;
         }
+
+        // Оставляем лог об удалённом продукте
+        DataProductLogs dataProductLogs = new DataProductLogs(0, manufacture_date, expiry_date, productId, "delete", quantityToDelete);
+        dbHelper.addProductLogs(dataProductLogs);
+
+        backToActivity();
     }
 
     private boolean areAllFieldsFilled(){
@@ -542,7 +549,7 @@ public class CreateProductFragment extends Fragment {
     }
 
     // Метод для выхода из фрагмента
-    private void backToQrCodeScannerActivity(){
+    private void backToActivity(){
         // Вызываем метод активности для возобновления сканера
         if (mListener != null) {
             mListener.onFragmentClose(); // Возвращаем управление активности

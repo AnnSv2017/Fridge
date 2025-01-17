@@ -322,7 +322,12 @@ public class QrCodeInfoFragment extends Fragment {
             Toast.makeText(requireContext(), "Продукт был успешно удалён!", Toast.LENGTH_SHORT).show();
         } else{
             Toast.makeText(requireContext(), "Продукта в холодильнике нет в таком количестве!", Toast.LENGTH_SHORT).show();
+            return;
         }
+
+        // Добавление в логи
+        DataProductLogs dataProductLogs = new DataProductLogs(0, manufacture_date, expiry_date, productId, "delete", quantityToDelete);
+        dbHelper.addProductLogs(dataProductLogs);
 
         backOnClick();
     }
