@@ -154,6 +154,7 @@ public class AddToFridgeFromShoppingListFragment extends Fragment {
 
             textViewWeightOne.setText(String.valueOf(dataProduct.getMass_value()) + " " + dataProduct.getMass_unit());
 
+            editTextQuantity.setText(String.valueOf(dataPISL.getQuantity()));
             editTextQuantity.addTextChangedListener(new TextWatcher() {
                 @Override
                 public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -189,21 +190,9 @@ public class AddToFridgeFromShoppingListFragment extends Fragment {
 
             rlShowInfoProduct.setOnClickListener(v -> {infoProductOnClick();});
 
-            backImageView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    // Вызываем метод активности для закрытия фрагмента и открытия активности
-                    if (mListener != null) {
-                        mListener.onFragmentClose();
-                    }
-                    // Закрываем фрагмент
-                    getActivity().getSupportFragmentManager().beginTransaction()
-                            .remove(AddToFridgeFromShoppingListFragment.this)
-                            .commit();
-                }
-            });
+            addButton.setOnClickListener(v -> {addToFridgeOnClick();});
 
-
+            backImageView.setOnClickListener(v -> {backToActivity();});
         }
     }
 
@@ -322,6 +311,70 @@ public class AddToFridgeFromShoppingListFragment extends Fragment {
                 infoProductFragment.getView().requestLayout();
             }
         }
+    }
+
+    // TODO: Обработка нажатий на кнопки
+    private void addToFridgeOnClick(){
+        // Проверка на заполнение полей
+        if(!areAllFieldsFilled()){
+            return;
+        }
+        // Добавление в холодильник
+        String manufacture_date = editTextManufactureDate.getText().toString();
+        String expiry_date = editTextExpiryDate.getText().toString();
+        int quantity = Integer.parseInt(editTextQuantity.getText().toString());
+        DataProductInFridge dataProductInFridge = new DataProductInFridge(0, manufacture_date, expiry_date, dataPISL.getProduct_id(), quantity);
+        dbHelper.addProductInFridge(dataProductInFridge);
+
+        // Удаление из списка покупок
+        dbHelper.deleteProductFromShoppingList(dataPISL.getId());
+
+        backToActivity();
+    }
+
+    private void deleteProductFromShoppingList(){
+        // Удаление из списка покупок
+        dbHelper.deleteProductFromShoppingList(dataPISL.getId());
+
+        backToActivity();
+    }
+
+    private boolean areAllFieldsFilled(){
+        if(editTextManufactureDate.getText().toString().isEmpty() || editTextExpiryDate.getText().toString().isEmpty()){
+            Toast.makeText(requireContext(), "Заполните все поля с датами!", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        try{
+            Integer.parseInt(editTextQuantity.getText().toString());
+        } catch (Exception e){
+            Toast.makeText(requireContext(), "Введите корректное количество товара!", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        if(Integer.parseInt(editTextQuantity.getText().toString()) <= 0){
+            Toast.makeText(requireContext(), "Количество должно быть больше 0!", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        return true;
+    }
+
+    // Метод для выхода из фрагмента
+    private void backToActivity(){
+        // Если наш элемент списка не был удалён(т.е. мы не добавили его в холодильник и не удалили из списка, а просто вернулись к активности)
+        // То обновляем количество (возможно оно поменялось)
+        if(dbHelper.productInShoppingListIsExist(dataPISL.getId())){
+            int newQuantity = Integer.parseInt(editTextQuantity.getText().toString());
+            dbHelper.editProductInShoppingListQuantityById(dataPISL.getId(), newQuantity);
+        }
+        if (mListener != null) {
+            mListener.onFragmentClose();
+        }
+        // Закрываем фрагмент
+        getActivity().getSupportFragmentManager().beginTransaction()
+                .remove(AddToFridgeFromShoppingListFragment.this)
+                .commit();
     }
 
     //Метод вызывается, когда фрагмент отключается от активности.

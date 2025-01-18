@@ -481,6 +481,29 @@ public class DBHelper extends SQLiteOpenHelper {
         return exists;
     }
 
+    public boolean productInShoppingListIsExist(int id){
+        SQLiteDatabase db = getDbManager().getDatabase();
+
+        Cursor cursor = db.query(
+                PRODUCTS_IN_SHOPPING_LIST_TABLE,
+                new String[]{"id"},
+                "id = ?",
+                new String[]{String.valueOf(id)},
+                null,
+                null,
+                null
+        );
+
+        boolean exists = false;
+        if (cursor != null && cursor.moveToFirst()) {
+            exists = true;
+        }
+        if(cursor != null){
+            cursor.close();
+        }
+
+        return exists;
+    }
 
     // Получение объекта по его id в БД
     public DataProduct getProductById(int idPK){
@@ -780,6 +803,15 @@ public class DBHelper extends SQLiteOpenHelper {
         db.update(ALLERGENS_TABLE, cv, "id = ?", new String[]{String.valueOf(allergenId)});
     }
 
+    public void editProductInShoppingListQuantityById(int id, int newQuantity){
+        SQLiteDatabase db = getDbManager().getDatabase();
+
+        ContentValues cv = new ContentValues();
+
+        cv.put("quantity", newQuantity);
+
+        db.update(PRODUCTS_IN_SHOPPING_LIST_TABLE, cv, "id = ?", new String[]{String.valueOf(id)});
+    }
     // Удаление объектов из БД
     public void deleteAllergenByName(String name){
         SQLiteDatabase db = getDbManager().getDatabase();
@@ -818,6 +850,12 @@ public class DBHelper extends SQLiteOpenHelper {
             cursor.close();
         }
         return isDeleted;
+    }
+
+    public void deleteProductFromShoppingList(int id){
+        SQLiteDatabase db = getDbManager().getDatabase();
+
+        db.delete(PRODUCTS_IN_SHOPPING_LIST_TABLE, "id = ?", new String[]{String.valueOf(id)});
     }
 
     // Поиск объектов

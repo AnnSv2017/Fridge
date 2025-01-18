@@ -532,10 +532,20 @@ public class CreateProductFragment extends Fragment {
             return false;
         }
 
+        if(Integer.parseInt(editTextWeight.getText().toString()) <= 0){
+            Toast.makeText(requireContext(), "Вес должен быть больше 0!", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
         try{
             Integer.parseInt(editTextQuantity.getText().toString());
         } catch (Exception e){
             Toast.makeText(getContext(), "Введите корректное количество товара!", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        if(Integer.parseInt(editTextQuantity.getText().toString()) <= 0){
+            Toast.makeText(requireContext(), "Количество должно быть больше 0!", Toast.LENGTH_SHORT).show();
             return false;
         }
 
