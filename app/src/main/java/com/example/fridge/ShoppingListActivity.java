@@ -59,6 +59,8 @@ public class ShoppingListActivity extends AppCompatActivity implements ShoppingL
         // Вызываем публичный метод активности
 //        ProductDetailFragment productDetailFragment = ProductDetailFragment.newInstance(product);
 //        switchToFragment(productDetailFragment);
+        AddToFridgeFromShoppingListFragment addToFridgeFromShoppingListFragment = AddToFridgeFromShoppingListFragment.newInstance(product);
+        switchToFragment(addToFridgeFromShoppingListFragment);
         Toast.makeText(this, "Продукт " + product.getId(), Toast.LENGTH_SHORT).show();
     }
 

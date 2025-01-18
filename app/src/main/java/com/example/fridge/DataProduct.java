@@ -1,6 +1,11 @@
 package com.example.fridge;
 
-public class DataProduct {
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import androidx.annotation.NonNull;
+
+public class DataProduct implements Parcelable {
     private Integer id;
     private String type;
     private String name;
@@ -82,4 +87,54 @@ public class DataProduct {
     public String getMeasurement_type() {
         return measurement_type;
     }
+
+    // Конструктор для восстановления объекта из Parcel
+    protected DataProduct(Parcel in) {
+        id = in.readInt();
+        type = in.readString();
+        name = in.readString();
+        firm = in.readString();
+        mass_value = in.readDouble();
+        mass_unit = in.readString();
+        proteins = in.readDouble();
+        fats = in.readDouble();
+        carbohydrates = in.readDouble();
+        calories_kcal = in.readInt();
+        calories_KJ = in.readInt();
+        measurement_type = in.readString();
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(@NonNull Parcel parcel, int i) {
+        parcel.writeInt(id);
+        parcel.writeString(type);
+        parcel.writeString(name);
+        parcel.writeString(firm);
+        parcel.writeDouble(mass_value);
+        parcel.writeString(mass_unit);
+        parcel.writeDouble(proteins);
+        parcel.writeDouble(fats);
+        parcel.writeDouble(carbohydrates);
+        parcel.writeInt(calories_kcal);
+        parcel.writeInt(calories_KJ);
+        parcel.writeString(measurement_type);
+    }
+
+    // Статический CREATOR
+    public static final Parcelable.Creator<DataProduct> CREATOR = new Parcelable.Creator<DataProduct>() {
+        @Override
+        public DataProduct createFromParcel(Parcel in) {
+            return new DataProduct(in);
+        }
+
+        @Override
+        public DataProduct[] newArray(int size) {
+            return new DataProduct[size];
+        }
+    };
 }

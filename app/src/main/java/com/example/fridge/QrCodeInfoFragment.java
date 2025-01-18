@@ -48,7 +48,7 @@ public class QrCodeInfoFragment extends Fragment {
     private RelativeLayout rlShowInfoProduct;
     private Button addButton, deleteButton;
 
-    private Fragment infoProductFragCont;
+    private Fragment infoProductFragment;
 
     private boolean infoProductIsExpended = false;
 
@@ -132,16 +132,15 @@ public class QrCodeInfoFragment extends Fragment {
         int product_id = dbHelper.getProductIdByFullName(type, name, firm, mass_value, mass_unit);
         int productInFridgeId = dbHelper.getProductInFridgeIdIfItInFridge(manufacture_date, expiry_date, product_id);
         DataProductInFridge dataProductInFridge = dbHelper.getProductInFridgeById(productInFridgeId);
-        //infoProductFragCont = new InfoProductFragment(dataProductInFridge);
-        infoProductFragCont = InfoProductFragment.newInstance(dataProductInFridge);
-        transaction.replace(R.id.info_product_fragment_container, infoProductFragCont);
+        infoProductFragment = InfoProductFragment.newInstance(dataProductInFridge);
+        transaction.replace(R.id.info_product_fragment_container, infoProductFragment);
         transaction.commit(); // Асинхронная транзакция
 
         // Ожидаем завершения транзакции
         new Handler(Looper.getMainLooper()).post(() -> {
-            if (infoProductFragCont != null && infoProductFragCont.getView() != null) {
-                infoProductFragCont.getView().setVisibility(View.GONE);
-                infoProductFragCont.getView().requestLayout();
+            if (infoProductFragment != null && infoProductFragment.getView() != null) {
+                infoProductFragment.getView().setVisibility(View.GONE);
+                infoProductFragment.getView().requestLayout();
                 Log.d("FragmentDebug", "Fragment hidden successfully");
             } else {
                 Log.e("FragmentError", "Fragment not found!");
@@ -234,14 +233,14 @@ public class QrCodeInfoFragment extends Fragment {
         listSwitchImageView.setImageResource(infoProductIsExpended ? R.drawable.ic_open_list : R.drawable.ic_close_list);
 
         if(infoProductIsExpended){
-            if (infoProductFragCont != null && infoProductFragCont.getView() != null) {
-                infoProductFragCont.getView().setVisibility(View.VISIBLE);
-                infoProductFragCont.getView().requestLayout();
+            if (infoProductFragment != null && infoProductFragment.getView() != null) {
+                infoProductFragment.getView().setVisibility(View.VISIBLE);
+                infoProductFragment.getView().requestLayout();
             }
         } else{
-            if (infoProductFragCont != null && infoProductFragCont.getView() != null) {
-                infoProductFragCont.getView().setVisibility(View.GONE);
-                infoProductFragCont.getView().requestLayout();
+            if (infoProductFragment != null && infoProductFragment.getView() != null) {
+                infoProductFragment.getView().setVisibility(View.GONE);
+                infoProductFragment.getView().requestLayout();
             }
         }
     }

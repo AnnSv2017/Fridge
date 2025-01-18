@@ -1,36 +1,30 @@
 package com.example.fridge;
 
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
-import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.GridLayout;
 import android.widget.TextView;
 
-import java.util.ArrayList;
 import java.util.List;
 
-public class InfoProductFragment extends Fragment {
-
+public class InfoProductWithoutDatesFragment extends Fragment {
     private DBHelper dbHelper;
-    private DataProductInFridge dataPIF;
+    private DataProduct dataProduct;
 
-    private TextView textViewName, textViewType, textViewFirm, textViewManufactureDate, textViewExpiryDate, textViewMass, textViewProteins, textViewFats, textViewCarbohydrates, textViewCalories, textViewAllergens, textViewMeasurementType;
-    private String name, type, firm, manufacture_date, expiry_date, mass_unit, measurement_type;
+    private TextView textViewName, textViewType, textViewFirm, textViewMass, textViewProteins, textViewFats, textViewCarbohydrates, textViewCalories, textViewAllergens, textViewMeasurementType;
+    private String name, type, firm, mass_unit, measurement_type;
     private Double mass_value, proteins, fats, carbohydrates;
     private Integer calories_kcal, calories_KJ, quantity;
     private List<String> allergensList;
 
-    public static InfoProductFragment newInstance(DataProductInFridge product) {
-        InfoProductFragment fragment = new InfoProductFragment();
+    public static InfoProductWithoutDatesFragment newInstance(DataProduct product) {
+        InfoProductWithoutDatesFragment fragment = new InfoProductWithoutDatesFragment();
         Bundle args = new Bundle();
         args.putParcelable("product", product); // Parcelable
         fragment.setArguments(args);
@@ -41,21 +35,19 @@ public class InfoProductFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if(getArguments() != null){
-            dataPIF = getArguments().getParcelable("product");
+            dataProduct = getArguments().getParcelable("product");
         }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_info_product, container, false);
+        View view = inflater.inflate(R.layout.fragment_info_product_without_dates, container, false);
 
         dbHelper = DBHelper.getInstance(requireContext());
 
         textViewName = view.findViewById(R.id.text_view_name);
         textViewType = view.findViewById(R.id.text_view_type);
         textViewFirm = view.findViewById(R.id.text_view_firm);
-        textViewManufactureDate = view.findViewById(R.id.text_view_manufacture_date);
-        textViewExpiryDate = view.findViewById(R.id.text_view_expiry_date);
         textViewMass = view.findViewById(R.id.text_view_mass);
         textViewProteins = view.findViewById(R.id.text_view_proteins);
         textViewFats = view.findViewById(R.id.text_view_fats);
@@ -70,8 +62,7 @@ public class InfoProductFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        if(dataPIF != null){
-            DataProduct dataProduct = dbHelper.getProductById(dataPIF.getProduct_id());
+        if(dataProduct != null){
             name = dataProduct.getName();
             type = dataProduct.getType();
             firm = dataProduct.getFirm();
@@ -84,17 +75,11 @@ public class InfoProductFragment extends Fragment {
             calories_KJ = dataProduct.getCalories_KJ();
             measurement_type = dataProduct.getMeasurement_type();
 
-            manufacture_date = dataPIF.getManufacture_date();
-            expiry_date = dataPIF.getExpiry_date();
-            quantity = dataPIF.getQuantity();
-
-            allergensList = dbHelper.getAllAllergensByProductId(dataPIF.getProduct_id());
+            allergensList = dbHelper.getAllAllergensByProductId(dataProduct.getId());
 
             textViewName.setText(name);
             textViewType.setText(type);
             textViewFirm.setText(firm);
-            textViewManufactureDate.setText(manufacture_date);
-            textViewExpiryDate.setText(expiry_date);
             textViewMass.setText(String.valueOf(mass_value) + " " + mass_unit);
             textViewProteins.setText(String.valueOf(proteins) + " г");
             textViewFats.setText(String.valueOf(fats) + " г");
@@ -108,6 +93,5 @@ public class InfoProductFragment extends Fragment {
             }
             textViewMeasurementType.setText(measurement_type);
         }
-        //view.setVisibility(View.GONE);
     }
 }
