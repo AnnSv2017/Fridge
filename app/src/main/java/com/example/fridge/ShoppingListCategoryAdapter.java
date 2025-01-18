@@ -72,11 +72,6 @@ public class ShoppingListCategoryAdapter extends BaseAdapter {
 
         // Выставляем количество зелёных и красных продуктов
         shoppingListProductAdapter = new ShoppingListProductAdapter(context, category.getProducts());
-//        int[] counts = productAdapter.countGreenAndRed();
-//        String greenCount = String.valueOf(counts[0]);
-//        String redCount = String.valueOf(counts[1]);
-//        textViewQuantity.setText(greenCount + "/" + redCount);
-
         textViewQuantity.setText(String.valueOf(shoppingListProductAdapter.getCount()));
 
         // Если категория раскрыта, отображаем продукты

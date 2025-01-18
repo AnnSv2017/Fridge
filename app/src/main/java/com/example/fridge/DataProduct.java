@@ -32,7 +32,7 @@ public class DataProduct {
     }
 
     public String getFull_name(){
-        return name + firm + ", " + mass_value + " " + mass_unit;
+        return type + ", " + name + ", " + firm + ", " + mass_value + " " + mass_unit;
     }
 
     public Integer getId() {

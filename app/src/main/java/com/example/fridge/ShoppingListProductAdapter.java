@@ -13,6 +13,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.List;
 
 public class ShoppingListProductAdapter extends BaseAdapter {
 
@@ -69,11 +70,6 @@ public class ShoppingListProductAdapter extends BaseAdapter {
         int productId = dataProductInShoppingList.getProduct_id();
         DataProduct dataProduct = dbHelper.getProductById(productId);
         String name = dataProduct.getName();
-
-        // Получения количества дней до истечения срока
-        LocalDate currentDate = LocalDate.now();
-        LocalDate expiryDate = LocalDate.parse(dataProductInShoppingList.getExpiry_date(), formatter);
-        long days = ChronoUnit.DAYS.between(currentDate, expiryDate);
 
         // Получение количества товара
         int quantity = (Integer) dataProductInShoppingList.getQuantity();

@@ -26,9 +26,6 @@ public class ProductDetailFragment extends Fragment {
     private InfoProductFragment infoProductFragCont;
     private ImageView backButton;
 
-//    public ProductDetailFragment(DataProductInFridge product){
-//        this.productInFridge = product;
-//    }
 
     public static ProductDetailFragment newInstance(DataProductInFridge product) {
         ProductDetailFragment fragment = new ProductDetailFragment();

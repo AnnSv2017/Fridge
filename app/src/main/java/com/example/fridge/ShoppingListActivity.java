@@ -48,11 +48,12 @@ public class ShoppingListActivity extends AppCompatActivity implements ShoppingL
     }
 
     private void addProductToListOnClick(){
-        CreateProductFragment createProductFragment = new CreateProductFragment();
+        CreateProductFragment createProductFragment = CreateProductFragment.newInstance("ShoppingListActivity");
         switchToFragment(createProductFragment);
     }
 
 
+    // Метод, вызываемый при нажатии на элемент productListView
     @Override
     public void onProductClick(DataProductInShoppingList product) {
         // Вызываем публичный метод активности
@@ -82,6 +83,8 @@ public class ShoppingListActivity extends AppCompatActivity implements ShoppingL
 
     @Override
     public void onFragmentClose() {
+        categoriesList = dbHelper.getAllCategoriesForShoppingList();
+        shoppingListCategoryAdapter.updateCategories(categoriesList);
         // Восстанавливаем активность
         findViewById(R.id.activity_container).setVisibility(View.VISIBLE);
         // Скрываем контейнер фрагмента

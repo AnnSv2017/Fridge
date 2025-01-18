@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity implements CategoryAdapter.O
 
         dbHelper = DBHelper.getInstance(this);
 
-        categoriesList = dbHelper.getAllCategories();
+        categoriesList = dbHelper.getAllCategoriesForFridge();
         if (categoriesList == null || categoriesList.isEmpty()) {
             Log.e("MainActivity", "categoriesList is empty or null!");
         } else {

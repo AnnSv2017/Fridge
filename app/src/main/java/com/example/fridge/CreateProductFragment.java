@@ -22,6 +22,7 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -61,6 +62,19 @@ public class CreateProductFragment extends Fragment {
     private PopupWindow popupWindow;
     private RecyclerView.Adapter adapter;
 
+    private static final String ARG_SOURCE = "source";
+    private String source;
+    private String QrCodeScannerActivity_STRING = "QrCodeScannerActivity";
+    private String ShoppingListActivity_STRING = "ShoppingListActivity";
+
+    public static CreateProductFragment newInstance(String source) {
+        CreateProductFragment fragment = new CreateProductFragment();
+        Bundle args = new Bundle();
+        args.putString(ARG_SOURCE, source);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
     //Этот метод вызывается, когда фрагмент подключается к активности.
     @Override
     public void onAttach(Context context) {
@@ -70,6 +84,14 @@ public class CreateProductFragment extends Fragment {
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement OnFragmentInteractionListener");
+        }
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (getArguments() != null) {
+            source = getArguments().getString(ARG_SOURCE);
         }
     }
 
@@ -121,8 +143,6 @@ public class CreateProductFragment extends Fragment {
         imageViewMinusQuantity.setOnClickListener(view1 -> {decreaseQuantity(editTextQuantity);});
         imageViewPlusQuantity.setOnClickListener(view1 -> {increaseQuantity(editTextQuantity);});
 
-        editTextManufactureDate.setOnClickListener(view1 -> {showDatePicker(editTextManufactureDate);});
-        editTextExpiryDate.setOnClickListener(view1 -> {showDatePicker(editTextExpiryDate);});
 
         editTextName.addTextChangedListener(new TextWatcher() {
             @Override
@@ -132,12 +152,6 @@ public class CreateProductFragment extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-//                ArrayList<String> filteredSuggestions = getSuggestionsFromDatabase(s.toString());
-//                suggestionsAdapter.updateData(filteredSuggestions);
-//
-//                if (!popupWindow.isShowing() && !filteredSuggestions.isEmpty()) {
-//                    popupWindow.showAsDropDown(editTextName);
-//                }
                 showSuggestionNames(charSequence.toString());
             }
 
@@ -146,23 +160,6 @@ public class CreateProductFragment extends Fragment {
 
             }
         });
-
-        editTextDays.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                // Вызывается при каждом изменении текста
-                updateDates();
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-            }
-        });
-
 
         // Получаем SharedViewModel
         sharedViewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
@@ -180,8 +177,44 @@ public class CreateProductFragment extends Fragment {
 
         backImageView.setOnClickListener(view1 -> {backToActivity();});
 
-        addBtn.setOnClickListener(view1 -> {addProduct();});
-        deleteBtn.setOnClickListener(view1 -> {deleteProduct();});
+        // Вызов произошёл через сканнер Qr кодов
+        if(QrCodeScannerActivity_STRING.equals(source)){
+            // Настраиваем даты
+            editTextManufactureDate.setOnClickListener(view1 -> {showDatePicker(editTextManufactureDate);});
+            editTextExpiryDate.setOnClickListener(view1 -> {showDatePicker(editTextExpiryDate);});
+
+            editTextDays.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                }
+
+                @Override
+                public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                    // Вызывается при каждом изменении текста
+                    updateDates();
+                }
+
+                @Override
+                public void afterTextChanged(Editable editable) {
+                }
+            });
+            // Вызов методов создания/удаления продуктов в/из холодильник(а)
+            addBtn.setOnClickListener(view1 -> {addProduct();});
+            deleteBtn.setOnClickListener(view1 -> {deleteProduct();});
+
+        }
+        // Вызов произошёл через активность закупок продуктов
+        else if (ShoppingListActivity_STRING.equals(source)) {
+            // Скрываем дату
+            TextView textViewValid = view.findViewById(R.id.text_view_valid);
+            LinearLayout datesContainer = view.findViewById(R.id.dates_container);
+            textViewValid.setVisibility(View.GONE);
+            datesContainer.setVisibility(View.GONE);
+            // Скрываем кнопку удалить
+            deleteBtn.setVisibility(View.GONE);
+            // Вызов метода добавления в список закупок
+            addBtn.setOnClickListener(view1 -> {addProductToShoppingList();});
+        }
 
         return view;
     }
@@ -275,8 +308,17 @@ public class CreateProductFragment extends Fragment {
     }
 
     private void addProduct(){
+        // Список всех полей для проверки
+        EditText[] requiredFields = {
+                editTextName, editTextFirm, editTextType,
+                editTextManufactureDate, editTextExpiryDate,
+                editTextWeight, editTextQuantity,
+                editTextProteins, editTextFats,
+                editTextCarbohydrates, editTextCaloriesKcal,
+                editTextCaloriesKJ
+        };
         //Если какое-то поле было не заполнены, то продукт не добавляется
-        if (!areAllFieldsFilled()){
+        if (!areAllFieldsFilled(requiredFields)){
             return;
         }
         String type = editTextType.getText().toString().trim();
@@ -341,7 +383,16 @@ public class CreateProductFragment extends Fragment {
     }
 
     private void deleteProduct(){
-        if(!areAllFieldsFilled()){
+        // Список всех полей для проверки
+        EditText[] requiredFields = {
+                editTextName, editTextFirm, editTextType,
+                editTextManufactureDate, editTextExpiryDate,
+                editTextWeight, editTextQuantity,
+                editTextProteins, editTextFats,
+                editTextCarbohydrates, editTextCaloriesKcal,
+                editTextCaloriesKJ
+        };
+        if(!areAllFieldsFilled(requiredFields)){
             return;
         }
         String type = editTextType.getText().toString().trim();
@@ -395,16 +446,75 @@ public class CreateProductFragment extends Fragment {
         backToActivity();
     }
 
-    private boolean areAllFieldsFilled(){
+    private void addProductToShoppingList(){
         // Список всех полей для проверки
         EditText[] requiredFields = {
                 editTextName, editTextFirm, editTextType,
-                editTextManufactureDate, editTextExpiryDate,
                 editTextWeight, editTextQuantity,
                 editTextProteins, editTextFats,
                 editTextCarbohydrates, editTextCaloriesKcal,
                 editTextCaloriesKJ
         };
+        if(!areAllFieldsFilled(requiredFields)){
+            return;
+        }
+        String type = editTextType.getText().toString().trim();
+        String name = editTextName.getText().toString().trim();
+        String firm = editTextFirm.getText().toString().trim();
+        Double mass_value = Double.parseDouble(editTextWeight.getText().toString().trim());
+
+        RadioButton selectedRadioButton1 = view.findViewById(radioGroupWeight.getCheckedRadioButtonId());
+        String mass_unit = selectedRadioButton1.getText().toString();
+
+        Double proteins = Double.parseDouble(editTextProteins.getText().toString().trim());
+        Double fats = Double.parseDouble(editTextFats.getText().toString().trim());
+        Double carbohydrates = Double.parseDouble(editTextCarbohydrates.getText().toString().trim());
+        int caloriesKcal = Integer.parseInt(editTextCaloriesKcal.getText().toString().trim());
+        int caloriesKJ = Integer.parseInt(editTextCaloriesKJ.getText().toString().trim());
+
+        RadioButton radioButton2 = view.findViewById(radioGroupMeasurementType.getCheckedRadioButtonId());
+        String measurement_type = radioButton2.getText().toString();
+
+        // Добавление продукта как разновидности в БД если ещё не добавлен
+        DataProduct dataProduct = new DataProduct(0, type, name, firm, mass_value, mass_unit, proteins, fats, carbohydrates, caloriesKcal, caloriesKJ, measurement_type);
+
+        // Если продукта ещё нет в БД
+        if(!dbHelper.productAlreadyExist(dataProduct)){
+            // Добавляем продукт
+            dbHelper.addProductIfNotExist(dataProduct);
+
+            // Добавляем тип в типы если нет
+            DataType dataType = new DataType(0, type);
+            dbHelper.addType(dataType);
+
+            // Добавляем фирму в фирмы если нет
+            DataFirm dataFirm = new DataFirm(0, firm);
+            dbHelper.addFirm(dataFirm);
+
+            // Получение id продукта и Связывание продукта со списком аллергенов
+            int productId = dbHelper.getProductIdByFullName(type, name, firm, mass_value, mass_unit);
+            sharedViewModel.getSelectedAllergens().observe(getViewLifecycleOwner(), allergensList ->{
+                for(String allergen : allergensList){
+                    DataProductAllergens dataProductAllergens = new DataProductAllergens(0, productId, allergen);
+                    dbHelper.addProductAllergens(dataProductAllergens);
+                }
+            });
+        }
+
+        // Добавление в список закупок
+        int productId = dbHelper.getProductIdByFullName(type, name, firm, mass_value, mass_unit);
+        int quantity = Integer.parseInt(editTextQuantity.getText().toString());
+        DataProductInShoppingList dataProductInShoppingList = new DataProductInShoppingList(0, productId, quantity);
+        dbHelper.addProductInShoppingList(dataProductInShoppingList);
+
+        Toast.makeText(getContext(), "Продукт был успешно добавлен в список закупок!", Toast.LENGTH_SHORT).show();
+
+        // Выходим из фрагмента
+        backToActivity();
+    }
+
+    private boolean areAllFieldsFilled(EditText[] requiredFields){
+
 
         // Проверка заполненности текстовых полей
         for (EditText field : requiredFields) {

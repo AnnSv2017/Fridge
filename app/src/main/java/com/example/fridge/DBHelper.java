@@ -19,7 +19,7 @@ public class DBHelper extends SQLiteOpenHelper {
     private Context context;
     DBManager dbManager;
     private static final String DATABASE_NAME = "helper.db";
-    private static final int DATABASE_VERSION = 8;
+    private static final int DATABASE_VERSION = 9;
 
     // SQL-запросы для создания таблиц
 
@@ -97,8 +97,6 @@ public class DBHelper extends SQLiteOpenHelper {
     private static final String CREATE_PRODUCTS_IN_SHOPPING_LIST_TABLE =
             "CREATE TABLE " + PRODUCTS_IN_SHOPPING_LIST_TABLE + " (" +
                     "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                    "manufacture_date TEXT, " +
-                    "expiry_date TEXT, " +
                     "product_id INTEGER, " +
                     "quantity INTEGER, " +
                     "FOREIGN KEY(product_id) REFERENCES product_table(id)" +
@@ -200,18 +198,14 @@ public class DBHelper extends SQLiteOpenHelper {
 
     private DataProductInShoppingList getDataProductInShoppingListFromCursor(Cursor cursor){
         int idIndex = cursor.getColumnIndex("id");
-        int manufactureDateIndex = cursor.getColumnIndex("manufacture_date");
-        int expiryDateIndex = cursor.getColumnIndex("expiry_date");
         int productIdIndex = cursor.getColumnIndex("product_id");
         int quantityIndex = cursor.getColumnIndex("quantity");
 
         int id = cursor.getInt(idIndex);
-        String manufacture_date = cursor.getString(manufactureDateIndex);
-        String expiry_date = cursor.getString(expiryDateIndex);
         int product_id = cursor.getInt(productIdIndex);
         int quantity = cursor.getInt(quantityIndex);
 
-        return new DataProductInShoppingList(id, manufacture_date, expiry_date, product_id, quantity);
+        return new DataProductInShoppingList(id, product_id, quantity);
     }
 
     // Добавления новых объектов в таблицы
@@ -317,14 +311,12 @@ public class DBHelper extends SQLiteOpenHelper {
     public void addProductInShoppingList(DataProductInShoppingList data){
         SQLiteDatabase db = getDbManager().getDatabase();
 
-        int productInShoppingListId = getProductInShoppingListId(data.getManufacture_date(), data.getExpiry_date(), data.getProduct_id());
+        int productInShoppingListId = getProductInShoppingListId(data.getProduct_id());
 
         ContentValues cv = new ContentValues();
 
         // Если продукта нет в холодильнике, то мы его добавляем
         if(productInShoppingListId == -1){
-            cv.put("manufacture_date", data.getManufacture_date());
-            cv.put("expiry_date", data.getExpiry_date());
             cv.put("product_id", data.getProduct_id());
             cv.put("quantity", data.getQuantity());
 
@@ -415,15 +407,15 @@ public class DBHelper extends SQLiteOpenHelper {
         return productInFridgeId;
     }
 
-    public int getProductInShoppingListId(String manufacture_date, String expiry_date, int product_id){
+    public int getProductInShoppingListId(int product_id){
         SQLiteDatabase db = getDbManager().getDatabase();
 
         int productInShoppingListId = -1;
         Cursor cursor = db.query(
                 PRODUCTS_IN_SHOPPING_LIST_TABLE,
                 new String[]{"id"},
-                "manufacture_date = ? AND expiry_date = ? AND product_id = ?",
-                new String[]{manufacture_date, expiry_date, String.valueOf(product_id)},
+                "product_id = ?",
+                new String[]{String.valueOf(product_id)},
                 null,
                 null,
                 null
@@ -850,14 +842,16 @@ public class DBHelper extends SQLiteOpenHelper {
     }
 
     // Методы без запросов к БД
-    public ArrayList<Category> getAllCategories(){
+    public ArrayList<Category> getAllCategoriesForFridge(){
         ArrayList<Category> categories = new ArrayList<>();
         ArrayList<String> types = getAllTypesNames();
         ArrayList<DataProductInFridge> products;
         for(String type : types){
             products = getAllProductsInFridgeByType(type);
-            Category category = new Category(type, R.drawable.ic_close_list, products);
-            categories.add(category);
+            if(products != null && !products.isEmpty()){
+                Category category = new Category(type, R.drawable.ic_close_list, products);
+                categories.add(category);
+            }
         }
         return categories;
     }
@@ -868,8 +862,10 @@ public class DBHelper extends SQLiteOpenHelper {
         ArrayList<DataProductInShoppingList> products;
         for(String type : types){
             products = getAllProductsInShoppingListByType(type);
-            Category category = new Category(type, R.drawable.ic_close_list, products);
-            categories.add(category);
+            if(products != null && !products.isEmpty()){
+                Category category = new Category(type, R.drawable.ic_close_list, products);
+                categories.add(category);
+            }
         }
         return categories;
     }
