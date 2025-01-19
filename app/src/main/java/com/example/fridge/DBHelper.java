@@ -10,6 +10,7 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -364,6 +365,35 @@ public class DBHelper extends SQLiteOpenHelper {
     }
 
     public int getProductIdByFullName(String type, String name, String firm, Double mass_value, String mass_unit){
+        SQLiteDatabase db = getDbManager().getDatabase();
+
+        int productId = -1;
+        Cursor cursor = db.query(
+                PRODUCT_TABLE,
+                new String[]{"id"},
+                "type = ? AND name = ? AND firm = ? AND mass_value = ? AND mass_unit = ?",
+                new String[]{type, name, firm, String.valueOf(mass_value), mass_unit},
+                null,
+                null,
+                null
+        );
+        if(cursor != null && cursor.moveToFirst()){
+            int productIdIndex = cursor.getColumnIndex("id");
+            productId = cursor.getInt(productIdIndex);
+        }
+        cursor.close();
+
+        return productId;
+    }
+
+    public int getProductIdByFullName(String fullName){
+        String[] parts = fullName.split(", ");
+        String type = parts[0];
+        String name = parts[1];
+        String firm = parts[2];
+        String mass_value = parts[3].split(" ")[0];
+        String mass_unit = parts[3].split(" ")[1];
+
         SQLiteDatabase db = getDbManager().getDatabase();
 
         int productId = -1;
@@ -864,7 +894,9 @@ public class DBHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = getDbManager().getDatabase();
 
         String sqlQuery = "SELECT type || ', ' || name || ', ' || firm || ', ' || mass_value || ' ' || mass_unit AS full_name " +
-                "FROM product_table WHERE full_name LIKE ? ORDER BY name ASC";
+                "FROM product_table " +
+                " WHERE full_name LIKE ? " +
+                " ORDER BY type ASC, name ASC, firm ASC, mass_value ASC";
         Cursor cursor = db.rawQuery(sqlQuery, new String[]{"%" + query + "%"});
 
         if (cursor.moveToFirst()) {
@@ -887,12 +919,135 @@ public class DBHelper extends SQLiteOpenHelper {
         for(String type : types){
             products = getAllProductsInFridgeByType(type);
             if(products != null && !products.isEmpty()){
-                Category category = new Category(type, R.drawable.ic_close_list, products);
+                Category category = new Category(type, false, products);
                 categories.add(category);
             }
         }
         return categories;
     }
+
+    // Вызывается когда пользователь что-то выбрал в предложенном списке продуктов
+    public ArrayList<Category> getCategoryForFridgeByFullName(String fullName){
+        int productId = getProductIdByFullName(fullName);
+        ArrayList<Integer> productsId = new ArrayList<>();
+        productsId.add(productId);
+        String[] parts = fullName.split(", ");
+        String type = parts[0];
+        ArrayList<DataProductInFridge> products = getAllProductInFridgeByTypeANDProductsId(type, productsId);
+        ArrayList<Category> categories = new ArrayList<>();
+        Category category = new Category(type, true, products);
+        categories.add(category);
+        return categories;
+    }
+
+    // Вызывается когда пользователь что-то ввёл в поисковую строку, но ещё не выбрал
+    public ArrayList<Category> getAllCategoriesForFridgeByQuery(String query){
+        ArrayList<Category> categories = new ArrayList<>();
+        ArrayList<String> fullNames = searchProducts(query);
+        ArrayList<DataProductInFridge> products;
+        ArrayList<Integer> productsId = new ArrayList<>();
+        for(String full_name : fullNames){
+            productsId.add(getProductIdByFullName(full_name));
+        }
+        ArrayList<String> typesList = getAllTypesByProductsId(productsId);
+        for(String type : typesList){
+            products = getAllProductInFridgeByTypeANDProductsId(type, productsId);
+            if(products != null && !products.isEmpty()){
+                Category category = new Category(type, false, products);
+                categories.add(category);
+            }
+        }
+        return categories;
+    }
+
+    public ArrayList<String> getAllTypesByProductsId(ArrayList<Integer> productsId) {
+        ArrayList<String> types = new ArrayList<>();
+        SQLiteDatabase db = getDbManager().getDatabase();
+
+        // Формируем список ID в формате строки, разделённой запятыми
+        StringBuilder idListBuilder = new StringBuilder();
+        for (int i = 0; i < productsId.size(); i++) {
+            idListBuilder.append(productsId.get(i));
+            if (i < productsId.size() - 1) {
+                idListBuilder.append(","); // добавляем запятую между ID
+            }
+        }
+        String idList = idListBuilder.toString();
+
+        // SQL-запрос
+        String query = "SELECT DISTINCT type FROM " + PRODUCT_TABLE + " WHERE id IN (" + idList + ") ORDER BY type ASC";
+        Cursor cursor = null;
+
+        try {
+            cursor = db.rawQuery(query, null);
+            if (cursor.moveToFirst()) {
+                do {
+                    int typeIndex = cursor.getColumnIndex("type");
+                    String type = cursor.getString(typeIndex);
+                    types.add(type);
+                } while (cursor.moveToNext());
+            }
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+
+        return types;
+    }
+
+    public ArrayList<DataProductInFridge> getAllProductInFridgeByTypeANDProductsId(String type, ArrayList<Integer> productsId) {
+        ArrayList<DataProductInFridge> dataList = new ArrayList<>();
+        SQLiteDatabase db = getDbManager().getDatabase();
+
+        if (productsId == null || productsId.isEmpty()) {
+            // Если список ID пустой, сразу возвращаем пустой результат
+            return dataList;
+        }
+
+        // Формируем строку с плейсхолдерами для параметризованного запроса
+        StringBuilder placeholders = new StringBuilder();
+        for (int i = 0; i < productsId.size(); i++) {
+            placeholders.append("?");
+            if (i < productsId.size() - 1) {
+                placeholders.append(",");
+            }
+        }
+
+        // SQL-запрос
+        String query = "SELECT pif.*, p.* " +
+                "FROM " + PRODUCTS_IN_FRIDGE_TABLE + " pif " +
+                "JOIN " + PRODUCT_TABLE + " p ON pif.product_id = p.id " +
+                "WHERE p.type = ? " +
+                "AND pif.product_id IN (" + placeholders + ") " +
+                "ORDER BY p.type ASC, p.name ASC, p.firm ASC, p.mass_value ASC";
+
+        // Подготовка аргументов для параметризованного запроса
+        String[] args = new String[productsId.size() + 1];
+        args[0] = type;
+        for (int i = 0; i < productsId.size(); i++) {
+            args[i + 1] = String.valueOf(productsId.get(i));
+        }
+
+        Cursor cursor = null;
+        try {
+            cursor = db.rawQuery(query, args);
+            if (cursor.moveToFirst()) {
+                do {
+                    DataProductInFridge data = getDataProductInFridgeFromCursor(cursor);
+                    dataList.add(data);
+                } while (cursor.moveToNext());
+            }
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+
+        return dataList;
+    }
+
+
 
     public ArrayList<Category> getAllCategoriesForShoppingList(){
         ArrayList<Category> categories = new ArrayList<>();
@@ -901,7 +1056,7 @@ public class DBHelper extends SQLiteOpenHelper {
         for(String type : types){
             products = getAllProductsInShoppingListByType(type);
             if(products != null && !products.isEmpty()){
-                Category category = new Category(type, R.drawable.ic_close_list, products);
+                Category category = new Category(type, false, products);
                 categories.add(category);
             }
         }

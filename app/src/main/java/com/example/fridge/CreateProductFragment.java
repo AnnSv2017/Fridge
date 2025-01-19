@@ -532,7 +532,7 @@ public class CreateProductFragment extends Fragment {
             return false;
         }
 
-        if(Integer.parseInt(editTextWeight.getText().toString()) <= 0){
+        if(Double.parseDouble(editTextWeight.getText().toString()) <= 0){
             Toast.makeText(requireContext(), "Вес должен быть больше 0!", Toast.LENGTH_SHORT).show();
             return false;
         }
@@ -618,7 +618,7 @@ public class CreateProductFragment extends Fragment {
             popupWindow = new PopupWindow(recyclerView, editTextName.getWidth(), ViewGroup.LayoutParams.WRAP_CONTENT, true);
             popupWindow.setBackgroundDrawable(new ColorDrawable(Color.WHITE));
             popupWindow.setElevation(10); // Задаем стиль
-            popupWindow.setFocusable(false); // Окно не перехватывает фоку
+            popupWindow.setFocusable(false); // Окно не перехватывает фокус
             popupWindow.setOutsideTouchable(true); // Позволяет закрывать окно при нажатии вне его области
 
             popupWindow.showAsDropDown(editTextName);

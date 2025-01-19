@@ -56,12 +56,8 @@ public class ShoppingListActivity extends AppCompatActivity implements ShoppingL
     // Метод, вызываемый при нажатии на элемент productListView
     @Override
     public void onProductClick(DataProductInShoppingList product) {
-        // Вызываем публичный метод активности
-//        ProductDetailFragment productDetailFragment = ProductDetailFragment.newInstance(product);
-//        switchToFragment(productDetailFragment);
         AddToFridgeFromShoppingListFragment addToFridgeFromShoppingListFragment = AddToFridgeFromShoppingListFragment.newInstance(product);
         switchToFragment(addToFridgeFromShoppingListFragment);
-        Toast.makeText(this, "Продукт " + product.getId(), Toast.LENGTH_SHORT).show();
     }
 
     public void switchToFragment(Fragment fragment) {

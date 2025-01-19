@@ -82,6 +82,7 @@ public class CategoryAdapter extends BaseAdapter {
         // Если категория раскрыта, отображаем продукты
         ListView productsListView = view.findViewById(R.id.products_list_view);
         if (category.isExpanded()) {
+            Log.d("CategoryAdapter", "Category expanded: " + category.getName());
             productsListView.setAdapter(productAdapter);
             // Устанавливаем высоту ListView
             setListViewHeightBasedOnChildren(productsListView);
@@ -96,6 +97,7 @@ public class CategoryAdapter extends BaseAdapter {
             });
             productsListView.setVisibility(View.VISIBLE);
         } else {
+            Log.d("CategoryAdapter", "Category collapsed: " + category.getName());
             productsListView.setVisibility(View.GONE);
         }
 

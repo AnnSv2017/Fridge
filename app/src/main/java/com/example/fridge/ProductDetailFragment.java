@@ -17,14 +17,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class ProductDetailFragment extends Fragment {
 
-    private OnFragmentInteractionListener mListener;
+    private OnFragmentInteractionExpendedListener mListener;
     private DataProductInFridge dataPIF;
+    private DBHelper dbHelper;
 
-    private InfoProductFragment infoProductFragCont;
-    private ImageView backButton;
+    private InfoProductFragment infoProductFragment;
+    private ImageView backButton, deleteButton;
 
 
     public static ProductDetailFragment newInstance(DataProductInFridge product) {
@@ -48,11 +50,11 @@ public class ProductDetailFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
+        if (context instanceof OnFragmentInteractionExpendedListener) {
+            mListener = (OnFragmentInteractionExpendedListener) context;
         } else {
             throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
+                    + " must implement OnFragmentInteractionExpendedListener");
         }
     }
 
@@ -60,7 +62,10 @@ public class ProductDetailFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_product_detail, container, false);
 
+        dbHelper = DBHelper.getInstance(requireContext());
+
         backButton = view.findViewById(R.id.back_image_view);
+        deleteButton = view.findViewById(R.id.delete_image_view);
 
         return view;
     }
@@ -69,26 +74,45 @@ public class ProductDetailFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         if(dataPIF != null){
-            backButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    // Вызываем метод активности для закрытия фрагмента и открытия активности
-                    if (mListener != null) {
-                        mListener.onFragmentClose();
-                    }
-                    // Закрываем фрагмент
-                    getActivity().getSupportFragmentManager().beginTransaction()
-                            .remove(ProductDetailFragment.this)
-                            .commit();
-                }
-            });
-
-            infoProductFragCont = InfoProductFragment.newInstance(dataPIF);
+            infoProductFragment = InfoProductFragment.newInstance(dataPIF);
             FragmentTransaction ft = getChildFragmentManager().beginTransaction();
-            ft.replace(R.id.info_product_fragment_container, infoProductFragCont);
+            ft.replace(R.id.info_product_fragment_container, infoProductFragment);
             ft.addToBackStack(null);
             ft.commit();
+
+            backButton.setOnClickListener(v -> {backToActivity();});
+
+            deleteButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    // Удаляем продукт из холодильника
+                    boolean isDeleted = dbHelper.deleteProductFromFridge(dataPIF.getId(), dataPIF.getQuantity());
+                    if(isDeleted){
+                        Toast.makeText(requireContext(), "Продукт был успешно удалён!", Toast.LENGTH_SHORT).show();
+                        // Фиксируем удаление в логах
+                        DataProductLogs dataProductLogs = new DataProductLogs(0, dataPIF.getManufacture_date(), dataPIF.getExpiry_date(), dataPIF.getProduct_id(), "delete", dataPIF.getQuantity());
+                        dbHelper.addProductLogs(dataProductLogs);
+                    } else {
+                        Toast.makeText(requireContext(), "ERROR. Продукт НЕ был удалён!", Toast.LENGTH_SHORT).show();
+                    }
+                    if(mListener != null){
+                        mListener.onActivityUpdate();
+                    }
+                    backToActivity();
+                }
+            });
         }
+    }
+
+    private void backToActivity(){
+        // Вызываем метод активности для закрытия фрагмента и открытия активности
+        if (mListener != null) {
+            mListener.onFragmentClose();
+        }
+        // Закрываем фрагмент
+        getActivity().getSupportFragmentManager().beginTransaction()
+                .remove(ProductDetailFragment.this)
+                .commit();
     }
 
     //Метод вызывается, когда фрагмент отключается от активности.

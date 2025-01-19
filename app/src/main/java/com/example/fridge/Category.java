@@ -8,11 +8,10 @@ public class Category<T> {
     private boolean isExpanded; // Расширенный
     private ArrayList<T> products;
 
-    public Category(String name, int imageResourceId, ArrayList<T> products) {
+    public Category(String name, boolean isExpanded, ArrayList<T> products) {
         this.name = name;
-        this.imageResourceId = imageResourceId;
+        this.isExpanded = isExpanded;
         this.products = products;
-        this.isExpanded = false;
     }
 
     public String getName() {
