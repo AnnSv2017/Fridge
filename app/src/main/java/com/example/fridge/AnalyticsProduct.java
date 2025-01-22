@@ -1,6 +1,11 @@
 package com.example.fridge;
 
-public class AnalyticsProduct {
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import androidx.annotation.NonNull;
+
+public class AnalyticsProduct implements Parcelable {
     private int productId;
     private String manufactureDate;
     private String expiryDate;
@@ -40,4 +45,42 @@ public class AnalyticsProduct {
     public int getOverdueLogsCount() {
         return overdueLogsCount;
     }
+
+    // Конструктор для восстановления объекта из Parcel
+    protected AnalyticsProduct(Parcel in) {
+        productId = in.readInt();
+        manufactureDate = in.readString();
+        expiryDate = in.readString();
+        addLogsCount = in.readInt();
+        usedLogsCount = in.readInt();
+        overdueLogsCount = in.readInt();
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(@NonNull Parcel parcel, int i) {
+        parcel.writeInt(productId);
+        parcel.writeString(manufactureDate);
+        parcel.writeString(expiryDate);
+        parcel.writeInt(addLogsCount);
+        parcel.writeInt(usedLogsCount);
+        parcel.writeInt(overdueLogsCount);
+    }
+
+    // Статический CREATOR
+    public static final Parcelable.Creator<AnalyticsProduct> CREATOR = new Parcelable.Creator<AnalyticsProduct>() {
+        @Override
+        public AnalyticsProduct createFromParcel(Parcel in) {
+            return new AnalyticsProduct(in);
+        }
+
+        @Override
+        public AnalyticsProduct[] newArray(int size) {
+            return new AnalyticsProduct[size];
+        }
+    };
 }

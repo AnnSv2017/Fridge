@@ -114,6 +114,5 @@ public class InfoProductFragment extends Fragment {
             }
             textViewMeasurementType.setText(measurement_type);
         }
-        //view.setVisibility(View.GONE);
     }
 }

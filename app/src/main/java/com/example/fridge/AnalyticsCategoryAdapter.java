@@ -23,7 +23,7 @@ public class AnalyticsCategoryAdapter extends BaseAdapter {
     private AnalyticsCategoryAdapter.OnProductClickListener productClickListener;
 
     public interface OnProductClickListener {
-        void onProductClick(DataProductLogs product);
+        void onProductClick(AnalyticsProduct analyticsProduct);
     }
 
     public AnalyticsCategoryAdapter(Context context, List<Category> categories, AnalyticsCategoryAdapter.OnProductClickListener listener) {
@@ -86,8 +86,8 @@ public class AnalyticsCategoryAdapter extends BaseAdapter {
             productsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                    ArrayList<DataProductLogs> dataProductLogs= category.getProducts();
-                    showInfoProduct(dataProductLogs.get(i));
+                    ArrayList<AnalyticsProduct> data = category.getProducts();
+                    showInfoProduct(data.get(i));
                 }
             });
             productsListView.setVisibility(View.VISIBLE);
@@ -99,8 +99,7 @@ public class AnalyticsCategoryAdapter extends BaseAdapter {
         return view;
     }
 
-    private void showInfoProduct(DataProductLogs data) {
-        Log.e("AnalyticsCategoryAdapter", "показ инфы продукта " + data.getId());
+    private void showInfoProduct(AnalyticsProduct data) {
         if (productClickListener != null) {
             productClickListener.onProductClick(data);
         }
