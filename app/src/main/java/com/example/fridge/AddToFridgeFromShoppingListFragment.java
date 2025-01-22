@@ -41,7 +41,9 @@ public class AddToFridgeFromShoppingListFragment extends Fragment {
     private DataProductInShoppingList dataPISL;
     private DataProduct dataProduct;
     private DBHelper dbHelper;
+    // "yyyy-MM-dd"    "dd.MM.yyyy"
     private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+    private DateTimeFormatter formatterDB = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     private TextView textViewFullName, textViewWeightOne, textViewTotalWeight;
     private TextInputEditText editTextManufactureDate, editTextExpiryDate, editTextDays, editTextQuantity;
@@ -192,6 +194,8 @@ public class AddToFridgeFromShoppingListFragment extends Fragment {
 
             addButton.setOnClickListener(v -> {addToFridgeOnClick();});
 
+            deleteButton.setOnClickListener(v -> {deleteProductFromShoppingList();});
+
             backImageView.setOnClickListener(v -> {backToActivity();});
         }
     }
@@ -319,12 +323,23 @@ public class AddToFridgeFromShoppingListFragment extends Fragment {
         if(!areAllFieldsFilled()){
             return;
         }
+        // Проверка корректности ВВЕДЁННЫХ дат
+        if(!allDatesAreCorrect()){
+            return;
+        }
         // Добавление в холодильник
-        String manufacture_date = editTextManufactureDate.getText().toString();
-        String expiry_date = editTextExpiryDate.getText().toString();
+        String manufacture_date = LocalDate.parse(editTextManufactureDate.getText().toString(), formatter).format(formatterDB);
+        String expiry_date = LocalDate.parse(editTextExpiryDate.getText().toString(), formatter).format(formatterDB);
+        Log.e("addToFridgeOnClick 1", manufacture_date + " " + expiry_date);
         int quantity = Integer.parseInt(editTextQuantity.getText().toString());
         DataProductInFridge dataProductInFridge = new DataProductInFridge(0, manufacture_date, expiry_date, dataPISL.getProduct_id(), quantity);
         dbHelper.addProductInFridge(dataProductInFridge);
+
+        // Фиксируем добавление в логах
+        String currentDate = LocalDate.now().format(formatterDB);
+        Log.e("addToFridgeOnClick 2", currentDate);
+        DataProductLogs dataProductLogs = new DataProductLogs(0, currentDate, manufacture_date, expiry_date, dataPISL.getProduct_id(), "add", quantity);
+        dbHelper.addProductLogs(dataProductLogs);
 
         // Удаление из списка покупок
         dbHelper.deleteProductFromShoppingList(dataPISL.getId());
@@ -354,6 +369,28 @@ public class AddToFridgeFromShoppingListFragment extends Fragment {
 
         if(Integer.parseInt(editTextQuantity.getText().toString()) <= 0){
             Toast.makeText(requireContext(), "Количество должно быть больше 0!", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        return true;
+    }
+
+    // Обязательно вызывается после areAllFieldsFilled() когда проверено, что поля с датами заполнены и
+    // Вызывается только после добавления даты т.к. при удалении даты лишь сравниваются с уже существующими датами
+    private boolean allDatesAreCorrect(){
+        // Проверка на то что дата изготовления идёт раньше чем дата истечения срока годности
+        LocalDate manufactureDate = LocalDate.parse(editTextManufactureDate.getText().toString(), formatter);
+        LocalDate expiryDate = LocalDate.parse(editTextExpiryDate.getText().toString(), formatter);
+        if(manufactureDate.isAfter(expiryDate)){
+            Toast.makeText(requireContext(), "Дата изготовления должна идти раньше чем дата истечения срока!", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        // Проверка корректности введённых дат
+        LocalDate currentDate = LocalDate.now();
+        if(currentDate.isAfter(expiryDate)){
+            // Если текущая дата уже стоит позже даты истечения срока, значит продукт уже просрочен и мы его добавить не можем!
+            Toast.makeText(requireContext(), "Продукт уже просрочен! Сегодня уже " + currentDate.format(formatter), Toast.LENGTH_SHORT).show();
             return false;
         }
 

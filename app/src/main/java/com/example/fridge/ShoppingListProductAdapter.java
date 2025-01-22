@@ -19,7 +19,6 @@ public class ShoppingListProductAdapter extends BaseAdapter {
 
     private Context context;
     private ArrayList<DataProductInShoppingList> productsList;
-    private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
     public ShoppingListProductAdapter(Context context, ArrayList<DataProductInShoppingList> productsList){
         this.context = context;

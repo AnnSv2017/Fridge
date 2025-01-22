@@ -114,4 +114,9 @@ public class ShoppingListActivity extends AppCompatActivity implements ShoppingL
         Intent intent = new Intent(this, QrCodeScannerActivity.class);
         startActivity(intent);
     }
+
+    public void btnAnalytics(View v){
+        Intent intent = new Intent(this, AnalyticsActivity.class);
+        startActivity(intent);
+    }
 }

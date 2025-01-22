@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 public class Category<T> {
     private String name;
-    private int imageResourceId;
     private boolean isExpanded; // Расширенный
     private ArrayList<T> products;
 
@@ -16,10 +15,6 @@ public class Category<T> {
 
     public String getName() {
         return name;
-    }
-
-    public int getImageResourceId() {
-        return imageResourceId;
     }
 
     public boolean isExpanded() {

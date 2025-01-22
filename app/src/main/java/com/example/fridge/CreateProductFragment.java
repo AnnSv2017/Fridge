@@ -45,6 +45,7 @@ public class CreateProductFragment extends Fragment {
     private View view;
     private DBHelper dbHelper;
     private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+    private DateTimeFormatter formatterDB = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     private ImageView backImageView;
     private TextInputEditText editTextName, editTextFirm, editTextType, editTextManufactureDate, editTextExpiryDate, editTextDays, editTextWeight, editTextQuantity;
@@ -317,8 +318,12 @@ public class CreateProductFragment extends Fragment {
                 editTextCarbohydrates, editTextCaloriesKcal,
                 editTextCaloriesKJ
         };
-        //Если какое-то поле было не заполнены, то продукт не добавляется
+        // Если какое-то поле было не заполнены, то продукт не добавляется
         if (!areAllFieldsFilled(requiredFields)){
+            return;
+        }
+        // Проверка корректности ВВЕДЁННЫХ дат
+        if(!allDatesAreCorrect()){
             return;
         }
         String type = editTextType.getText().toString().trim();
@@ -365,15 +370,16 @@ public class CreateProductFragment extends Fragment {
         }
 
         // Добавление продукта в холодильник
-        String manufacture_date = editTextManufactureDate.getText().toString();
-        String expiry_date = editTextExpiryDate.getText().toString();
+        String manufacture_date = LocalDate.parse(editTextManufactureDate.getText().toString(), formatter).format(formatterDB);
+        String expiry_date = LocalDate.parse(editTextExpiryDate.getText().toString(), formatter).format(formatterDB);
         int productId = dbHelper.getProductIdByFullName(type, name, firm, mass_value, mass_unit);
         int quantity = Integer.parseInt(editTextQuantity.getText().toString());
         DataProductInFridge dataProductInFridge = new DataProductInFridge(0, manufacture_date, expiry_date, productId, quantity);
         dbHelper.addProductInFridge(dataProductInFridge);
 
         // Добавление продукта в логи с датой
-        DataProductLogs dataProductLogs = new DataProductLogs(0, manufacture_date, expiry_date, productId, "add", quantity);
+        String currentDate = LocalDate.now().format(formatterDB);
+        DataProductLogs dataProductLogs = new DataProductLogs(0, currentDate, manufacture_date, expiry_date, productId, "add", quantity);
         dbHelper.addProductLogs(dataProductLogs);
 
         Toast.makeText(getContext(), "Продукт был успешно добавлен!", Toast.LENGTH_SHORT).show();
@@ -419,8 +425,8 @@ public class CreateProductFragment extends Fragment {
             return;
         }
         // Проверка существует ли он в холодильнике и достаточно ли его для удаления
-        String manufacture_date = editTextManufactureDate.getText().toString();
-        String expiry_date = editTextExpiryDate.getText().toString();
+        String manufacture_date = LocalDate.parse(editTextManufactureDate.getText().toString(), formatter).format(formatterDB);
+        String expiry_date = LocalDate.parse(editTextExpiryDate.getText().toString(), formatter).format(formatterDB);
         int productId = dbHelper.getProductIdByFullName(type, name, firm, mass_value, mass_unit);
         if(dbHelper.getProductInFridgeIdIfItInFridge(manufacture_date, expiry_date, productId) == -1){
             // Продукта нет в холодильнике
@@ -440,7 +446,16 @@ public class CreateProductFragment extends Fragment {
         }
 
         // Оставляем лог об удалённом продукте
-        DataProductLogs dataProductLogs = new DataProductLogs(0, manufacture_date, expiry_date, productId, "delete", quantityToDelete);
+        String currentDate = LocalDate.now().format(formatterDB);
+        String operationType;
+        LocalDate currentLocalDate = LocalDate.now();
+        LocalDate expiryLocalDate = LocalDate.parse(expiry_date, formatterDB);
+        if(currentLocalDate.isBefore(expiryLocalDate) || currentLocalDate.isEqual(expiryLocalDate)){
+            operationType = "used";
+        } else {
+            operationType = "overdue";
+        }
+        DataProductLogs dataProductLogs = new DataProductLogs(0, currentDate, manufacture_date, expiry_date, productId, operationType, quantityToDelete);
         dbHelper.addProductLogs(dataProductLogs);
 
         backToActivity();
@@ -514,8 +529,6 @@ public class CreateProductFragment extends Fragment {
     }
 
     private boolean areAllFieldsFilled(EditText[] requiredFields){
-
-
         // Проверка заполненности текстовых полей
         for (EditText field : requiredFields) {
             if (field.getText().toString().trim().isEmpty()) {
@@ -572,6 +585,28 @@ public class CreateProductFragment extends Fragment {
         }
 
         // Все поля заполнены
+        return true;
+    }
+
+    // Обязательно вызывается после areAllFieldsFilled() когда проверено, что поля с датами заполнены и
+    // Вызывается только после добавления даты т.к. при удалении даты лишь сравниваются с уже существующими датами
+    private boolean allDatesAreCorrect(){
+        // Проверка на то что дата изготовления идёт раньше чем дата истечения срока годности
+        LocalDate manufactureDate = LocalDate.parse(editTextManufactureDate.getText().toString(), formatter);
+        LocalDate expiryDate = LocalDate.parse(editTextExpiryDate.getText().toString(), formatter);
+        if(manufactureDate.isAfter(expiryDate)){
+            Toast.makeText(requireContext(), "Дата изготовления должна идти не позже чем дата истечения срока годности!", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        // Проверка корректности введённых дат
+        LocalDate currentDate = LocalDate.now();
+        if(currentDate.isAfter(expiryDate)){
+            // Если текущая дата уже стоит позже даты истечения срока, значит продукт уже просрочен и мы его добавить не можем!
+            Toast.makeText(requireContext(), "Продукт уже просрочен! Сегодня уже " + currentDate.format(formatter), Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
         return true;
     }
 

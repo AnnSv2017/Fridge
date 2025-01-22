@@ -19,11 +19,16 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+
 public class ProductDetailFragment extends Fragment {
 
     private OnFragmentInteractionExpendedListener mListener;
     private DataProductInFridge dataPIF;
     private DBHelper dbHelper;
+    private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+    private DateTimeFormatter formatterDB = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     private InfoProductFragment infoProductFragment;
     private ImageView backButton, deleteButton;
@@ -89,8 +94,18 @@ public class ProductDetailFragment extends Fragment {
                     boolean isDeleted = dbHelper.deleteProductFromFridge(dataPIF.getId(), dataPIF.getQuantity());
                     if(isDeleted){
                         Toast.makeText(requireContext(), "Продукт был успешно удалён!", Toast.LENGTH_SHORT).show();
+                        // Находим тип удаления (истрачено или просрочено)
+                        String currentDate = LocalDate.now().format(formatterDB);
+                        String operationType;
+                        LocalDate currentLocalDate = LocalDate.now();
+                        LocalDate expiryLocalDate = LocalDate.parse(dataPIF.getExpiry_date(), formatterDB);
+                        if(currentLocalDate.isBefore(expiryLocalDate)){
+                            operationType = "used";
+                        } else {
+                            operationType = "overdue";
+                        }
                         // Фиксируем удаление в логах
-                        DataProductLogs dataProductLogs = new DataProductLogs(0, dataPIF.getManufacture_date(), dataPIF.getExpiry_date(), dataPIF.getProduct_id(), "delete", dataPIF.getQuantity());
+                        DataProductLogs dataProductLogs = new DataProductLogs(0, currentDate, dataPIF.getManufacture_date(), dataPIF.getExpiry_date(), dataPIF.getProduct_id(), operationType, dataPIF.getQuantity());
                         dbHelper.addProductLogs(dataProductLogs);
                     } else {
                         Toast.makeText(requireContext(), "ERROR. Продукт НЕ был удалён!", Toast.LENGTH_SHORT).show();

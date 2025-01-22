@@ -74,7 +74,7 @@
                 android:onClick="btnQrCodeScanner"/>
 
             <ImageView
-                android:id="@+id/btn_logs"
+                android:id="@+id/btn_analytics"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:layout_gravity="center_vertical"
@@ -82,7 +82,8 @@
                 android:src="@drawable/ic_analytics"
                 android:layout_weight="1"
                 android:contentDescription="Аналитика потребления товаров"
-                android:clickable="true"/>
+                android:clickable="true"
+                android:onClick="btnAnalytics"/>
 
             <ImageView
                 android:id="@+id/btn_shopping_list"

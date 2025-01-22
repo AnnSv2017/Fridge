@@ -40,7 +40,6 @@ public class DataProductInFridge implements Parcelable {
         return quantity;
     }
 
-
     // Конструктор для восстановления объекта из Parcel
     protected DataProductInFridge(Parcel in) {
         id = in.readInt();

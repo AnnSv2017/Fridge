@@ -26,6 +26,8 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -34,6 +36,8 @@ import java.util.concurrent.TimeoutException;
 public class QrCodeInfoFragment extends Fragment {
 
     private DBHelper dbHelper;
+    //private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+    private DateTimeFormatter formatterDB = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     private JsonObject jsonData;
     private String name, firm, type, manufacture_date, expiry_date, mass_unit, measurement_type;
     private Double mass_value, proteins, fats, carbohydrates;
@@ -245,39 +249,6 @@ public class QrCodeInfoFragment extends Fragment {
         }
     }
 
-    private void fillAllFieldsInfoProduct(View viewFragment){
-        TextView textViewName = viewFragment.findViewById(R.id.text_view_name);
-        TextView textViewType = viewFragment.findViewById(R.id.text_view_type);
-        TextView textViewFirm = viewFragment.findViewById(R.id.text_view_firm);
-        TextView textViewManufactureDate = viewFragment.findViewById(R.id.text_view_manufacture_date);
-        TextView textViewExpiryDate = viewFragment.findViewById(R.id.text_view_expiry_date);
-        TextView textViewMass = viewFragment.findViewById(R.id.text_view_mass);
-        TextView textViewProteins = viewFragment.findViewById(R.id.text_view_proteins);
-        TextView textViewFats = viewFragment.findViewById(R.id.text_view_fats);
-        TextView textViewCarbohydrates = viewFragment.findViewById(R.id.text_view_carbohydrates);
-        TextView textViewCalories = viewFragment.findViewById(R.id.text_view_calories);
-        TextView textViewAllergens = viewFragment.findViewById(R.id.text_view_allergens);
-        TextView textViewMeasurementType = viewFragment.findViewById(R.id.text_view_measurement_type);
-
-        textViewName.setText(name);
-        textViewType.setText(type);
-        textViewFirm.setText(firm);
-        textViewManufactureDate.setText(manufacture_date);
-        textViewExpiryDate.setText(expiry_date);
-        textViewMass.setText(String.valueOf(mass_value) + " " + mass_unit);
-        textViewProteins.setText(String.valueOf(proteins) + " г");
-        textViewFats.setText(String.valueOf(fats) + " г");
-        textViewCarbohydrates.setText(String.valueOf(carbohydrates) + " г");
-        String calories_text = String.format("%s ккал/\n%s кДж", calories_kcal, calories_KJ);
-        textViewCalories.setText(calories_text);
-        if (allergensList != null && !allergensList.isEmpty()) {
-            textViewAllergens.setText(String.join(", ", allergensList));
-        } else{
-            textViewAllergens.setText("Нет аллергенов");
-        }
-        textViewMeasurementType.setText(measurement_type);
-    }
-
     private void backOnClick(){
         // Вызываем метод активности для возобновления сканера
         if (mListener != null) {
@@ -297,7 +268,8 @@ public class QrCodeInfoFragment extends Fragment {
         dbHelper.addProductInFridge(dataProductInFridge);
 
         // Добавление в логи
-        DataProductLogs dataProductLogs = new DataProductLogs(0, manufacture_date, expiry_date, product_id, "add", quantity);
+        String currentDate = LocalDate.now().format(formatterDB);
+        DataProductLogs dataProductLogs = new DataProductLogs(0, currentDate, manufacture_date, expiry_date, product_id, "add", quantity);
         dbHelper.addProductLogs(dataProductLogs);
 
         Toast.makeText(requireContext(), "Продукт был успешно добавлен!", Toast.LENGTH_SHORT).show();
@@ -325,7 +297,17 @@ public class QrCodeInfoFragment extends Fragment {
         }
 
         // Добавление в логи
-        DataProductLogs dataProductLogs = new DataProductLogs(0, manufacture_date, expiry_date, productId, "delete", quantityToDelete);
+        // Находим тип удаления (истрачено или просрочено)
+        String currentDate = LocalDate.now().format(formatterDB);
+        String operationType;
+        LocalDate currentLocalDate = LocalDate.now();
+        LocalDate expiryLocalDate = LocalDate.parse(expiry_date, formatterDB);
+        if(currentLocalDate.isBefore(expiryLocalDate) || currentLocalDate.isEqual(expiryLocalDate)){
+            operationType = "used";
+        } else {
+            operationType = "overdue";
+        }
+        DataProductLogs dataProductLogs = new DataProductLogs(0, currentDate, manufacture_date, expiry_date, productId, operationType, quantityToDelete);
         dbHelper.addProductLogs(dataProductLogs);
 
         backOnClick();

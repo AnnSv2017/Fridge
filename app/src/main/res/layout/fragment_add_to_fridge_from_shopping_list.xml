@@ -103,11 +103,14 @@
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/edit_text_days"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
                         android:gravity="center"
                         android:text="0"
                         android:inputType="number"
-                        android:digits="0123456789-"/>
+                        android:digits="0123456789-"
+                        android:scrollHorizontally="true"
+                        android:singleLine="true"
+                        android:ellipsize="end"/>
 
                 </com.google.android.material.textfield.TextInputLayout>
 

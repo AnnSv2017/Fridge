@@ -60,6 +60,38 @@
         <item name="boxCornerRadiusBottomEnd">8dp</item>
     </style>
 
+    <style name="CustomTextOrangeInputLayout" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <!-- Режим рамки -->
+        <item name="boxBackgroundMode">outline</item>
+
+        <!-- Цвет самого элемента -->
+        <item name="boxBackgroundColor">@color/white</item>
+
+        <!-- Цвет обводки -->
+        <item name="boxStrokeColor">@color/orange</item>
+
+        <!-- Цвет текста подсказки -->
+        <item name="hintTextColor">@color/orange</item>
+
+        <!-- Цвет текста в EditText -->
+        <item name="android:textColor">@color/gray</item>
+
+        <!-- Толщина обводки -->
+        <item name="boxStrokeWidth">2dp</item>
+
+        <!-- Указываем закруглённость углов -->
+        <item name="shapeAppearanceOverlay">@style/RoundedCorners</item>
+
+        <!-- Подсказка при фокусе перемещается наверх -->
+        <item name="hintAnimationEnabled">true</item>
+
+        <!-- Настройка размеров -->
+        <item name="boxCornerRadiusTopStart">8dp</item>
+        <item name="boxCornerRadiusTopEnd">8dp</item>
+        <item name="boxCornerRadiusBottomStart">8dp</item>
+        <item name="boxCornerRadiusBottomEnd">8dp</item>
+    </style>
+
     <!-- Стиль для формы с закруглёнными углами -->
     <style name="RoundedCorners" parent="">
         <item name="cornerSize">12dp</item> <!-- Закруглённость углов -->

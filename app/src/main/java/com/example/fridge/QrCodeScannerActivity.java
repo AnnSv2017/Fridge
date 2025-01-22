@@ -267,6 +267,11 @@ public class QrCodeScannerActivity extends AppCompatActivity implements OnFragme
         startActivity(intent);
     }
 
+    public void btnAnalytics(View v){
+        Intent intent = new Intent(this, AnalyticsActivity.class);
+        startActivity(intent);
+    }
+
     public void btnShoppingList(View v){
         Intent intent = new Intent(this, ShoppingListActivity.class);
         startActivity(intent);

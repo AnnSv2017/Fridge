@@ -11,7 +11,9 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 
 import java.lang.reflect.Type;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class DBHelper extends SQLiteOpenHelper {
@@ -20,7 +22,7 @@ public class DBHelper extends SQLiteOpenHelper {
     private Context context;
     DBManager dbManager;
     private static final String DATABASE_NAME = "helper.db";
-    private static final int DATABASE_VERSION = 9;
+    private static final int DATABASE_VERSION = 10;
 
     // SQL-запросы для создания таблиц
 
@@ -86,6 +88,7 @@ public class DBHelper extends SQLiteOpenHelper {
     private static final String CREATE_PRODUCT_LOGS_TABLE =
             "CREATE TABLE " + PRODUCT_LOGS_TABLE + " (" +
                     "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                    "date TEXT, " +
                     "manufacture_date TEXT, " + // Формат ISO 8601
                     "expiry_date TEXT, " +
                     "product_id INTEGER, " +
@@ -207,6 +210,26 @@ public class DBHelper extends SQLiteOpenHelper {
         int quantity = cursor.getInt(quantityIndex);
 
         return new DataProductInShoppingList(id, product_id, quantity);
+    }
+
+    private DataProductLogs getDataProductLogsFromCursor(Cursor cursor){
+        int idIndex = cursor.getColumnIndex("id");
+        int dateIndex = cursor.getColumnIndex("date");
+        int manufactureDateIndex = cursor.getColumnIndex("manufacture_date");
+        int expiryDateIndex = cursor.getColumnIndex("expiry_date");
+        int productIdIndex = cursor.getColumnIndex("product_id");
+        int operationTypeIndex = cursor.getColumnIndex("operation_type");
+        int quantityIndex = cursor.getColumnIndex("quantity");
+
+        int id = cursor.getInt(idIndex);
+        String date = cursor.getString(dateIndex);
+        String manufacture_date = cursor.getString(manufactureDateIndex);
+        String expiry_date = cursor.getString(expiryDateIndex);
+        int product_id = cursor.getInt(productIdIndex);
+        String operation_type = cursor.getString(operationTypeIndex);
+        int quantity = cursor.getInt(quantityIndex);
+
+        return new DataProductLogs(id, date, manufacture_date, expiry_date, product_id, operation_type, quantity);
     }
 
     // Добавления новых объектов в таблицы
@@ -339,14 +362,32 @@ public class DBHelper extends SQLiteOpenHelper {
     public void addProductLogs(DataProductLogs data){
         SQLiteDatabase db = getDbManager().getDatabase();
 
-        ContentValues cv = new ContentValues();
-        cv.put("manufacture_date", data.getManufacture_date());
-        cv.put("expiry_date", data.getExpiry_date());
-        cv.put("product_id", data.getProduct_id());
-        cv.put("operation_type", data.getOperation_type());
-        cv.put("quantity", data.getQuantity());
+        int productLogsId = getProductLogsIdByData(data);
 
-        db.insert(PRODUCT_LOGS_TABLE, null, cv);
+        ContentValues cv = new ContentValues();
+
+        // Если продукта нет в логах, добавляем его в логи
+        if(productLogsId == -1){
+            cv.put("date", data.getDate());
+            cv.put("manufacture_date", data.getManufacture_date());
+            cv.put("expiry_date", data.getExpiry_date());
+            cv.put("product_id", data.getProduct_id());
+            cv.put("operation_type", data.getOperation_type());
+            cv.put("quantity", data.getQuantity());
+
+            db.insert(PRODUCT_LOGS_TABLE, null, cv);
+        }
+        // Если продукт есть в логах, то мы меняем количество
+        else{
+            DataProductLogs existingProduct = getProductLogsById(productLogsId);
+            if (existingProduct != null) {
+                int quantity = existingProduct.getQuantity() + data.getQuantity();
+                cv.put("quantity", quantity);
+                db.update(PRODUCT_LOGS_TABLE, cv, "id = ?", new String[]{String.valueOf(productLogsId)});
+            } else {
+                throw new IllegalStateException("Product with ID " + productLogsId + " not found in the database");
+            }
+        }
     }
 
     // Получение id объекта по имени и не только
@@ -435,6 +476,28 @@ public class DBHelper extends SQLiteOpenHelper {
         cursor.close();
 
         return productInFridgeId;
+    }
+
+    public int getProductLogsIdByData(DataProductLogs data){
+        SQLiteDatabase db = getDbManager().getDatabase();
+
+        int productLogsId = -1;
+        Cursor cursor = db.query(
+                PRODUCT_LOGS_TABLE,
+                new String[]{"id"},
+                "date = ? AND manufacture_date = ? AND expiry_date = ? AND product_id = ? AND operation_type = ?",
+                new String[]{data.getDate(), data.getManufacture_date(), data.getExpiry_date(), String.valueOf(data.getProduct_id()), data.getOperation_type()},
+                null,
+                null,
+                null
+        );
+        if(cursor.moveToFirst()){
+            int productLogsIdIndex = cursor.getColumnIndex("id");
+            productLogsId = cursor.getInt(productLogsIdIndex);
+        }
+        cursor.close();
+
+        return productLogsId;
     }
 
     public int getProductInShoppingListId(int product_id){
@@ -614,6 +677,38 @@ public class DBHelper extends SQLiteOpenHelper {
         DataProductInShoppingList data = null;
         if(cursor != null && cursor.moveToFirst()){
             data = getDataProductInShoppingListFromCursor(cursor);
+        }
+        if(cursor != null){
+            cursor.close();
+        }
+
+        return data;
+    }
+
+    public DataProductLogs getProductLogsById(int idPK){
+        SQLiteDatabase db = getDbManager().getDatabase();
+
+        Cursor cursor = db.query(
+                PRODUCT_LOGS_TABLE,
+                null,
+                "id = ?",
+                new String[]{String.valueOf(idPK)},
+                null,
+                null,
+                null
+        );
+
+        if (cursor == null || !cursor.moveToFirst()) {
+            Log.e("DBHelper", "No product found with ID: " + idPK);
+            if (cursor != null) {
+                cursor.close();
+            }
+            return null;
+        }
+
+        DataProductLogs data = null;
+        if(cursor != null && cursor.moveToFirst()){
+            data = getDataProductLogsFromCursor(cursor);
         }
         if(cursor != null){
             cursor.close();
@@ -802,6 +897,55 @@ public class DBHelper extends SQLiteOpenHelper {
         return list;
     }
 
+    public ArrayList<AnalyticsProduct> getAllAnalyticsProductByTypeANDDates(String type, String firstDate, String lastDate) {
+        ArrayList<AnalyticsProduct> list = new ArrayList<>();
+        SQLiteDatabase db = getDbManager().getDatabase();
+
+        String query = "SELECT " +
+                "product_id, " +
+                "manufacture_date, " +
+                "expiry_date, " +
+                "SUM(CASE WHEN operation_type = 'add' THEN quantity ELSE 0 END) AS addLogsCount, " +
+                "SUM(CASE WHEN operation_type = 'used' THEN quantity ELSE 0 END) AS usedLogsCount, " +
+                "SUM(CASE WHEN operation_type = 'overdue' THEN quantity ELSE 0 END) AS overdueLogsCount " +
+                "FROM " + PRODUCT_LOGS_TABLE + " " +
+                "WHERE product_id IN (SELECT id FROM " + PRODUCT_TABLE + " WHERE type = ?) " +
+                "AND date BETWEEN ? AND ? " +
+                "GROUP BY product_id, manufacture_date, expiry_date";
+
+        Cursor cursor = null;
+
+        try {
+            cursor = db.rawQuery(query, new String[]{type, firstDate, lastDate});
+
+            if (cursor.moveToFirst()) {
+                do {
+                    int productId = cursor.getInt(cursor.getColumnIndexOrThrow("product_id"));
+                    String manufactureDate = cursor.getString(cursor.getColumnIndexOrThrow("manufacture_date"));
+                    String expiryDate = cursor.getString(cursor.getColumnIndexOrThrow("expiry_date"));
+                    int addLogsCount = cursor.getInt(cursor.getColumnIndexOrThrow("addLogsCount"));
+                    int usedLogsCount = cursor.getInt(cursor.getColumnIndexOrThrow("usedLogsCount"));
+                    int overdueLogsCount = cursor.getInt(cursor.getColumnIndexOrThrow("overdueLogsCount"));
+
+                    list.add(new AnalyticsProduct(
+                            productId,
+                            manufactureDate,
+                            expiryDate,
+                            addLogsCount,
+                            usedLogsCount,
+                            overdueLogsCount
+                    ));
+                } while (cursor.moveToNext());
+            }
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+
+        return list;
+    }
+
     // Получение списка имён некоторых объектов
 
     public ArrayList<String> getAllTypesNames(){
@@ -821,6 +965,7 @@ public class DBHelper extends SQLiteOpenHelper {
         }
         return list;
     }
+
 
     // Изменение объектов
     public void editAllergenNameById(int allergenId, String newName){
@@ -912,6 +1057,20 @@ public class DBHelper extends SQLiteOpenHelper {
     }
 
     // Методы без запросов к БД
+    public ArrayList<Category> getAllCategoriesByDatesForAnalytics(String firstDate, String lastDate){
+        ArrayList<Category> categories = new ArrayList<>();
+        ArrayList<String> types = getAllTypesNames();
+        ArrayList<AnalyticsProduct> products;
+        for(String type : types){
+            products = getAllAnalyticsProductByTypeANDDates(type, firstDate, lastDate);
+            if(products != null && !products.isEmpty()){
+                Category category = new Category(type, false, products);
+                categories.add(category);
+            }
+        }
+        return categories;
+    }
+
     public ArrayList<Category> getAllCategoriesForFridge(){
         ArrayList<Category> categories = new ArrayList<>();
         ArrayList<String> types = getAllTypesNames();

@@ -15,12 +15,16 @@ import android.view.ViewGroup;
 import android.widget.GridLayout;
 import android.widget.TextView;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
 public class InfoProductFragment extends Fragment {
 
     private DBHelper dbHelper;
+    private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+    private DateTimeFormatter formatterDB = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     private DataProductInFridge dataPIF;
 
     private TextView textViewName, textViewType, textViewFirm, textViewManufactureDate, textViewExpiryDate, textViewMass, textViewProteins, textViewFats, textViewCarbohydrates, textViewCalories, textViewAllergens, textViewMeasurementType;
@@ -93,8 +97,10 @@ public class InfoProductFragment extends Fragment {
             textViewName.setText(name);
             textViewType.setText(type);
             textViewFirm.setText(firm);
-            textViewManufactureDate.setText(manufacture_date);
-            textViewExpiryDate.setText(expiry_date);
+            String manufactureDate = LocalDate.parse(manufacture_date, formatterDB).format(formatter);
+            String expiryDate = LocalDate.parse(expiry_date, formatterDB).format(formatter);
+            textViewManufactureDate.setText(manufactureDate);
+            textViewExpiryDate.setText(expiryDate);
             textViewMass.setText(String.valueOf(mass_value) + " " + mass_unit);
             textViewProteins.setText(String.valueOf(proteins) + " г");
             textViewFats.setText(String.valueOf(fats) + " г");

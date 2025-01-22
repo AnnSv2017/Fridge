@@ -17,7 +17,8 @@ public class ProductAdapter extends BaseAdapter {
 
     private Context context;
     private ArrayList<DataProductInFridge> productsList;
-    private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+    //private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+    private DateTimeFormatter formatterDB = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     public ProductAdapter(Context context, ArrayList<DataProductInFridge> productsList){
         this.context = context;
@@ -55,7 +56,7 @@ public class ProductAdapter extends BaseAdapter {
 
         // Получения количества дней до истечения срока
         LocalDate currentDate = LocalDate.now();
-        LocalDate expiryDate = LocalDate.parse(dataProductInFridge.getExpiry_date(), formatter);
+        LocalDate expiryDate = LocalDate.parse(dataProductInFridge.getExpiry_date(), formatterDB);
         long days = ChronoUnit.DAYS.between(currentDate, expiryDate);
 
         // Получение количества товара
@@ -70,7 +71,7 @@ public class ProductAdapter extends BaseAdapter {
         textViewDays.setText(String.valueOf(days) + " дн.");
         textViewQuantity.setText(String.valueOf(quantity));
 
-        if(days > 0){
+        if(days >= 0){
             rlProduct.setBackgroundResource(R.drawable.product_border_green);
         } else{
             rlProduct.setBackgroundResource(R.drawable.product_border_red);
@@ -87,7 +88,7 @@ public class ProductAdapter extends BaseAdapter {
         LocalDate currentDate = LocalDate.now();
 
         for (DataProductInFridge product : productsList) {
-            LocalDate expiryDate = LocalDate.parse(product.getExpiry_date(), formatter);
+            LocalDate expiryDate = LocalDate.parse(product.getExpiry_date(), formatterDB);
             long days = ChronoUnit.DAYS.between(currentDate, expiryDate);
 
             if (days > 0) {

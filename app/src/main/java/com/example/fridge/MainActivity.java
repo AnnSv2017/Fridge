@@ -43,7 +43,6 @@ public class MainActivity extends AppCompatActivity implements CategoryAdapter.O
     private ListView listViewCategories;
     private EditText editTextSearch;
     private ImageView imageViewErase;
-    private LinearLayout searchContainer;
 
 
     @Override
@@ -69,7 +68,6 @@ public class MainActivity extends AppCompatActivity implements CategoryAdapter.O
         // Поисковик
         editTextSearch = findViewById(R.id.edit_text_search);
         imageViewErase = findViewById(R.id.image_view_erase);
-        searchContainer = findViewById(R.id.search_container);
 
         editTextSearch.addTextChangedListener(new TextWatcher() {
             @Override
@@ -208,6 +206,11 @@ public class MainActivity extends AppCompatActivity implements CategoryAdapter.O
 
     public void btnQrCodeScanner(View v){
         Intent intent = new Intent(this, QrCodeScannerActivity.class);
+        startActivity(intent);
+    }
+
+    public void btnAnalytics(View v){
+        Intent intent = new Intent(this, AnalyticsActivity.class);
         startActivity(intent);
     }
 
