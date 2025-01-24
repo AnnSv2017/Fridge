@@ -3,15 +3,19 @@ package com.example.fridge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.DatePickerDialog;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -44,6 +48,7 @@ public class AnalyticsActivity extends AppCompatActivity implements AnalyticsCat
     private TextInputEditText editTextFirstDate, editTextLastDate, editTextDays;
     private ListView listViewCategories;
 
+    private boolean searchHasFullName = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,7 +84,7 @@ public class AnalyticsActivity extends AppCompatActivity implements AnalyticsCat
 
         // Адаптер и ListView
         if(editTextFirstDate.getText().toString().isEmpty() || editTextLastDate.getText().toString().isEmpty()){
-            categoriesList = new ArrayList<>();
+            categoriesList = dbHelper.getAllCategoriesForAnalytics();
         } else {
             String firstDate = LocalDate.parse(editTextFirstDate.getText().toString(), formatter).format(formatterDB);
             String lastDate = LocalDate.parse(editTextLastDate.getText().toString(), formatter).format(formatterDB);
@@ -89,6 +94,50 @@ public class AnalyticsActivity extends AppCompatActivity implements AnalyticsCat
 
         listViewCategories = findViewById(R.id.list_view_categories);
         listViewCategories.setAdapter(categoryAdapter);
+
+        // Поисковик
+        editTextSearch = findViewById(R.id.edit_text_search);
+        imageViewErase = findViewById(R.id.image_view_erase);
+
+        editTextSearch.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                showSuggestionNames(charSequence.toString());
+                //searchHasFullName = false;
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+
+        imageViewErase.setOnClickListener(v -> {
+            editTextSearch.setText("");
+            //searchHasFullName = false;
+            updateScreen();
+        });
+    }
+
+    private void updateScreen(){
+        if(editTextFirstDate.getText().toString().isEmpty() || editTextLastDate.getText().toString().isEmpty()){
+            categoriesList = dbHelper.getAllCategoriesForAnalytics();
+        } else {
+            String firstDate = LocalDate.parse(editTextFirstDate.getText().toString(), formatter).format(formatterDB);
+            String lastDate = LocalDate.parse(editTextLastDate.getText().toString(), formatter).format(formatterDB);
+            if(searchHasFullName){
+                String fullName = editTextSearch.getText().toString();
+                categoriesList = dbHelper.getCategoryForAnalyticsByFullNameWithDates(fullName, firstDate, lastDate);
+            } else{
+                categoriesList = dbHelper.getAllCategoriesByDatesForAnalytics(firstDate, lastDate);
+            }
+        }
+        categoryAdapter.updateCategories(categoriesList);
     }
 
     @Override
@@ -125,6 +174,7 @@ public class AnalyticsActivity extends AppCompatActivity implements AnalyticsCat
         findViewById(R.id.fragment_container).setVisibility(View.GONE);
     }
 
+    // Даты
     private void showDatePicker(EditText editText) {
         // Получаем текущую дату
         Calendar calendar = Calendar.getInstance();
@@ -167,7 +217,7 @@ public class AnalyticsActivity extends AppCompatActivity implements AnalyticsCat
         editTextDays.setText(String.valueOf(differenceInDays));
 
         // Когда обнавляются дни, значит две даты поменялись! Следовательно вызываем метод обновления ListView
-        updateListView();
+        updateScreen();
     }
 
     private void updateDates(){
@@ -188,20 +238,62 @@ public class AnalyticsActivity extends AppCompatActivity implements AnalyticsCat
         }
     }
 
-    private void updateListView(){
-        if(editTextFirstDate.getText().toString().isEmpty() || editTextLastDate.getText().toString().isEmpty()){
-            return;
-        }
-        String firstDate = LocalDate.parse(editTextFirstDate.getText().toString(), formatter).format(formatterDB);
-        String lastDate = LocalDate.parse(editTextLastDate.getText().toString(), formatter).format(formatterDB);
-        categoriesList = dbHelper.getAllCategoriesByDatesForAnalytics(firstDate, lastDate);
-        categoryAdapter.updateCategories(categoriesList);
-    }
-
     private String getModifiedDate(String date, long daysToAdd){
         LocalDate initialDate = LocalDate.parse(date, formatter);
         LocalDate modifiedDate = initialDate.plusDays(daysToAdd);
         return modifiedDate.format(formatter);
+    }
+
+    // Поисковик
+    private void showSuggestionNames(String query) {
+        ArrayList<String> suggestionNames = dbHelper.searchProducts(query);
+
+        if (suggestionNames.isEmpty()) {
+            if (popupWindow != null && popupWindow.isShowing()) {
+                popupWindow.dismiss();
+            }
+            return;
+        }
+
+        if (popupWindow == null || !popupWindow.isShowing()) {
+            RecyclerView recyclerView = new RecyclerView(this);
+            recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+            adapter = new SuggestionNamesAdapter(suggestionNames, selectedValue -> {
+                //fillFields(selectedValue);
+                editTextSearch.setText(selectedValue);
+                Log.i("showSuggestionNames", suggestionNames + " | " + selectedValue);
+                showSelectedProduct(selectedValue);
+                //searchHasFullName = true;
+                popupWindow.dismiss();
+            });
+
+            recyclerView.setAdapter(adapter);
+
+            popupWindow = new PopupWindow(recyclerView, editTextSearch.getWidth(), ViewGroup.LayoutParams.WRAP_CONTENT, true);
+            popupWindow.setBackgroundDrawable(new ColorDrawable(Color.WHITE));
+            popupWindow.setElevation(10); // Задаем стиль
+            popupWindow.setFocusable(false); // Окно не перехватывает фокус
+            popupWindow.setOutsideTouchable(true); // Позволяет закрывать окно при нажатии вне его области
+
+            popupWindow.showAsDropDown(editTextSearch);
+        } else {
+            ((SuggestionNamesAdapter) adapter).updateData(suggestionNames);
+        }
+    }
+
+    private void showSelectedProduct(String fullName){
+        // Обновляем ListView
+        if(editTextFirstDate.getText().toString().isEmpty() || editTextLastDate.getText().toString().isEmpty()){
+            Log.i("showSelectedProduct", "One of dates is null");
+            categoriesList = dbHelper.getCategoryForAnalyticsByFullName(fullName);
+        } else{
+            Log.i("showSelectedProduct", "Both of dates are not null");
+            String firstDate = LocalDate.parse(editTextFirstDate.getText().toString(), formatter).format(formatterDB);
+            String lastDate = LocalDate.parse(editTextLastDate.getText().toString(), formatter).format(formatterDB);
+            categoriesList = dbHelper.getCategoryForAnalyticsByFullNameWithDates(fullName, firstDate, lastDate);
+        }
+        categoryAdapter.updateCategories(categoriesList);
     }
 
     @Override

@@ -1202,7 +1202,11 @@ public class DBHelper extends SQLiteOpenHelper {
 
     public ArrayList<Category> getCategoryForAnalyticsByFullNameWithDates(String fullName, String firstDate, String lastDate){
         int productId = getProductIdByFullName(fullName);
+
+        Log.e("getCategoryForAnalyticsByFullNameWithDates", "productId = " + String.valueOf(productId));
+
         ArrayList<AnalyticsProduct> products = getAnalyticsProductByProductIdANDDates(productId, firstDate, lastDate);
+        Log.e("getCategoryForAnalyticsByFullNameWithDates", "len products = " + products.size());
         ArrayList<Category> categories = new ArrayList<>();
         DataProduct dataProduct = getProductById(productId);
         Category category = new Category(dataProduct.getType(), true, products);
@@ -1265,6 +1269,9 @@ public class DBHelper extends SQLiteOpenHelper {
         ArrayList<AnalyticsProduct> analyticsProducts = new ArrayList<>();
         SQLiteDatabase db = getDbManager().getDatabase();
 
+        Log.e("QueryParams", "product_id: " + product_id + ", firstDate: " + firstDate + ", lastDate: " + lastDate);
+
+
         String query = "SELECT " +
                 "product_id, " +
                 "manufacture_date, " +
@@ -1273,7 +1280,7 @@ public class DBHelper extends SQLiteOpenHelper {
                 "SUM(CASE WHEN operation_type = 'used' THEN quantity ELSE 0 END) AS usedLogsCount, " +
                 "SUM(CASE WHEN operation_type = 'overdue' THEN quantity ELSE 0 END) AS overdueLogsCount " +
                 "FROM " + PRODUCT_LOGS_TABLE + " " +
-                "WHERE product_id = ? AND date BETWEEN ? AND ? " +
+                "WHERE product_id = ? AND date >= ? AND date <= ? " +
                 "GROUP BY product_id, manufacture_date, expiry_date";
 
 
@@ -1281,6 +1288,8 @@ public class DBHelper extends SQLiteOpenHelper {
 
         try {
             cursor = db.rawQuery(query, new String[]{String.valueOf(product_id), firstDate, lastDate});
+
+            Log.d("CursorCount", "Rows returned: " + cursor.getCount());
 
             if (cursor.moveToFirst()) {
                 do {
