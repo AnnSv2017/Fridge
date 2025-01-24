@@ -897,54 +897,7 @@ public class DBHelper extends SQLiteOpenHelper {
         return list;
     }
 
-    public ArrayList<AnalyticsProduct> getAllAnalyticsProductByTypeANDDates(String type, String firstDate, String lastDate) {
-        ArrayList<AnalyticsProduct> list = new ArrayList<>();
-        SQLiteDatabase db = getDbManager().getDatabase();
 
-        String query = "SELECT " +
-                "product_id, " +
-                "manufacture_date, " +
-                "expiry_date, " +
-                "SUM(CASE WHEN operation_type = 'add' THEN quantity ELSE 0 END) AS addLogsCount, " +
-                "SUM(CASE WHEN operation_type = 'used' THEN quantity ELSE 0 END) AS usedLogsCount, " +
-                "SUM(CASE WHEN operation_type = 'overdue' THEN quantity ELSE 0 END) AS overdueLogsCount " +
-                "FROM " + PRODUCT_LOGS_TABLE + " " +
-                "WHERE product_id IN (SELECT id FROM " + PRODUCT_TABLE + " WHERE type = ?) " +
-                "AND date BETWEEN ? AND ? " +
-                "GROUP BY product_id, manufacture_date, expiry_date";
-
-        Cursor cursor = null;
-
-        try {
-            cursor = db.rawQuery(query, new String[]{type, firstDate, lastDate});
-
-            if (cursor.moveToFirst()) {
-                do {
-                    int productId = cursor.getInt(cursor.getColumnIndexOrThrow("product_id"));
-                    String manufactureDate = cursor.getString(cursor.getColumnIndexOrThrow("manufacture_date"));
-                    String expiryDate = cursor.getString(cursor.getColumnIndexOrThrow("expiry_date"));
-                    int addLogsCount = cursor.getInt(cursor.getColumnIndexOrThrow("addLogsCount"));
-                    int usedLogsCount = cursor.getInt(cursor.getColumnIndexOrThrow("usedLogsCount"));
-                    int overdueLogsCount = cursor.getInt(cursor.getColumnIndexOrThrow("overdueLogsCount"));
-
-                    list.add(new AnalyticsProduct(
-                            productId,
-                            manufactureDate,
-                            expiryDate,
-                            addLogsCount,
-                            usedLogsCount,
-                            overdueLogsCount
-                    ));
-                } while (cursor.moveToNext());
-            }
-        } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
-        }
-
-        return list;
-    }
 
     // Получение списка имён некоторых объектов
 
@@ -1056,20 +1009,7 @@ public class DBHelper extends SQLiteOpenHelper {
         return results;
     }
 
-    // Методы без запросов к БД
-    public ArrayList<Category> getAllCategoriesByDatesForAnalytics(String firstDate, String lastDate){
-        ArrayList<Category> categories = new ArrayList<>();
-        ArrayList<String> types = getAllTypesNames();
-        ArrayList<AnalyticsProduct> products;
-        for(String type : types){
-            products = getAllAnalyticsProductByTypeANDDates(type, firstDate, lastDate);
-            if(products != null && !products.isEmpty()){
-                Category category = new Category(type, false, products);
-                categories.add(category);
-            }
-        }
-        return categories;
-    }
+    // Методы для получения Категорий
 
     public ArrayList<Category> getAllCategoriesForFridge(){
         ArrayList<Category> categories = new ArrayList<>();
@@ -1206,8 +1146,6 @@ public class DBHelper extends SQLiteOpenHelper {
         return dataList;
     }
 
-
-
     public ArrayList<Category> getAllCategoriesForShoppingList(){
         ArrayList<Category> categories = new ArrayList<>();
         ArrayList<String> types = getAllTypesNames();
@@ -1222,5 +1160,253 @@ public class DBHelper extends SQLiteOpenHelper {
         return categories;
     }
 
+    // TODO: Аналитика
+
+    public ArrayList<Category> getAllCategoriesForAnalytics(){
+        ArrayList<Category> categories = new ArrayList<>();
+        ArrayList<String> types = getAllTypesNames();
+        ArrayList<AnalyticsProduct> products;
+        for(String type : types){
+            products = getAllAnalyticsProductByType(type);
+            if(products != null && !products.isEmpty()){
+                Category category = new Category(type, false, products);
+                categories.add(category);
+            }
+        }
+        return categories;
+    }
+
+    public ArrayList<Category> getAllCategoriesByDatesForAnalytics(String firstDate, String lastDate){
+        ArrayList<Category> categories = new ArrayList<>();
+        ArrayList<String> types = getAllTypesNames();
+        ArrayList<AnalyticsProduct> products;
+        for(String type : types){
+            products = getAllAnalyticsProductByTypeANDDates(type, firstDate, lastDate);
+            if(products != null && !products.isEmpty()){
+                Category category = new Category(type, false, products);
+                categories.add(category);
+            }
+        }
+        return categories;
+    }
+
+    public ArrayList<Category> getCategoryForAnalyticsByFullName(String fullName){
+        int productId = getProductIdByFullName(fullName);
+        ArrayList<AnalyticsProduct> products = getAnalyticsProductByProductId(productId);
+        ArrayList<Category> categories = new ArrayList<>();
+        DataProduct dataProduct = getProductById(productId);
+        Category category = new Category(dataProduct.getType(), true, products);
+        categories.add(category);
+        return categories;
+    }
+
+    public ArrayList<Category> getCategoryForAnalyticsByFullNameWithDates(String fullName, String firstDate, String lastDate){
+        int productId = getProductIdByFullName(fullName);
+        ArrayList<AnalyticsProduct> products = getAnalyticsProductByProductIdANDDates(productId, firstDate, lastDate);
+        ArrayList<Category> categories = new ArrayList<>();
+        DataProduct dataProduct = getProductById(productId);
+        Category category = new Category(dataProduct.getType(), true, products);
+        categories.add(category);
+        return categories;
+    }
+
+    public ArrayList<AnalyticsProduct> getAnalyticsProductByProductId(int product_id) {
+        // По факту всегда один элемент, просто передаётся в списке
+        ArrayList<AnalyticsProduct> analyticsProducts = new ArrayList<>();
+        SQLiteDatabase db = getDbManager().getDatabase();
+
+        String query = "SELECT " +
+                "product_id, " +
+                "manufacture_date, " +
+                "expiry_date, " +
+                "SUM(CASE WHEN operation_type = 'add' THEN quantity ELSE 0 END) AS addLogsCount, " +
+                "SUM(CASE WHEN operation_type = 'used' THEN quantity ELSE 0 END) AS usedLogsCount, " +
+                "SUM(CASE WHEN operation_type = 'overdue' THEN quantity ELSE 0 END) AS overdueLogsCount " +
+                "FROM " + PRODUCT_LOGS_TABLE + " " +
+                "WHERE product_id = ? " +
+                "GROUP BY product_id, manufacture_date, expiry_date";
+
+
+        Cursor cursor = null;
+
+        try {
+            cursor = db.rawQuery(query, new String[]{String.valueOf(product_id)});
+
+            if (cursor.moveToFirst()) {
+                do {
+                    int productId = cursor.getInt(cursor.getColumnIndexOrThrow("product_id"));
+                    String manufactureDate = cursor.getString(cursor.getColumnIndexOrThrow("manufacture_date"));
+                    String expiryDate = cursor.getString(cursor.getColumnIndexOrThrow("expiry_date"));
+                    int addLogsCount = cursor.getInt(cursor.getColumnIndexOrThrow("addLogsCount"));
+                    int usedLogsCount = cursor.getInt(cursor.getColumnIndexOrThrow("usedLogsCount"));
+                    int overdueLogsCount = cursor.getInt(cursor.getColumnIndexOrThrow("overdueLogsCount"));
+
+                    analyticsProducts.add(new AnalyticsProduct(
+                            productId,
+                            manufactureDate,
+                            expiryDate,
+                            addLogsCount,
+                            usedLogsCount,
+                            overdueLogsCount
+                    ));
+                } while (cursor.moveToNext());
+            }
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+
+        return analyticsProducts;
+    }
+
+    public ArrayList<AnalyticsProduct> getAnalyticsProductByProductIdANDDates(int product_id, String firstDate, String lastDate) {
+        // По факту всегда один элемент, просто передаётся в списке
+        ArrayList<AnalyticsProduct> analyticsProducts = new ArrayList<>();
+        SQLiteDatabase db = getDbManager().getDatabase();
+
+        String query = "SELECT " +
+                "product_id, " +
+                "manufacture_date, " +
+                "expiry_date, " +
+                "SUM(CASE WHEN operation_type = 'add' THEN quantity ELSE 0 END) AS addLogsCount, " +
+                "SUM(CASE WHEN operation_type = 'used' THEN quantity ELSE 0 END) AS usedLogsCount, " +
+                "SUM(CASE WHEN operation_type = 'overdue' THEN quantity ELSE 0 END) AS overdueLogsCount " +
+                "FROM " + PRODUCT_LOGS_TABLE + " " +
+                "WHERE product_id = ? AND date BETWEEN ? AND ? " +
+                "GROUP BY product_id, manufacture_date, expiry_date";
+
+
+        Cursor cursor = null;
+
+        try {
+            cursor = db.rawQuery(query, new String[]{String.valueOf(product_id), firstDate, lastDate});
+
+            if (cursor.moveToFirst()) {
+                do {
+                    int productId = cursor.getInt(cursor.getColumnIndexOrThrow("product_id"));
+                    String manufactureDate = cursor.getString(cursor.getColumnIndexOrThrow("manufacture_date"));
+                    String expiryDate = cursor.getString(cursor.getColumnIndexOrThrow("expiry_date"));
+                    int addLogsCount = cursor.getInt(cursor.getColumnIndexOrThrow("addLogsCount"));
+                    int usedLogsCount = cursor.getInt(cursor.getColumnIndexOrThrow("usedLogsCount"));
+                    int overdueLogsCount = cursor.getInt(cursor.getColumnIndexOrThrow("overdueLogsCount"));
+
+                    analyticsProducts.add(new AnalyticsProduct(
+                            productId,
+                            manufactureDate,
+                            expiryDate,
+                            addLogsCount,
+                            usedLogsCount,
+                            overdueLogsCount
+                    ));
+                } while (cursor.moveToNext());
+            }
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+
+        return analyticsProducts;
+    }
+
+    public ArrayList<AnalyticsProduct> getAllAnalyticsProductByType(String type) {
+        ArrayList<AnalyticsProduct> list = new ArrayList<>();
+        SQLiteDatabase db = getDbManager().getDatabase();
+
+        String query = "SELECT " +
+                "product_id, " +
+                "manufacture_date, " +
+                "expiry_date, " +
+                "SUM(CASE WHEN operation_type = 'add' THEN quantity ELSE 0 END) AS addLogsCount, " +
+                "SUM(CASE WHEN operation_type = 'used' THEN quantity ELSE 0 END) AS usedLogsCount, " +
+                "SUM(CASE WHEN operation_type = 'overdue' THEN quantity ELSE 0 END) AS overdueLogsCount " +
+                "FROM " + PRODUCT_LOGS_TABLE + " " +
+                "WHERE product_id IN (SELECT id FROM " + PRODUCT_TABLE + " WHERE type = ?) " +
+                "GROUP BY product_id, manufacture_date, expiry_date";
+
+        Cursor cursor = null;
+
+        try {
+            cursor = db.rawQuery(query, new String[]{type});
+
+            if (cursor.moveToFirst()) {
+                do {
+                    int productId = cursor.getInt(cursor.getColumnIndexOrThrow("product_id"));
+                    String manufactureDate = cursor.getString(cursor.getColumnIndexOrThrow("manufacture_date"));
+                    String expiryDate = cursor.getString(cursor.getColumnIndexOrThrow("expiry_date"));
+                    int addLogsCount = cursor.getInt(cursor.getColumnIndexOrThrow("addLogsCount"));
+                    int usedLogsCount = cursor.getInt(cursor.getColumnIndexOrThrow("usedLogsCount"));
+                    int overdueLogsCount = cursor.getInt(cursor.getColumnIndexOrThrow("overdueLogsCount"));
+
+                    list.add(new AnalyticsProduct(
+                            productId,
+                            manufactureDate,
+                            expiryDate,
+                            addLogsCount,
+                            usedLogsCount,
+                            overdueLogsCount
+                    ));
+                } while (cursor.moveToNext());
+            }
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+
+        return list;
+    }
+
+    public ArrayList<AnalyticsProduct> getAllAnalyticsProductByTypeANDDates(String type, String firstDate, String lastDate) {
+        ArrayList<AnalyticsProduct> list = new ArrayList<>();
+        SQLiteDatabase db = getDbManager().getDatabase();
+
+        String query = "SELECT " +
+                "product_id, " +
+                "manufacture_date, " +
+                "expiry_date, " +
+                "SUM(CASE WHEN operation_type = 'add' THEN quantity ELSE 0 END) AS addLogsCount, " +
+                "SUM(CASE WHEN operation_type = 'used' THEN quantity ELSE 0 END) AS usedLogsCount, " +
+                "SUM(CASE WHEN operation_type = 'overdue' THEN quantity ELSE 0 END) AS overdueLogsCount " +
+                "FROM " + PRODUCT_LOGS_TABLE + " " +
+                "WHERE product_id IN (SELECT id FROM " + PRODUCT_TABLE + " WHERE type = ?) " +
+                "AND date BETWEEN ? AND ? " +
+                "GROUP BY product_id, manufacture_date, expiry_date";
+
+        Cursor cursor = null;
+
+        try {
+            cursor = db.rawQuery(query, new String[]{type, firstDate, lastDate});
+
+            if (cursor.moveToFirst()) {
+                do {
+                    int productId = cursor.getInt(cursor.getColumnIndexOrThrow("product_id"));
+                    String manufactureDate = cursor.getString(cursor.getColumnIndexOrThrow("manufacture_date"));
+                    String expiryDate = cursor.getString(cursor.getColumnIndexOrThrow("expiry_date"));
+                    int addLogsCount = cursor.getInt(cursor.getColumnIndexOrThrow("addLogsCount"));
+                    int usedLogsCount = cursor.getInt(cursor.getColumnIndexOrThrow("usedLogsCount"));
+                    int overdueLogsCount = cursor.getInt(cursor.getColumnIndexOrThrow("overdueLogsCount"));
+
+                    list.add(new AnalyticsProduct(
+                            productId,
+                            manufactureDate,
+                            expiryDate,
+                            addLogsCount,
+                            usedLogsCount,
+                            overdueLogsCount
+                    ));
+                } while (cursor.moveToNext());
+            }
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+
+        return list;
+    }
+
 }
+
 

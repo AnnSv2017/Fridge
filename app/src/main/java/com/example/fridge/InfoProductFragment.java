@@ -26,17 +26,31 @@ public class InfoProductFragment extends Fragment {
     private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
     private DateTimeFormatter formatterDB = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     private DataProductInFridge dataPIF;
+    private DataProduct dataP;
+    private String manufacture_date, expiry_date;
 
     private TextView textViewName, textViewType, textViewFirm, textViewManufactureDate, textViewExpiryDate, textViewMass, textViewProteins, textViewFats, textViewCarbohydrates, textViewCalories, textViewAllergens, textViewMeasurementType;
-    private String name, type, firm, manufacture_date, expiry_date, mass_unit, measurement_type;
+    private String name, type, firm, mass_unit, measurement_type;
     private Double mass_value, proteins, fats, carbohydrates;
     private Integer calories_kcal, calories_KJ, quantity;
     private List<String> allergensList;
 
+    // Метод для передачи DataProductInFridge
     public static InfoProductFragment newInstance(DataProductInFridge product) {
         InfoProductFragment fragment = new InfoProductFragment();
         Bundle args = new Bundle();
+        args.putParcelable("product_in_fridge", product); // Parcelable
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    // Метод для передачи DataProduct и строк manufacture_date и expiry_date
+    public static InfoProductFragment newInstance(DataProduct product, String manufactureDate, String expiryDate) {
+        InfoProductFragment fragment = new InfoProductFragment();
+        Bundle args = new Bundle();
         args.putParcelable("product", product); // Parcelable
+        args.putString("manufacture_date", manufactureDate);
+        args.putString("expiry_date", expiryDate);
         fragment.setArguments(args);
         return fragment;
     }
@@ -45,7 +59,13 @@ public class InfoProductFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if(getArguments() != null){
-            dataPIF = getArguments().getParcelable("product");
+            if (getArguments().containsKey("product_in_fridge")) {
+                dataPIF = getArguments().getParcelable("product_in_fridge");
+            } else if (getArguments().containsKey("product")) {
+                dataP = getArguments().getParcelable("product");
+                manufacture_date = getArguments().getString("manufacture_date");
+                expiry_date = getArguments().getString("expiry_date");
+            }
         }
     }
 
@@ -74,45 +94,61 @@ public class InfoProductFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        if(dataPIF != null){
-            DataProduct dataProduct = dbHelper.getProductById(dataPIF.getProduct_id());
-            name = dataProduct.getName();
-            type = dataProduct.getType();
-            firm = dataProduct.getFirm();
-            mass_value = dataProduct.getMass_value();
-            mass_unit = dataProduct.getMass_unit();
-            proteins = dataProduct.getProteins();
-            fats = dataProduct.getFats();
-            carbohydrates = dataProduct.getCarbohydrates();
-            calories_kcal = dataProduct.getCalories_kcal();
-            calories_KJ = dataProduct.getCalories_KJ();
-            measurement_type = dataProduct.getMeasurement_type();
 
-            manufacture_date = dataPIF.getManufacture_date();
-            expiry_date = dataPIF.getExpiry_date();
-            quantity = dataPIF.getQuantity();
-
-            allergensList = dbHelper.getAllAllergensByProductId(dataPIF.getProduct_id());
-
-            textViewName.setText(name);
-            textViewType.setText(type);
-            textViewFirm.setText(firm);
-            String manufactureDate = LocalDate.parse(manufacture_date, formatterDB).format(formatter);
-            String expiryDate = LocalDate.parse(expiry_date, formatterDB).format(formatter);
-            textViewManufactureDate.setText(manufactureDate);
-            textViewExpiryDate.setText(expiryDate);
-            textViewMass.setText(String.valueOf(mass_value) + " " + mass_unit);
-            textViewProteins.setText(String.valueOf(proteins) + " г");
-            textViewFats.setText(String.valueOf(fats) + " г");
-            textViewCarbohydrates.setText(String.valueOf(carbohydrates) + " г");
-            String calories_text = String.format("%s ккал/\n%s кДж", calories_kcal, calories_KJ);
-            textViewCalories.setText(calories_text);
-            if (allergensList != null && !allergensList.isEmpty()) {
-                textViewAllergens.setText(String.join(", ", allergensList));
-            } else{
-                textViewAllergens.setText("Нет аллергенов");
-            }
-            textViewMeasurementType.setText(measurement_type);
+        if (dataPIF != null) {
+            displayDataFromFridge(dataPIF);
+        } else if (dataP != null) {
+            displayDataFromProduct(dataP, manufacture_date, expiry_date);
         }
+    }
+
+    private void displayDataFromFridge(DataProductInFridge product) {
+        DataProduct dataProduct = dbHelper.getProductById(product.getProduct_id());
+        populateFields(dataProduct);
+
+        manufacture_date = product.getManufacture_date();
+        expiry_date = product.getExpiry_date();
+        quantity = product.getQuantity();
+
+        String manufactureDate = LocalDate.parse(manufacture_date, formatterDB).format(formatter);
+        String expiryDate = LocalDate.parse(expiry_date, formatterDB).format(formatter);
+        textViewManufactureDate.setText(manufactureDate);
+        textViewExpiryDate.setText(expiryDate);
+    }
+
+    private void displayDataFromProduct(DataProduct product, String manufactureDate, String expiryDate) {
+        populateFields(product);
+
+        String formattedManufactureDate = LocalDate.parse(manufactureDate, formatterDB).format(formatter);
+        String formattedExpiryDate = LocalDate.parse(expiryDate, formatterDB).format(formatter);
+        textViewManufactureDate.setText(formattedManufactureDate);
+        textViewExpiryDate.setText(formattedExpiryDate);
+    }
+
+    private void populateFields(DataProduct product) {
+        name = product.getName();
+        type = product.getType();
+        firm = product.getFirm();
+        mass_value = product.getMass_value();
+        mass_unit = product.getMass_unit();
+        proteins = product.getProteins();
+        fats = product.getFats();
+        carbohydrates = product.getCarbohydrates();
+        calories_kcal = product.getCalories_kcal();
+        calories_KJ = product.getCalories_KJ();
+        measurement_type = product.getMeasurement_type();
+
+        allergensList = dbHelper.getAllAllergensByProductId(product.getId());
+
+        textViewName.setText(name);
+        textViewType.setText(type);
+        textViewFirm.setText(firm);
+        textViewMass.setText(String.format("%s %s", mass_value, mass_unit));
+        textViewProteins.setText(String.format("%s г", proteins));
+        textViewFats.setText(String.format("%s г", fats));
+        textViewCarbohydrates.setText(String.format("%s г", carbohydrates));
+        textViewCalories.setText(String.format("%s ккал/\n%s кДж", calories_kcal, calories_KJ));
+        textViewAllergens.setText(allergensList != null && !allergensList.isEmpty() ? String.join(", ", allergensList) : "Нет аллергенов");
+        textViewMeasurementType.setText(measurement_type);
     }
 }

@@ -30,7 +30,7 @@ public class AnalyticsProductDetailFragment extends Fragment {
     private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
     private DateTimeFormatter formatterDB = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
-    private InfoProductWithoutDatesFragment infoProductFragment;
+    private InfoProductFragment infoProductFragment;
     private TextView textViewFullName, textViewAdd, textViewUsed, textViewOverdue;
     private RelativeLayout rlShowInfoProduct;
     private ImageView backButton, listSwitchImageView;
@@ -92,7 +92,7 @@ public class AnalyticsProductDetailFragment extends Fragment {
 
             // Транзакция
             FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
-            infoProductFragment = InfoProductWithoutDatesFragment.newInstance(dataProduct);
+            infoProductFragment = InfoProductFragment.newInstance(dataProduct, analyticsProduct.getManufactureDate(), analyticsProduct.getExpiryDate());
             transaction.replace(R.id.info_product_fragment_container, infoProductFragment);
             transaction.commit(); // Асинхронная транзакция
 
