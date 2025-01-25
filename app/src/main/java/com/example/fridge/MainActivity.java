@@ -1,15 +1,28 @@
 package com.example.fridge;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.work.ExistingPeriodicWorkPolicy;
+import androidx.work.PeriodicWorkRequest;
+import androidx.work.WorkManager;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -29,6 +42,8 @@ import android.widget.PopupWindow;
 import com.example.fridge.R;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends AppCompatActivity implements CategoryAdapter.OnProductClickListener, OnFragmentInteractionExpendedListener {
 
@@ -49,6 +64,20 @@ public class MainActivity extends AppCompatActivity implements CategoryAdapter.O
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // Уведомления
+        createNotificationChannel(this);
+        // Запросить разрешение на отправку уведомлений
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.POST_NOTIFICATIONS)
+                    != PackageManager.PERMISSION_GRANTED) {
+                // Запрашиваем разрешение
+                ActivityCompat.requestPermissions(this,
+                        new String[]{android.Manifest.permission.POST_NOTIFICATIONS},
+                        101); // 101 — любой уникальный код запроса
+            }
+        }
+        scheduleDailyCheck();
 
         dbHelper = DBHelper.getInstance(this);
 
@@ -217,6 +246,68 @@ public class MainActivity extends AppCompatActivity implements CategoryAdapter.O
     public void btnShoppingList(View v){
         Intent intent = new Intent(this, ShoppingListActivity.class);
         startActivity(intent);
+    }
+
+    // TODO: Уведомления
+
+    //Вызывается, когда пользователь отвечает на запрос разрешений.
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == 101) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Log.i("Notifications", "Разрешение на уведомления предоставлено");
+            } else {
+                Log.w("Notifications", "Разрешение на уведомления отклонено");
+            }
+        }
+    }
+
+    // Создание канала для уведомлений
+    private void createNotificationChannel(Context context) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            String channelId = "FRIDGE_CHANNEL";
+            String channelName = "Fridge Notifications";
+            String channelDescription = "Уведомления о продуктах в холодильнике";
+            int importance = NotificationManager.IMPORTANCE_HIGH;
+
+            NotificationChannel channel = new NotificationChannel(channelId, channelName, importance);
+            channel.setDescription(channelDescription);
+
+            NotificationManager manager = context.getSystemService(NotificationManager.class);
+            if (manager != null) {
+                manager.createNotificationChannel(channel);
+            }
+        }
+    }
+
+    // Метод для проверку испорченности продуктов
+    private void scheduleDailyCheck() {
+        // Установите время выполнения (полночь)
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+
+        // Рассчитываем начальную задержку
+        long initialDelay = calendar.getTimeInMillis() - System.currentTimeMillis();
+        if (initialDelay < 0) {
+            // Если текущее время позже настроенного времени, добавляем 1 день
+            initialDelay += TimeUnit.DAYS.toMillis(1);
+        }
+
+        // Создаем задачу с временем
+        PeriodicWorkRequest dailyWorkRequest = new PeriodicWorkRequest.Builder(
+                ExpiryCheckWorker.class,
+                1, TimeUnit.DAYS // Интервал выполнения
+        ).setInitialDelay(initialDelay, TimeUnit.MILLISECONDS).build(); // Задержка перед первым запуском
+
+        // Планируем задачу с уникальным именем
+        WorkManager.getInstance(getApplicationContext()).enqueueUniquePeriodicWork(
+                "ExpiryCheck",
+                ExistingPeriodicWorkPolicy.REPLACE,
+                dailyWorkRequest
+        );
     }
 
     @Override

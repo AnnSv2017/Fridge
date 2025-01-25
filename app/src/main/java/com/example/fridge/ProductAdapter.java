@@ -91,7 +91,7 @@ public class ProductAdapter extends BaseAdapter {
             LocalDate expiryDate = LocalDate.parse(product.getExpiry_date(), formatterDB);
             long days = ChronoUnit.DAYS.between(currentDate, expiryDate);
 
-            if (days > 0) {
+            if (days >= 0) {
                 greenCount++;
             } else {
                 redCount++;

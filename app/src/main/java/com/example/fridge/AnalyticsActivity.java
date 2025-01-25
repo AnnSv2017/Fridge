@@ -108,7 +108,7 @@ public class AnalyticsActivity extends AppCompatActivity implements AnalyticsCat
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 showSuggestionNames(charSequence.toString());
-                //searchHasFullName = false;
+                searchHasFullName = false;
             }
 
             @Override
@@ -119,7 +119,7 @@ public class AnalyticsActivity extends AppCompatActivity implements AnalyticsCat
 
         imageViewErase.setOnClickListener(v -> {
             editTextSearch.setText("");
-            //searchHasFullName = false;
+            searchHasFullName = false;
             updateScreen();
         });
     }
@@ -264,7 +264,7 @@ public class AnalyticsActivity extends AppCompatActivity implements AnalyticsCat
                 editTextSearch.setText(selectedValue);
                 Log.i("showSuggestionNames", suggestionNames + " | " + selectedValue);
                 showSelectedProduct(selectedValue);
-                //searchHasFullName = true;
+                searchHasFullName = true;
                 popupWindow.dismiss();
             });
 

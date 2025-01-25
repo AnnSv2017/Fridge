@@ -324,9 +324,9 @@ public class CreateProductFragment extends Fragment {
             return;
         }
         // Проверка корректности ВВЕДЁННЫХ дат
-        if(!allDatesAreCorrect()){
-            return;
-        }
+//        if(!allDatesAreCorrect()){
+//            return;
+//        }
         String type = editTextType.getText().toString().trim();
         String name = editTextName.getText().toString().trim();
         String firm = editTextFirm.getText().toString().trim();

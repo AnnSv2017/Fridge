@@ -12,6 +12,8 @@ import androidx.annotation.Nullable;
 
 import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -1415,6 +1417,30 @@ public class DBHelper extends SQLiteOpenHelper {
 
         return list;
     }
+
+    // Уведомления
+    public List<DataProductInFridge> getExpiredProductsInFridge() {
+        List<DataProductInFridge> list = new ArrayList<>();
+        SQLiteDatabase db = getDbManager().getDatabase();
+
+        String currentDate = LocalDate.now().toString();
+
+        String query = "SELECT * FROM " + PRODUCTS_IN_FRIDGE_TABLE +
+                " WHERE DATE(expiry_date) <= DATE(?)";
+
+        Cursor cursor = db.rawQuery(query, new String[]{currentDate});
+
+        if (cursor != null) {
+            while (cursor.moveToNext()) {
+                DataProductInFridge product = getDataProductInFridgeFromCursor(cursor);
+                list.add(product);
+            }
+            cursor.close();
+        }
+        Log.i("getExpiredProductsInFridge", "len list of notifications = " + list.size());
+        return list;
+    }
+
 
 }
 
