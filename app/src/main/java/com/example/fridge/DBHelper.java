@@ -6,16 +6,11 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
-import java.lang.reflect.Type;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public class DBHelper extends SQLiteOpenHelper {
@@ -947,6 +942,12 @@ public class DBHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = getDbManager().getDatabase();
 
         db.delete(ALLERGENS_TABLE, "name = ?", new String[]{name});
+    }
+
+    public void deleteProduct(int id){
+        SQLiteDatabase db = getDbManager().getDatabase();
+
+        db.delete(PRODUCT_TABLE, "id = ?", new String[]{String.valueOf(id)});
     }
 
     public boolean deleteProductFromFridge(int idPK, int quantityToDelete){

@@ -229,7 +229,7 @@ public class AnalyticsActivity extends AppCompatActivity implements AnalyticsCat
                 days = Long.parseLong(editTextDays.getText().toString());
             } catch (NumberFormatException e) {
                 // Обработка ошибки: если строка не число
-                Toast.makeText(this, "Введите корректное число!", Toast.LENGTH_SHORT).show();
+                ToastUtils.showCustomToast(this, "Введите корректное число", "e");
                 return;
             }
 
@@ -260,9 +260,7 @@ public class AnalyticsActivity extends AppCompatActivity implements AnalyticsCat
             recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
             adapter = new SuggestionNamesAdapter(suggestionNames, selectedValue -> {
-                //fillFields(selectedValue);
                 editTextSearch.setText(selectedValue);
-                Log.i("showSuggestionNames", suggestionNames + " | " + selectedValue);
                 showSelectedProduct(selectedValue);
                 searchHasFullName = true;
                 popupWindow.dismiss();

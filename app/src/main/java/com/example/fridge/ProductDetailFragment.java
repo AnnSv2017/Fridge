@@ -8,15 +8,10 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
-import android.os.Handler;
-import android.os.Looper;
-import android.os.Parcelable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import java.time.LocalDate;
@@ -93,7 +88,7 @@ public class ProductDetailFragment extends Fragment {
                     // Удаляем продукт из холодильника
                     boolean isDeleted = dbHelper.deleteProductFromFridge(dataPIF.getId(), dataPIF.getQuantity());
                     if(isDeleted){
-                        Toast.makeText(requireContext(), "Продукт был успешно удалён!", Toast.LENGTH_SHORT).show();
+                        ToastUtils.showCustomToast(requireContext(), "Продукт был успешно удалён", "s");
                         // Находим тип удаления (истрачено или просрочено)
                         String currentDate = LocalDate.now().format(formatterDB);
                         String operationType;
@@ -108,7 +103,7 @@ public class ProductDetailFragment extends Fragment {
                         DataProductLogs dataProductLogs = new DataProductLogs(0, currentDate, dataPIF.getManufacture_date(), dataPIF.getExpiry_date(), dataPIF.getProduct_id(), operationType, dataPIF.getQuantity());
                         dbHelper.addProductLogs(dataProductLogs);
                     } else {
-                        Toast.makeText(requireContext(), "ERROR. Продукт НЕ был удалён!", Toast.LENGTH_SHORT).show();
+                        ToastUtils.showCustomToast(requireContext(), "ERROR. Продукт НЕ был удалён", "e");
                     }
                     if(mListener != null){
                         mListener.onActivityUpdate();

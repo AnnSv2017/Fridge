@@ -169,7 +169,7 @@ public class AddToFridgeFromShoppingListFragment extends Fragment {
                     if(quantityText != null && !quantityText.isEmpty()){
                         updateTotalWeight(charSequence.toString());
                     } else{
-                        Toast.makeText(requireContext(), "Введите корректное число!", Toast.LENGTH_SHORT).show();
+                        ToastUtils.showCustomToast(requireContext(), "Введите корректное число", "e");
                     }
                 }
 
@@ -252,7 +252,7 @@ public class AddToFridgeFromShoppingListFragment extends Fragment {
                 days = Long.parseLong(editTextDays.getText().toString());
             } catch (NumberFormatException e) {
                 // Обработка ошибки: если строка не число
-                Toast.makeText(getContext(), "Введите корректное число!", Toast.LENGTH_SHORT).show();
+                ToastUtils.showCustomToast(requireContext(), "Введите корректное число", "e");
                 return;
             }
 
@@ -344,31 +344,33 @@ public class AddToFridgeFromShoppingListFragment extends Fragment {
         // Удаление из списка покупок
         dbHelper.deleteProductFromShoppingList(dataPISL.getId());
 
+        ToastUtils.showCustomToast(requireContext(), "Продукт был успешно добавлен в холодильник", "s");
+
         backToActivity();
     }
 
     private void deleteProductFromShoppingList(){
         // Удаление из списка покупок
         dbHelper.deleteProductFromShoppingList(dataPISL.getId());
-
+        ToastUtils.showCustomToast(requireContext(), "Продукт был успешно удалён из списка закупок", "s");
         backToActivity();
     }
 
     private boolean areAllFieldsFilled(){
         if(editTextManufactureDate.getText().toString().isEmpty() || editTextExpiryDate.getText().toString().isEmpty()){
-            Toast.makeText(requireContext(), "Заполните все поля с датами!", Toast.LENGTH_SHORT).show();
+            ToastUtils.showCustomToast(requireContext(), "Заполните все поля с датами", "e");
             return false;
         }
 
         try{
             Integer.parseInt(editTextQuantity.getText().toString());
         } catch (Exception e){
-            Toast.makeText(requireContext(), "Введите корректное количество товара!", Toast.LENGTH_SHORT).show();
+            ToastUtils.showCustomToast(requireContext(), "Введите корректное количество товара", "e");
             return false;
         }
 
         if(Integer.parseInt(editTextQuantity.getText().toString()) <= 0){
-            Toast.makeText(requireContext(), "Количество должно быть больше 0!", Toast.LENGTH_SHORT).show();
+            ToastUtils.showCustomToast(requireContext(), "Количество должно быть больше 0", "e");
             return false;
         }
 
@@ -382,7 +384,7 @@ public class AddToFridgeFromShoppingListFragment extends Fragment {
         LocalDate manufactureDate = LocalDate.parse(editTextManufactureDate.getText().toString(), formatter);
         LocalDate expiryDate = LocalDate.parse(editTextExpiryDate.getText().toString(), formatter);
         if(manufactureDate.isAfter(expiryDate)){
-            Toast.makeText(requireContext(), "Дата изготовления должна идти раньше чем дата истечения срока!", Toast.LENGTH_SHORT).show();
+            ToastUtils.showCustomToast(requireContext(), "Дата изготовления должна идти раньше чем дата истечения срока", "e");
             return false;
         }
 
@@ -390,7 +392,7 @@ public class AddToFridgeFromShoppingListFragment extends Fragment {
         LocalDate currentDate = LocalDate.now();
         if(currentDate.isAfter(expiryDate)){
             // Если текущая дата уже стоит позже даты истечения срока, значит продукт уже просрочен и мы его добавить не можем!
-            Toast.makeText(requireContext(), "Продукт уже просрочен! Сегодня уже " + currentDate.format(formatter), Toast.LENGTH_SHORT).show();
+            ToastUtils.showCustomToast(requireContext(), "Продукт уже просрочен! Сегодня уже " + currentDate.format(formatter), "e");
             return false;
         }
 

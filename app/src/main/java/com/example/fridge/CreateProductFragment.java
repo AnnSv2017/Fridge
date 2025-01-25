@@ -294,7 +294,7 @@ public class CreateProductFragment extends Fragment {
                 days = Long.parseLong(editTextDays.getText().toString());
             } catch (NumberFormatException e) {
                 // Обработка ошибки: если строка не число
-                Toast.makeText(getContext(), "Введите корректное число!", Toast.LENGTH_SHORT).show();
+                ToastUtils.showCustomToast(requireContext(), "Введите корректное число", "e");
                 return;
             }
 
@@ -324,9 +324,9 @@ public class CreateProductFragment extends Fragment {
             return;
         }
         // Проверка корректности ВВЕДЁННЫХ дат
-//        if(!allDatesAreCorrect()){
-//            return;
-//        }
+        if(!allDatesAreCorrect()){
+            return;
+        }
         String type = editTextType.getText().toString().trim();
         String name = editTextName.getText().toString().trim();
         String firm = editTextFirm.getText().toString().trim();
@@ -383,7 +383,7 @@ public class CreateProductFragment extends Fragment {
         DataProductLogs dataProductLogs = new DataProductLogs(0, currentDate, manufacture_date, expiry_date, productId, "add", quantity);
         dbHelper.addProductLogs(dataProductLogs);
 
-        Toast.makeText(getContext(), "Продукт был успешно добавлен!", Toast.LENGTH_SHORT).show();
+        ToastUtils.showCustomToast(requireContext(), "Продукт был успешно добавлен", "s");
 
         // Выходим из фрагмента
         backToActivity();
@@ -422,7 +422,7 @@ public class CreateProductFragment extends Fragment {
         // Проверка существует ли данный продукт вообще(ProductTable)
         DataProduct dataProduct = new DataProduct(0, type, name, firm, mass_value, mass_unit, proteins, fats, carbohydrates, caloriesKcal, caloriesKJ, measurement_type);
         if(!dbHelper.productAlreadyExist(dataProduct)){
-            Toast.makeText(requireContext(), "Данного продукта нет в холодильнике!", Toast.LENGTH_SHORT).show();
+            ToastUtils.showCustomToast(requireContext(), "Данного продукта нет в холодильнике", "e");
             return;
         }
         // Проверка существует ли он в холодильнике и достаточно ли его для удаления
@@ -431,7 +431,7 @@ public class CreateProductFragment extends Fragment {
         int productId = dbHelper.getProductIdByFullName(type, name, firm, mass_value, mass_unit);
         if(dbHelper.getProductInFridgeIdIfItInFridge(manufacture_date, expiry_date, productId) == -1){
             // Продукта нет в холодильнике
-            Toast.makeText(requireContext(), "Данного продукта нет в холодильнике!", Toast.LENGTH_SHORT).show();
+            ToastUtils.showCustomToast(requireContext(), "Данного продукта нет в холодильнике", "e");
             return;
         }
         // Удаление продукта
@@ -440,9 +440,9 @@ public class CreateProductFragment extends Fragment {
         int quantityToDelete = Integer.parseInt(editTextQuantity.getText().toString());
         boolean isDeleted = dbHelper.deleteProductFromFridge(productInFridgeId, quantityToDelete);
         if(isDeleted){
-            Toast.makeText(requireContext(), "Продукт был успешно удалён!", Toast.LENGTH_SHORT).show();
+            ToastUtils.showCustomToast(requireContext(), "Продукт был успешно удалён", "s");
         } else{
-            Toast.makeText(requireContext(), "Продукта в холодильнике нет в таком количестве!", Toast.LENGTH_SHORT).show();
+            ToastUtils.showCustomToast(requireContext(), "Продукта в холодильнике нет в таком количестве", "e");
             return;
         }
 
@@ -523,7 +523,7 @@ public class CreateProductFragment extends Fragment {
         DataProductInShoppingList dataProductInShoppingList = new DataProductInShoppingList(0, productId, quantity);
         dbHelper.addProductInShoppingList(dataProductInShoppingList);
 
-        Toast.makeText(getContext(), "Продукт был успешно добавлен в список закупок!", Toast.LENGTH_SHORT).show();
+        ToastUtils.showCustomToast(requireContext(), "Продукт был успешно добавлен в список закупок", "s");
 
         // Выходим из фрагмента
         backToActivity();
@@ -533,7 +533,7 @@ public class CreateProductFragment extends Fragment {
         // Проверка заполненности текстовых полей
         for (EditText field : requiredFields) {
             if (field.getText().toString().trim().isEmpty()) {
-                Toast.makeText(getContext(), "Заполните все поля!", Toast.LENGTH_SHORT).show();
+                ToastUtils.showCustomToast(requireContext(), "Заполните все поля", "e");
                 return false;
             }
         }
@@ -542,24 +542,24 @@ public class CreateProductFragment extends Fragment {
         try{
             Double.parseDouble(editTextWeight.getText().toString());
         } catch (Exception e){
-            Toast.makeText(getContext(), "Введите корректный вес товара!", Toast.LENGTH_SHORT).show();
+            ToastUtils.showCustomToast(requireContext(), "Введите корректный вес товара!", "e");
             return false;
         }
 
         if(Double.parseDouble(editTextWeight.getText().toString()) <= 0){
-            Toast.makeText(requireContext(), "Вес должен быть больше 0!", Toast.LENGTH_SHORT).show();
+            ToastUtils.showCustomToast(requireContext(), "Вес должен быть больше 0", "e");
             return false;
         }
 
         try{
             Integer.parseInt(editTextQuantity.getText().toString());
         } catch (Exception e){
-            Toast.makeText(getContext(), "Введите корректное количество товара!", Toast.LENGTH_SHORT).show();
+            ToastUtils.showCustomToast(requireContext(), "Введите корректное количество товара", "e");
             return false;
         }
 
         if(Integer.parseInt(editTextQuantity.getText().toString()) <= 0){
-            Toast.makeText(requireContext(), "Количество должно быть больше 0!", Toast.LENGTH_SHORT).show();
+            ToastUtils.showCustomToast(requireContext(), "Количество должно быть больше 0", "e");
             return false;
         }
 
@@ -570,18 +570,18 @@ public class CreateProductFragment extends Fragment {
             Integer.parseInt(editTextCaloriesKcal.getText().toString());
             Integer.parseInt(editTextCaloriesKJ.getText().toString());
         } catch (Exception e){
-            Toast.makeText(getContext(), "Введите корректную пищевую/энергетическую ценность!", Toast.LENGTH_SHORT).show();
+            ToastUtils.showCustomToast(requireContext(), "Введите корректную пищевую/энергетическую ценность!", "e");
             return false;
         }
 
         // Проверка выбора в RadioGroupWeight и RadioGroupMeasurementType
         if (radioGroupWeight.getCheckedRadioButtonId() == -1) {
-            Toast.makeText(getContext(), "Выберите единицу измерения количества товара (л/кг)", Toast.LENGTH_SHORT).show();
+            ToastUtils.showCustomToast(requireContext(), "Выберите единицу измерения количества товара (л/кг)", "e");
             return false;
         }
 
         if(radioGroupMeasurementType.getCheckedRadioButtonId() == -1){
-            Toast.makeText(getContext(), "Выберите тип измерения!", Toast.LENGTH_SHORT).show();
+            ToastUtils.showCustomToast(requireContext(), "Выберите тип измерения", "e");
             return false;
         }
 
@@ -596,7 +596,7 @@ public class CreateProductFragment extends Fragment {
         LocalDate manufactureDate = LocalDate.parse(editTextManufactureDate.getText().toString(), formatter);
         LocalDate expiryDate = LocalDate.parse(editTextExpiryDate.getText().toString(), formatter);
         if(manufactureDate.isAfter(expiryDate)){
-            Toast.makeText(requireContext(), "Дата изготовления должна идти не позже чем дата истечения срока годности!", Toast.LENGTH_SHORT).show();
+            ToastUtils.showCustomToast(requireContext(), "Дата изготовления должна идти не позже чем дата истечения срока годности", "e");
             return false;
         }
 
@@ -604,7 +604,7 @@ public class CreateProductFragment extends Fragment {
         LocalDate currentDate = LocalDate.now();
         if(currentDate.isAfter(expiryDate)){
             // Если текущая дата уже стоит позже даты истечения срока, значит продукт уже просрочен и мы его добавить не можем!
-            Toast.makeText(requireContext(), "Продукт уже просрочен! Сегодня уже " + currentDate.format(formatter), Toast.LENGTH_SHORT).show();
+            ToastUtils.showCustomToast(requireContext(), "Продукт уже просрочен! Сегодня уже " + currentDate.format(formatter), "e");
             return false;
         }
 

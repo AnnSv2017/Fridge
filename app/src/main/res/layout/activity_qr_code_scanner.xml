@@ -64,16 +64,17 @@
         <RelativeLayout
             android:id="@+id/qr_menu"
             android:layout_width="match_parent"
-            android:layout_height="200dp"
+            android:layout_height="120dp"
             android:layout_above="@+id/bottom_menu">
 
             <Button
                 android:id="@+id/createProductBtn"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginVertical="10dp"
+                android:layout_centerVertical="true"
+                android:layout_centerHorizontal="true"
                 android:layout_marginHorizontal="10dp"
-                android:text="Создать продукт"
+                android:text="добавить/удалить продукт"
                 android:textSize="20sp"
                 android:backgroundTint="@color/orange"
                 android:contentDescription="Создание qr кода"

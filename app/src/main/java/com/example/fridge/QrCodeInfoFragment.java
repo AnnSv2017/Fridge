@@ -4,7 +4,6 @@ import android.content.Context;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import android.os.Handler;
@@ -20,7 +19,6 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.gson.JsonArray;
@@ -31,9 +29,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.concurrent.TimeoutException;
 
-public class QrCodeInfoFragment extends Fragment {
+public class QrCodeInfoFragment extends Fragment implements OnBackPressInQrCodeInfoFragmentListener {
 
     private DBHelper dbHelper;
     //private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
@@ -57,6 +54,17 @@ public class QrCodeInfoFragment extends Fragment {
     private boolean infoProductIsExpended = false;
 
     private OnFragmentInteractionListener mListener;
+
+    private boolean productWasCreatedEarlier = false;
+    @Override
+    public int getProductIdIfProductWasNOTCreatedEarlier(){
+        if(productWasCreatedEarlier){
+            return -1; // Если продукт был создан ранее, ничего не делаем
+        } else{
+            // Возвращаем id продукта, чтобы удалить его из базы данных
+            return dbHelper.getProductIdByFullName(type, name, firm, mass_value, mass_unit);
+        }
+    }
 
     public QrCodeInfoFragment(JsonObject jsonData) {
         this.jsonData = jsonData;
@@ -116,7 +124,7 @@ public class QrCodeInfoFragment extends Fragment {
             measurement_type = jsonData.get("measurement_type").getAsString();
         } else {
             // Обработка ошибки, если jsonData null
-            Toast.makeText(getContext(), "Ошибка: jsonData отсутствует", Toast.LENGTH_SHORT).show();
+            ToastUtils.showCustomToast(requireContext(), "Ошибка: jsonData отсутствует", "e");
         }
 
         backImageView = view.findViewById(R.id.back_image_view);
@@ -131,11 +139,44 @@ public class QrCodeInfoFragment extends Fragment {
         rlShowInfoProduct = view.findViewById(R.id.rl_show_info_product);
         listSwitchImageView = view.findViewById(R.id.image_view_list_switch);
 
+        addButton = view.findViewById(R.id.add_button);
+        deleteButton = view.findViewById(R.id.delete_button);
+
+
+        // Проверка на существование продукта как объекта
+        DataProductInFridge dataProductInFridge = null;
+        int product_id = dbHelper.getProductIdByFullName(type, name, firm, mass_value, mass_unit);
+        if(product_id == -1){
+            productWasCreatedEarlier = false;
+            // Создаём оюъект продукта и добавляем в БД, если мы этот продукт решим не добавлять в холодильник или удалим, тогда и сам продукт как объект должегн быть удалён из ProductTable
+            DataProduct dataProduct = new DataProduct(0, type, name, firm, mass_value, mass_unit, proteins, fats, carbohydrates, calories_kcal, calories_KJ, measurement_type);
+            dbHelper.addProductIfNotExist(dataProduct);
+            int new_product_id = dbHelper.getProductIdByFullName(type, name, firm, mass_value, mass_unit);
+            int quantity = Integer.parseInt(editTextQuantity.getText().toString());
+            dataProductInFridge = new DataProductInFridge(0, manufacture_date, expiry_date, new_product_id, quantity);
+
+            // Если продукта вообще нет, то мы не можем его удалить -> скрываем кнопку удаления
+            deleteButton.setVisibility(View.GONE);
+        } else{
+            productWasCreatedEarlier = true;
+            // Проверка на существование продукта в холодильнике
+            int productInFridgeId = dbHelper.getProductInFridgeIdIfItInFridge(manufacture_date, expiry_date, product_id);
+            if(productInFridgeId == -1){
+                int quantity = Integer.parseInt(editTextQuantity.getText().toString());
+                dataProductInFridge = new DataProductInFridge(0, manufacture_date, expiry_date, product_id, quantity);
+
+                // Если продукта нет в холодильнике, то мы не можем его удалить -> скрываем кнопку удаления
+                deleteButton.setVisibility(View.GONE);
+            } else{
+                dataProductInFridge = dbHelper.getProductInFridgeById(productInFridgeId);
+            }
+        }
+
         // Транзакция
         FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
-        int product_id = dbHelper.getProductIdByFullName(type, name, firm, mass_value, mass_unit);
-        int productInFridgeId = dbHelper.getProductInFridgeIdIfItInFridge(manufacture_date, expiry_date, product_id);
-        DataProductInFridge dataProductInFridge = dbHelper.getProductInFridgeById(productInFridgeId);
+//        int product_id = dbHelper.getProductIdByFullName(type, name, firm, mass_value, mass_unit);
+//        int productInFridgeId = dbHelper.getProductInFridgeIdIfItInFridge(manufacture_date, expiry_date, product_id);
+//        DataProductInFridge dataProductInFridge = dbHelper.getProductInFridgeById(productInFridgeId);
         infoProductFragment = InfoProductFragment.newInstance(dataProductInFridge);
         transaction.replace(R.id.info_product_fragment_container, infoProductFragment);
         transaction.commit(); // Асинхронная транзакция
@@ -169,7 +210,7 @@ public class QrCodeInfoFragment extends Fragment {
                 if(quantityText != null && !quantityText.isEmpty()){
                     updateTotalWeight(charSequence.toString());
                 } else{
-                    Toast.makeText(requireContext(), "Введите корректное число!", Toast.LENGTH_SHORT).show();
+                    ToastUtils.showCustomToast(requireContext(), "Введите корректное число", "e");
                 }
             }
 
@@ -192,10 +233,7 @@ public class QrCodeInfoFragment extends Fragment {
 
         rlShowInfoProduct.setOnClickListener(v -> {infoProductOnClick();});
 
-        addButton = view.findViewById(R.id.add_button);
-        deleteButton = view.findViewById(R.id.delete_button);
-
-        backImageView.setOnClickListener(v -> {backOnClick();});
+        backImageView.setOnClickListener(v -> {backOnClick("backImageView");});
 
         addButton.setOnClickListener(v -> {addProductOnClick();});
         deleteButton.setOnClickListener(v -> {deleteProductOnClick();});
@@ -249,7 +287,13 @@ public class QrCodeInfoFragment extends Fragment {
         }
     }
 
-    private void backOnClick(){
+    private void backOnClick(String who){
+        // Если мы вышли из фрагмента и продукт не создавался раннее
+        if (who.equals("backImageView") && !productWasCreatedEarlier){
+            // Удаляем созданный нами продукт как объект
+            int created_product_id = dbHelper.getProductIdByFullName(type, name, firm, mass_value, mass_unit);
+            dbHelper.deleteProduct(created_product_id);
+        }
         // Вызываем метод активности для возобновления сканера
         if (mListener != null) {
             mListener.onFragmentClose(); // Возвращаем управление активности
@@ -272,17 +316,17 @@ public class QrCodeInfoFragment extends Fragment {
         DataProductLogs dataProductLogs = new DataProductLogs(0, currentDate, manufacture_date, expiry_date, product_id, "add", quantity);
         dbHelper.addProductLogs(dataProductLogs);
 
-        Toast.makeText(requireContext(), "Продукт был успешно добавлен!", Toast.LENGTH_SHORT).show();
+        ToastUtils.showCustomToast(requireContext(), "Продукт был успешно добавлен", "s");
 
-        backOnClick();
+        backOnClick("addProductOnClick");
     }
 
     private void deleteProductOnClick(){
-        // Удаление из холодильника, поскольку если у нас есть qr-код, значит этот продукт существует или существовал в холодильнике
+        // Откравается только тогда когда мы можем удалить продукт
         int productId = dbHelper.getProductIdByFullName(type, name, firm, mass_value, mass_unit);
         if(dbHelper.getProductInFridgeIdIfItInFridge(manufacture_date, expiry_date, productId) == -1){
             // Продукта нет в холодильнике
-            Toast.makeText(requireContext(), "Данного продукта нет в холодильнике!", Toast.LENGTH_SHORT).show();
+            ToastUtils.showCustomToast(requireContext(), "Данного продукта нет в холодильнике", "e");
             return;
         }
         // Продукт в холодильнике есть
@@ -290,9 +334,9 @@ public class QrCodeInfoFragment extends Fragment {
         int quantityToDelete = Integer.parseInt(editTextQuantity.getText().toString());
         boolean isDeleted = dbHelper.deleteProductFromFridge(productInFridgeId, quantityToDelete);
         if(isDeleted){
-            Toast.makeText(requireContext(), "Продукт был успешно удалён!", Toast.LENGTH_SHORT).show();
+            ToastUtils.showCustomToast(requireContext(), "Продукт был успешно удалён", "s");
         } else{
-            Toast.makeText(requireContext(), "Продукта в холодильнике нет в таком количестве!", Toast.LENGTH_SHORT).show();
+            ToastUtils.showCustomToast(requireContext(), "Продукта в холодильнике нет в таком количестве", "e");
             return;
         }
 
@@ -310,7 +354,7 @@ public class QrCodeInfoFragment extends Fragment {
         DataProductLogs dataProductLogs = new DataProductLogs(0, currentDate, manufacture_date, expiry_date, productId, operationType, quantityToDelete);
         dbHelper.addProductLogs(dataProductLogs);
 
-        backOnClick();
+        backOnClick("deleteProductOnClick");
     }
 
     //Метод вызывается, когда фрагмент отключается от активности.

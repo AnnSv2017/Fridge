@@ -20,7 +20,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -166,7 +165,7 @@ public class QrCodeScannerActivity extends AppCompatActivity implements OnFragme
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 initializeScanner();
             } else {
-                Toast.makeText(this, "Камера не разрешена", Toast.LENGTH_SHORT).show();
+                ToastUtils.showCustomToast(this, "Камера не разрешена", "e");
             }
         }
     }
@@ -216,7 +215,21 @@ public class QrCodeScannerActivity extends AppCompatActivity implements OnFragme
 
         FragmentManager fragmentManager = getSupportFragmentManager();
         if (fragmentManager.getBackStackEntryCount() > 0) {
-            // Если есть фрагменты в стеке, возвращаемся назад
+            // Получаем текущий фрагмент
+            Fragment currentFragment = fragmentManager.findFragmentById(R.id.fragment_container);
+
+            if (currentFragment instanceof OnBackPressInQrCodeInfoFragmentListener) {
+                // Вызываем метод фрагмента
+                int productId = ((OnBackPressInQrCodeInfoFragmentListener) currentFragment).getProductIdIfProductWasNOTCreatedEarlier();
+
+                if (productId != -1) {
+                    // Удаляем продукт из базы данных, если id не равно -1
+                    DBHelper dbHelper = DBHelper.getInstance(this);
+                    dbHelper.deleteProduct(productId);
+                }
+            }
+
+            // Возвращаемся к предыдущему фрагменту
             fragmentManager.popBackStack();
             onFragmentClose();
         } else {

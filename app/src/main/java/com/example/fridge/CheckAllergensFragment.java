@@ -4,16 +4,12 @@ import android.app.AlertDialog;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
-
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -81,17 +77,17 @@ public class CheckAllergensFragment extends Fragment {
 
                     public boolean onMenuItemClick(MenuItem menuItem) {
                             if(menuItem.getItemId() == R.id.action_edit){
-                                Toast.makeText(getContext(), "Изменение", Toast.LENGTH_SHORT).show();
+                                ToastUtils.showCustomToast(requireContext(), "Изменение", "s");
                                 showEditAllergenAlertDialog(allergenName);
                             }
                             else if(menuItem.getItemId() == R.id.action_delete){
-                                Toast.makeText(getContext(), "Удаление", Toast.LENGTH_SHORT).show();
+                                ToastUtils.showCustomToast(requireContext(), "Удаление", "s");
                                 dbHelper.deleteAllergenByName(allergenName);
                                 adapterAllergens.deleteAllergenFromSelected(allergenName);
                                 updateAllergensArr();
                             }
                             else{
-                                Toast.makeText(getContext(), "ДРУГОЕ", Toast.LENGTH_SHORT).show();
+                                ToastUtils.showCustomToast(requireContext(), "ДРУГОЕ", "s");
                             }
                             return true;
                     }
