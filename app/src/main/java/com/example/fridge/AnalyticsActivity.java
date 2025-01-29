@@ -235,6 +235,8 @@ public class AnalyticsActivity extends AppCompatActivity implements AnalyticsCat
 
             String lastDateText = getModifiedDate(firstDate, days);
             editTextLastDate.setText(lastDateText);
+
+            updateScreen();
         }
     }
 
