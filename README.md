@@ -5,4 +5,4 @@
 
 [Скачать последнюю версию](https://github.com/AnnSv2017/Fridge/releases/latest)  
 # Ссылка на видеоролик
-[Видеоролик](https://vk.com/video759351043_456239017?list=ln-6KJfTUODjp9HVe4zfO)
+[Видеоролик](https://vk.com/video759351043_456239018?list=ln-ZuzDoL4D5Z0hkHGerK)
