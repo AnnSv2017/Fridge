@@ -388,6 +388,20 @@ public class DBHelper extends SQLiteOpenHelper {
     }
 
     // Получение id объекта по имени и не только
+    public int getTypeIdByName(String name){
+        SQLiteDatabase db = getDbManager().getDatabase();
+
+        int typeId = -1;
+        Cursor cursor = db.query(TYPE_TABLE, new String[]{"id"}, "name = ?", new String[]{name}, null, null, null);
+        if(cursor != null && cursor.moveToFirst()){
+            int typeIdIndex = cursor.getColumnIndex("id");
+            typeId = cursor.getInt(typeIdIndex);
+        }
+        cursor.close();
+
+        return typeId;
+    }
+
     public int getAllergenIdByName(String name){
         SQLiteDatabase db = getDbManager().getDatabase();
 

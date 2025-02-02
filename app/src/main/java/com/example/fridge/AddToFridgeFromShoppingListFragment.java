@@ -188,7 +188,7 @@ public class AddToFridgeFromShoppingListFragment extends Fragment {
                 updateTotalWeight(editTextQuantity.getText().toString());
             });
 
-            textViewTotalWeight.setText(String.valueOf(dataProduct.getMass_value()) + " " + dataProduct.getMass_unit());
+            updateTotalWeight(editTextQuantity.getText().toString());
 
             rlShowInfoProduct.setOnClickListener(v -> {infoProductOnClick();});
 

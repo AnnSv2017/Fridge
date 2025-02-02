@@ -94,7 +94,7 @@ public class ProductDetailFragment extends Fragment {
                         String operationType;
                         LocalDate currentLocalDate = LocalDate.now();
                         LocalDate expiryLocalDate = LocalDate.parse(dataPIF.getExpiry_date(), formatterDB);
-                        if(currentLocalDate.isBefore(expiryLocalDate)){
+                        if(currentLocalDate.isBefore(expiryLocalDate) || currentLocalDate.isEqual(expiryLocalDate)){
                             operationType = "used";
                         } else {
                             operationType = "overdue";

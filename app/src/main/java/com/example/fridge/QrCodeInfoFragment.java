@@ -311,6 +311,12 @@ public class QrCodeInfoFragment extends Fragment implements OnBackPressInQrCodeI
         DataProductInFridge dataProductInFridge = new DataProductInFridge(0, manufacture_date, expiry_date, product_id, quantity);
         dbHelper.addProductInFridge(dataProductInFridge);
 
+        // Добавление типа если его до этого не было
+        int typeId = dbHelper.getTypeIdByName(type);
+        if(typeId == -1){
+            dbHelper.addType(new DataType(0, type));
+        }
+
         // Добавление в логи
         String currentDate = LocalDate.now().format(formatterDB);
         DataProductLogs dataProductLogs = new DataProductLogs(0, currentDate, manufacture_date, expiry_date, product_id, "add", quantity);
