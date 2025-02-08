@@ -62,8 +62,6 @@ public class AnalyticsProductAdapter extends BaseAdapter {
         textViewUsed.setText("+" + String.valueOf(data.getUsedLogsCount()));
         textViewOverdue.setText("-" + String.valueOf(data.getOverdueLogsCount()));
 
-
-
         return view;
     }
 }

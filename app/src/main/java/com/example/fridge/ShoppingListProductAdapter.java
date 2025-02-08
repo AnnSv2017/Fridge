@@ -9,11 +9,7 @@ import android.widget.BaseAdapter;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.List;
 
 public class ShoppingListProductAdapter extends BaseAdapter {
 
@@ -30,16 +26,6 @@ public class ShoppingListProductAdapter extends BaseAdapter {
         this.productsList = productsList;
     }
 
-//    @Override
-//    public int getCount() {
-//        return productsList.size();
-//    }
-//
-//    @Override
-//    public Object getItem(int position) {
-//        return productsList.get(position);
-//    }
-
     @Override
     public int getCount() {
         return (productsList != null) ? productsList.size() : 0;
@@ -49,7 +35,6 @@ public class ShoppingListProductAdapter extends BaseAdapter {
     public Object getItem(int position) {
         return (productsList != null && position >= 0 && position < productsList.size()) ? productsList.get(position) : null;
     }
-
 
     @Override
     public long getItemId(int position) {

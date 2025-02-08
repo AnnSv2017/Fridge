@@ -30,37 +30,3 @@ public class DBManager {
         }
     }
 }
-
-
-//public class DBManager {
-//    private static DBManager instance;
-//    private SQLiteDatabase database;
-//    private DBHelper dbHelper;
-//    private Context context;
-//
-//    private DBManager(Context context) {
-//        this.context = context.getApplicationContext();
-//        dbHelper = new DBHelper(this.context);
-//    }
-//
-//    public static synchronized DBManager getInstance(Context context) {
-//        if (instance == null) {
-//            instance = new DBManager(context);
-//        }
-//        return instance;
-//    }
-//
-//    public SQLiteDatabase getDatabase() {
-//        if (database == null || !database.isOpen()) {
-//            database = dbHelper.getWritableDatabase();
-//        }
-//        return database;
-//    }
-//
-//    public void closeDatabase() {
-//        if (database != null && database.isOpen()) {
-//            database.close();
-//        }
-//    }
-//}
-

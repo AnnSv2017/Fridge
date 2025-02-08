@@ -26,14 +26,6 @@
             android:label="@string/title_activity_shopping_list"
             android:theme="@style/Theme.Fridge" />
         <activity
-            android:name=".TestActivity"
-            android:exported="false" />
-        <activity
-            android:name=".MyCaptureActivity"
-            android:exported="false"
-            android:screenOrientation="portrait"
-            android:theme="@style/Theme.Fridge" />
-        <activity
             android:name=".QrCodeScannerActivity"
             android:exported="false"
             android:screenOrientation="portrait"

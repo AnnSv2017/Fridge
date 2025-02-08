@@ -545,19 +545,6 @@
             android:text="Добавить/Удалить Аллерген"
             android:background="@drawable/table_row_button_background" />
 
-<!--        <TextView-->
-<!--            android:id="@+id/text_view_change_allergens"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_marginHorizontal="10dp"-->
-<!--            android:layout_marginVertical="2.5dp"-->
-<!--            android:padding="5dp"-->
-<!--            android:text="Добавить/Удалить Аллерген"-->
-<!--            style="@style/MainTextStyle"-->
-<!--            android:background="@drawable/table_row_background"-->
-<!--            android:backgroundTint="@color/main_color"-->
-<!--            android:clickable="true"/>-->
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -585,17 +572,6 @@
                 android:layout_weight="1"/>
 
         </LinearLayout>
-
-        <!--    <EditText-->
-        <!--        android:id="@+id/edit_text_mass"-->
-        <!--        android:layout_width="wrap_content"-->
-        <!--        android:layout_height="48dp"-->
-        <!--        android:layout_marginHorizontal="5dp"-->
-        <!--        android:layout_marginVertical="5dp"-->
-        <!--        android:background="@drawable/edit_text_border"-->
-        <!--        android:hint="масса/объём"-->
-        <!--        android:textColorHint="@color/gray"-->
-        <!--        android:textSize="16sp"/>-->
 
     </LinearLayout>
 

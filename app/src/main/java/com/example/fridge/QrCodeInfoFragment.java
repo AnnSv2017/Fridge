@@ -33,7 +33,6 @@ import java.util.Locale;
 public class QrCodeInfoFragment extends Fragment implements OnBackPressInQrCodeInfoFragmentListener {
 
     private DBHelper dbHelper;
-    //private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
     private DateTimeFormatter formatterDB = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     private JsonObject jsonData;
     private String name, firm, type, manufacture_date, expiry_date, mass_unit, measurement_type;
@@ -45,7 +44,6 @@ public class QrCodeInfoFragment extends Fragment implements OnBackPressInQrCodeI
 
     private TextView textViewFullName, textViewWeightOne, textViewTotalWeight;
     private TextInputEditText editTextQuantity;
-    //private TextView textViewName, textViewType, textViewManufactureDate, textViewExpiryDate, textViewMass, textViewProteins, textViewFats, textViewCarbohydrates, textViewCalories, textViewAllergens, textViewMeasurementType;
     private RelativeLayout rlShowInfoProduct;
     private Button addButton, deleteButton;
 
@@ -174,9 +172,6 @@ public class QrCodeInfoFragment extends Fragment implements OnBackPressInQrCodeI
 
         // Транзакция
         FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
-//        int product_id = dbHelper.getProductIdByFullName(type, name, firm, mass_value, mass_unit);
-//        int productInFridgeId = dbHelper.getProductInFridgeIdIfItInFridge(manufacture_date, expiry_date, product_id);
-//        DataProductInFridge dataProductInFridge = dbHelper.getProductInFridgeById(productInFridgeId);
         infoProductFragment = InfoProductFragment.newInstance(dataProductInFridge);
         transaction.replace(R.id.info_product_fragment_container, infoProductFragment);
         transaction.commit(); // Асинхронная транзакция

@@ -59,9 +59,6 @@ public class AllergensAdapter extends BaseAdapter {
             checkMarkImageView.setVisibility(View.GONE);
         }
 
-        // Обработчик нажатия для переключения состояния
-        //convertView.setOnClickListener(v -> toggleSelection(allergen));
-
         return convertView;
     }
 

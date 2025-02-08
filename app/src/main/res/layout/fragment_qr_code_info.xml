@@ -173,17 +173,6 @@
                 android:layout_column="0"
                 android:layout_columnSpan="2" />
 
-            <!--        <fragment-->
-            <!--            android:id="@+id/info_product_fragment"-->
-            <!--            android:name="com.example.fridge.InfoProductFragment"-->
-            <!--            android:layout_width="wrap_content"-->
-            <!--            android:layout_height="wrap_content"-->
-            <!--            android:layout_gravity="fill_horizontal"-->
-            <!--            android:layout_row="5"-->
-            <!--            android:layout_column="0"-->
-            <!--            android:layout_columnSpan="2"-->
-            <!--            tools:layout="@layout/fragment_info_product" />-->
-
             <Button
                 android:id="@+id/delete_button"
                 android:layout_width="0dp"

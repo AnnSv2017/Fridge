@@ -1,6 +1,5 @@
 package com.example.fridge;
 
-import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -12,39 +11,26 @@ import androidx.fragment.app.FragmentTransaction;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
-import android.widget.ImageView;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
-import com.google.zxing.BarcodeFormat;
 import com.google.zxing.ResultPoint;
-import com.google.zxing.WriterException;
-import com.google.zxing.common.BitMatrix;
 import com.journeyapps.barcodescanner.BarcodeCallback;
-import com.journeyapps.barcodescanner.BarcodeEncoder;
 import com.journeyapps.barcodescanner.BarcodeResult;
-import com.journeyapps.barcodescanner.CaptureActivity;
 import com.journeyapps.barcodescanner.CaptureManager;
 import com.journeyapps.barcodescanner.DecoratedBarcodeView;
-import com.journeyapps.barcodescanner.ScanContract;
-import com.journeyapps.barcodescanner.ScanOptions;
 import com.journeyapps.barcodescanner.Size;
 
 import java.util.List;
 
 
 public class QrCodeScannerActivity extends AppCompatActivity implements OnFragmentInteractionListener {
-
-    private ImageView qrCodeImageView;
-    private Button scanQrButton, addQrButton;
 
     private CaptureManager capture;
     private DecoratedBarcodeView barcodeScannerView;
@@ -103,47 +89,9 @@ public class QrCodeScannerActivity extends AppCompatActivity implements OnFragme
             }
             @Override
             public void possibleResultPoints(List<ResultPoint> resultPoints) {
-                // Обрабатываем дополнительные данные (опционально)
+
             }
         });
-
-
-
-        // Управление сканером
-//        capture = new CaptureManager(this, barcodeScannerView);
-//        capture.initializeFromIntent(getIntent(), savedInstanceState);
-//
-//        barcodeScannerView.getViewFinder().setLaserVisibility(false); // Убираем лазер
-//        barcodeScannerView.getViewFinder().setMaskColor(0x80000000);  // Полупрозрачный фон (50% черный)
-//        barcodeScannerView.getBarcodeView().setFramingRectSize(new Size(400, 400)); // Размер области сканирования
-
-
-//        qrCodeImageView = findViewById(R.id.qrCodeImageView);
-//
-//        final ActivityResultLauncher<ScanOptions> qrScanLauncher = registerForActivityResult(
-//                new ScanContract(),
-//                result -> {
-//                    if (result.getContents() != null) {
-//                        Toast.makeText(this, "Scanned: " + result.getContents(), Toast.LENGTH_LONG).show();
-//                        // Обработка JSON-данных
-//                    }
-//                }
-//        );
-//
-//        addQrButton = findViewById(R.id.addQrButton);
-//
-//        scanQrButton = findViewById(R.id.scanQrButton);
-//        scanQrButton.setOnClickListener(v -> {
-//            ScanOptions options = new ScanOptions();
-//            options.setPrompt("Scan a QR code");
-//            options.setBeepEnabled(true);
-//            options.setOrientationLocked(true);
-//            options.setCaptureActivity(CaptureActivity.class);
-//            qrScanLauncher.launch(options);
-//        });
-
-
-
     }
 
     private void initializeScanner() {
@@ -199,7 +147,6 @@ public class QrCodeScannerActivity extends AppCompatActivity implements OnFragme
         findViewById(R.id.activity_container).setVisibility(View.VISIBLE);
         // Скрываем контейнер фрагмента
         findViewById(R.id.fragment_container).setVisibility(View.GONE);
-
         // Возобновляем работу сканера
         barcodeScannerView.resume();
     }
@@ -252,26 +199,6 @@ public class QrCodeScannerActivity extends AppCompatActivity implements OnFragme
         super.onPause();
         if (barcodeScannerView != null) {
             barcodeScannerView.getBarcodeView().pause();
-        }
-    }
-
-    public void btnAddQr(View v){
-        String json = "{ \"name\": \"John\", \"age\": 30, \"city\": \"New York\" }"; // Ваш JSON
-        Bitmap qrCodeBitmap = generateQRCode(json);
-        if (qrCodeBitmap != null) {
-            qrCodeImageView.setImageBitmap(qrCodeBitmap);
-        }
-    }
-
-    public Bitmap generateQRCode(String jsonData) {
-        try {
-            BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
-            BitMatrix bitMatrix = new com.google.zxing.qrcode.QRCodeWriter().encode(
-                    jsonData, BarcodeFormat.QR_CODE, 400, 400);
-            return barcodeEncoder.createBitmap(bitMatrix);
-        } catch (WriterException e) {
-            e.printStackTrace();
-            return null;
         }
     }
 

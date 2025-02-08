@@ -17,7 +17,6 @@ public class ProductAdapter extends BaseAdapter {
 
     private Context context;
     private ArrayList<DataProductInFridge> productsList;
-    //private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
     private DateTimeFormatter formatterDB = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     public ProductAdapter(Context context, ArrayList<DataProductInFridge> productsList){
